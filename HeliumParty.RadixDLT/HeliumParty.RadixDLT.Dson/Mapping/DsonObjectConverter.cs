@@ -13,7 +13,7 @@ namespace HeliumParty.RadixDLT.Mapping
 
         public DsonObjectConverter(Func<T, byte[]> convertTToBytes, Func<byte[], T> convertBytesToT)
         {
-            CborCodecConstants.DsonPrefixesDictionary.TryGetValue(typeof(T), out _prefix);
+            DsonCodecConstants.DsonPrefixesDictionary.TryGetValue(typeof(T), out _prefix);
             _convertTToBytes = convertTToBytes;
             _convertBytesToT = convertBytesToT;
         }

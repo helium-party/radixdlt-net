@@ -7,7 +7,7 @@ using HeliumParty.RadixDLT.Primitives;
 
 namespace HeliumParty.RadixDLT.Mapping
 {
-    public static class CborCodecConstants
+    public static class DsonCodecConstants
     {
         // Dictionary which holds prefixes for DSON encoding and decoding
         public static readonly ImmutableDictionary<Type, byte> DsonPrefixesDictionary =
