@@ -10,14 +10,10 @@ namespace HeliumParty.RadixDLT.Primitives
         private ulong s0;
         private ulong s1;
 
-        private static readonly UInt128 maxValue = ~(UInt128)0;
-        private static readonly UInt128 zero = (UInt128)0;
-        private static readonly UInt128 one = (UInt128)1;
-
-        public static UInt128 MinValue { get { return zero; } }
-        public static UInt128 MaxValue { get { return maxValue; } }
-        public static UInt128 Zero { get { return zero; } }
-        public static UInt128 One { get { return one; } }
+        public static UInt128 MinValue => Zero;
+        public static UInt128 MaxValue { get; } = ~(UInt128)0;
+        public static UInt128 Zero { get; } = (UInt128)0;
+        public static UInt128 One { get; } = (UInt128)1;
 
         public static UInt128 Parse(string value)
         {
@@ -34,8 +30,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static bool TryParse(string value, NumberStyles style, IFormatProvider provider, out UInt128 result)
         {
-            BigInteger a;
-            if (!BigInteger.TryParse(value, style, provider, out a))
+            if (!BigInteger.TryParse(value, style, provider, out var a))
             {
                 result = Zero;
                 return false;
@@ -71,24 +66,28 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Create(out UInt128 c, uint r0, uint r1, uint r2, uint r3)
         {
+            c = Zero;
             c.s0 = (ulong)r1 << 32 | r0;
             c.s1 = (ulong)r3 << 32 | r2;
         }
 
         public static void Create(out UInt128 c, ulong s0, ulong s1)
         {
+            c = Zero;
             c.s0 = s0;
             c.s1 = s1;
         }
 
         public static void Create(out UInt128 c, long a)
         {
+            c = Zero;
             c.s0 = (ulong)a;
             c.s1 = a < 0 ? ulong.MaxValue : 0;
         }
 
         public static void Create(out UInt128 c, ulong a)
         {
+            c = Zero;
             c.s0 = a;
             c.s1 = 0;
         }
@@ -103,6 +102,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Create(out UInt128 c, BigInteger a)
         {
+            c = Zero;
             var sign = a.Sign;
             if (sign == -1)
                 a = -a;
@@ -114,6 +114,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Create(out UInt128 c, double a)
         {
+            c = Zero;
             var negate = false;
             if (a < 0)
             {
@@ -136,19 +137,19 @@ namespace HeliumParty.RadixDLT.Primitives
                 Negate(ref c);
         }
 
-        private uint r0 { get { return (uint)s0; } }
-        private uint r1 { get { return (uint)(s0 >> 32); } }
-        private uint r2 { get { return (uint)s1; } }
-        private uint r3 { get { return (uint)(s1 >> 32); } }
+        private uint r0 => (uint)s0;
+        private uint r1 => (uint)(s0 >> 32);
+        private uint r2 => (uint)s1;
+        private uint r3 => (uint)(s1 >> 32);
 
-        public ulong S0 { get { return s0; } }
-        public ulong S1 { get { return s1; } }
+        public ulong S0 => s0;
+        public ulong S1 => s1;
 
-        public bool IsZero { get { return (s0 | s1) == 0; } }
-        public bool IsOne { get { return s1 == 0 && s0 == 1; } }
-        public bool IsPowerOfTwo { get { return (this & (this - 1)).IsZero; } }
-        public bool IsEven { get { return (s0 & 1) == 0; } }
-        public int Sign { get { return IsZero ? 0 : 1; } }
+        public bool IsZero => (s0 | s1) == 0;
+        public bool IsOne => s1 == 0 && s0 == 1;
+        public bool IsPowerOfTwo => (this & (this - 1)).IsZero;
+        public bool IsEven => (s0 & 1) == 0;
+        public int Sign => IsZero ? 0 : 1;
 
         public override string ToString()
         {
@@ -170,91 +171,9 @@ namespace HeliumParty.RadixDLT.Primitives
             return ((BigInteger)this).ToString(format, provider);
         }
 
-        public static explicit operator UInt128(double a)
+        public override int GetHashCode()
         {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static explicit operator UInt128(sbyte a)
-        {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static implicit operator UInt128(byte a)
-        {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static explicit operator UInt128(short a)
-        {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static implicit operator UInt128(ushort a)
-        {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static explicit operator UInt128(int a)
-        {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static implicit operator UInt128(uint a)
-        {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static explicit operator UInt128(long a)
-        {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static implicit operator UInt128(ulong a)
-        {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static explicit operator UInt128(decimal a)
-        {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static explicit operator UInt128(BigInteger a)
-        {
-            UInt128 c;
-            Create(out c, a);
-            return c;
-        }
-
-        public static explicit operator float(UInt128 a)
-        {
-            return ConvertToFloat(ref a);
-        }
-
-        public static explicit operator double(UInt128 a)
-        {
-            return ConvertToDouble(ref a);
+            return s0.GetHashCode() ^ s1.GetHashCode();
         }
 
         public static float ConvertToFloat(ref UInt128 a)
@@ -269,6 +188,84 @@ namespace HeliumParty.RadixDLT.Primitives
             if (a.s1 == 0)
                 return a.s0;
             return a.s1 * (double)ulong.MaxValue + a.s0;
+        }
+
+        #region Operators
+
+        public static explicit operator UInt128(double a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static explicit operator UInt128(sbyte a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static implicit operator UInt128(byte a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static explicit operator UInt128(short a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static implicit operator UInt128(ushort a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static explicit operator UInt128(int a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static implicit operator UInt128(uint a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static explicit operator UInt128(long a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static implicit operator UInt128(ulong a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static explicit operator UInt128(decimal a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static explicit operator UInt128(BigInteger a)
+        {
+            Create(out var c, a);
+            return c;
+        }
+
+        public static explicit operator float(UInt128 a)
+        {
+            return ConvertToFloat(ref a);
+        }
+
+        public static explicit operator double(UInt128 a)
+        {
+            return ConvertToDouble(ref a);
         }
 
         public static explicit operator sbyte(UInt128 a)
@@ -316,8 +313,7 @@ namespace HeliumParty.RadixDLT.Primitives
             if (a.s1 == 0)
                 return a.s0;
             var shift = Math.Max(0, 32 - GetBitLength(a.s1));
-            UInt128 ashift;
-            RightShift(out ashift, ref a, shift);
+            RightShift(out var ashift, ref a, shift);
             return new decimal((int)a.r0, (int)a.r1, (int)a.r2, false, (byte)shift);
         }
 
@@ -330,22 +326,19 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static UInt128 operator <<(UInt128 a, int b)
         {
-            UInt128 c;
-            LeftShift(out c, ref a, b);
+            LeftShift(out var c, ref a, b);
             return c;
         }
 
         public static UInt128 operator >>(UInt128 a, int b)
         {
-            UInt128 c;
-            RightShift(out c, ref a, b);
+            RightShift(out var c, ref a, b);
             return c;
         }
 
         public static UInt128 operator &(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            And(out c, ref a, ref b);
+            And(out var c, ref a, ref b);
             return c;
         }
 
@@ -371,78 +364,67 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static UInt128 operator |(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Or(out c, ref a, ref b);
+            Or(out var c, ref a, ref b);
             return c;
         }
 
         public static UInt128 operator ^(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            ExclusiveOr(out c, ref a, ref b);
+            ExclusiveOr(out var c, ref a, ref b);
             return c;
         }
 
         public static UInt128 operator ~(UInt128 a)
         {
-            UInt128 c;
-            Not(out c, ref a);
+            Not(out var c, ref a);
             return c;
         }
 
         public static UInt128 operator +(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Add(out c, ref a, ref b);
+            Add(out var c, ref a, ref b);
             return c;
         }
 
         public static UInt128 operator +(UInt128 a, ulong b)
         {
-            UInt128 c;
-            Add(out c, ref a, b);
+            Add(out var c, ref a, b);
             return c;
         }
 
         public static UInt128 operator +(ulong a, UInt128 b)
         {
-            UInt128 c;
-            Add(out c, ref b, a);
+            Add(out var c, ref b, a);
             return c;
         }
 
         public static UInt128 operator ++(UInt128 a)
         {
-            UInt128 c;
-            Add(out c, ref a, 1);
+            Add(out var c, ref a, 1);
             return c;
         }
 
         public static UInt128 operator -(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Subtract(out c, ref a, ref b);
+            Subtract(out var c, ref a, ref b);
             return c;
         }
 
         public static UInt128 operator -(UInt128 a, ulong b)
         {
-            UInt128 c;
-            Subtract(out c, ref a, b);
+            Subtract(out var c, ref a, b);
             return c;
         }
 
         public static UInt128 operator -(ulong a, UInt128 b)
         {
-            UInt128 c;
-            Subtract(out c, a, ref b);
+            Subtract(out var c, a, ref b);
             return c;
         }
 
         public static UInt128 operator --(UInt128 a)
         {
-            UInt128 c;
-            Subtract(out c, ref a, 1);
+            Subtract(out var c, ref a, 1);
             return c;
         }
 
@@ -453,50 +435,43 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static UInt128 operator *(UInt128 a, uint b)
         {
-            UInt128 c;
-            Multiply(out c, ref a, b);
+            Multiply(out var c, ref a, b);
             return c;
         }
 
         public static UInt128 operator *(uint a, UInt128 b)
         {
-            UInt128 c;
-            Multiply(out c, ref b, a);
+            Multiply(out var c, ref b, a);
             return c;
         }
 
         public static UInt128 operator *(UInt128 a, ulong b)
         {
-            UInt128 c;
-            Multiply(out c, ref a, b);
+            Multiply(out var c, ref a, b);
             return c;
         }
 
         public static UInt128 operator *(ulong a, UInt128 b)
         {
-            UInt128 c;
-            Multiply(out c, ref b, a);
+            Multiply(out var c, ref b, a);
             return c;
         }
 
         public static UInt128 operator *(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Multiply(out c, ref a, ref b);
+            Multiply(out UInt128 c, ref a, ref b);
             return c;
         }
 
         public static UInt128 operator /(UInt128 a, ulong b)
         {
-            UInt128 c;
-            Divide(out c, ref a, b);
+            Divide(out var c, ref a, b);
             return c;
         }
 
         public static UInt128 operator /(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Divide(out c, ref a, ref b);
+            Divide(out var c, ref a, ref b);
             return c;
         }
 
@@ -512,8 +487,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static UInt128 operator %(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Remainder(out c, ref a, ref b);
+            Remainder(out var c, ref a, ref b);
             return c;
         }
 
@@ -787,6 +761,15 @@ namespace HeliumParty.RadixDLT.Primitives
             return !b.Equals(a);
         }
 
+        #endregion
+
+        #region Comparing
+
+        public static int Compare(UInt128 a, UInt128 b)
+        {
+            return a.CompareTo(b);
+        }
+
         public int CompareTo(UInt128 other)
         {
             if (s1 != other.s1)
@@ -895,10 +878,9 @@ namespace HeliumParty.RadixDLT.Primitives
             return Equals((UInt128)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return s0.GetHashCode() ^ s1.GetHashCode();
-        }
+        #endregion
+
+        #region Maths
 
         public static void Multiply(out UInt128 c, ulong a, ulong b)
         {
@@ -940,11 +922,10 @@ namespace HeliumParty.RadixDLT.Primitives
         private static void Multiply(out UInt256 c, ref UInt128 a, ref UInt128 b)
         {
 #if true
-            UInt128 c00, c01, c10, c11;
-            Multiply64(out c00, a.s0, b.s0);
-            Multiply64(out c01, a.s0, b.s1);
-            Multiply64(out c10, a.s1, b.s0);
-            Multiply64(out c11, a.s1, b.s1);
+            Multiply64(out var c00, a.s0, b.s0);
+            Multiply64(out var c01, a.s0, b.s1);
+            Multiply64(out var c10, a.s1, b.s0);
+            Multiply64(out var c11, a.s1, b.s1);
             var carry1 = (uint)0;
             var carry2 = (uint)0;
             c.s0 = c00.S0;
@@ -977,15 +958,13 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static UInt128 Square(ulong a)
         {
-            UInt128 c;
-            Square(out c, a);
+            Square(out var c, a);
             return c;
         }
 
         public static UInt128 Square(UInt128 a)
         {
-            UInt128 c;
-            Square(out c, ref a);
+            Square(out var c, ref a);
             return c;
         }
 
@@ -1004,22 +983,19 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static UInt128 Cube(ulong a)
         {
-            UInt128 c;
-            Cube(out c, a);
+            Cube(out var c, a);
             return c;
         }
 
         public static UInt128 Cube(UInt128 a)
         {
-            UInt128 c;
-            Cube(out c, ref a);
+            Cube(out var c, ref a);
             return c;
         }
 
         public static void Cube(out UInt128 c, ulong a)
         {
-            UInt128 square;
-            Square(out square, a);
+            Square(out var square, a);
             Multiply(out c, ref square, a);
         }
 
@@ -1040,6 +1016,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Add(out UInt128 c, ulong a, ulong b)
         {
+            c = Zero;
             c.s0 = a + b;
             c.s1 = 0;
             if (c.s0 < a && c.s0 < b)
@@ -1049,6 +1026,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Add(out UInt128 c, ref UInt128 a, ulong b)
         {
+            c = Zero;
             c.s0 = a.s0 + b;
             c.s1 = a.s1;
             if (c.s0 < a.s0 && c.s0 < b)
@@ -1058,6 +1036,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Add(out UInt128 c, ref UInt128 a, ref UInt128 b)
         {
+            c = Zero;
             c.s0 = a.s0 + b.s0;
             c.s1 = a.s1 + b.s1;
             if (c.s0 < a.s0 && c.s0 < b.s0)
@@ -1097,6 +1076,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Subtract(out UInt128 c, ref UInt128 a, ulong b)
         {
+            c = Zero;
             c.s0 = a.s0 - b;
             c.s1 = a.s1;
             if (a.s0 < b)
@@ -1106,6 +1086,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Subtract(out UInt128 c, ulong a, ref UInt128 b)
         {
+            c = Zero;
             c.s0 = a - b.s0;
             c.s1 = 0 - b.s1;
             if (a < b.s0)
@@ -1115,6 +1096,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Subtract(out UInt128 c, ref UInt128 a, ref UInt128 b)
         {
+            c = Zero;
             c.s0 = a.s0 - b.s0;
             c.s1 = a.s1 - b.s1;
             if (a.s0 < b.s0)
@@ -1144,6 +1126,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         private static void Square64(out UInt128 w, ulong u)
         {
+            w = Zero;
             var u0 = (ulong)(uint)u;
             var u1 = u >> 32;
             var carry = u0 * u0;
@@ -1159,6 +1142,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         private static void Multiply64(out UInt128 w, uint u, uint v)
         {
+            w = Zero;
             w.s0 = (ulong)u * v;
             w.s1 = 0;
             //Debug.Assert((BigInteger)w == (BigInteger)u * v);
@@ -1166,6 +1150,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         private static void Multiply64(out UInt128 w, ulong u, uint v)
         {
+            w = Zero;
             var u0 = (ulong)(uint)u;
             var u1 = u >> 32;
             var carry = u0 * v;
@@ -1178,6 +1163,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         private static void Multiply64(out UInt128 w, ulong u, ulong v)
         {
+            w = Zero;
             var u0 = (ulong)(uint)u;
             var u1 = u >> 32;
             var v0 = (ulong)(uint)v;
@@ -1194,6 +1180,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         private static void Multiply64(out UInt128 w, ulong u, ulong v, ulong c)
         {
+            w = Zero;
             var u0 = (ulong)(uint)u;
             var u1 = u >> 32;
             var v0 = (ulong)(uint)v;
@@ -1283,13 +1270,11 @@ namespace HeliumParty.RadixDLT.Primitives
                 Divide(out c, ref a, b.s0);
             else if (b.s1 <= uint.MaxValue)
             {
-                UInt128 rem;
-                Create(out c, DivRem96(out rem, ref a, ref b));
+                Create(out c, DivRem96(out var rem, ref a, ref b));
             }
             else
             {
-                UInt128 rem;
-                Create(out c, DivRem128(out rem, ref a, ref b));
+                Create(out c, DivRem128(out var rem, ref a, ref b));
             }
         }
 
@@ -1346,6 +1331,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         private static void Divide64(out UInt128 w, ulong u, ulong v)
         {
+            w = Zero;
             w.s1 = 0;
             w.s0 = u / v;
             //Debug.Assert((BigInteger)w == (BigInteger)u / v);
@@ -1353,6 +1339,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         private static void Divide96(out UInt128 w, ref UInt128 u, uint v)
         {
+            w = Zero;
             var r2 = u.r2;
             var w2 = r2 / v;
             var u0 = (ulong)(r2 - w2 * v);
@@ -1368,6 +1355,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         private static void Divide128(out UInt128 w, ref UInt128 u, uint v)
         {
+            w = Zero;
             var r3 = u.r3;
             var w3 = r3 / v;
             var u0 = (ulong)(r3 - w3 * v);
@@ -1386,6 +1374,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         private static void Divide96(out UInt128 w, ref UInt128 u, ulong v)
         {
+            w = Zero;
             w.s0 = w.s1 = 0;
             var dneg = GetBitLength((uint)(v >> 32));
             var d = 32 - dneg;
@@ -1412,6 +1401,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         private static void Divide128(out UInt128 w, ref UInt128 u, ulong v)
         {
+            w = Zero;
             w.s0 = w.s1 = 0;
             var dneg = GetBitLength((uint)(v >> 32));
             var d = 32 - dneg;
@@ -1510,8 +1500,7 @@ namespace HeliumParty.RadixDLT.Primitives
         private static ulong DivRem96(out UInt128 rem, ref UInt128 a, ref UInt128 b)
         {
             var d = 32 - GetBitLength(b.r2);
-            UInt128 v;
-            LeftShift64(out v, ref b, d);
+            LeftShift64(out var v, ref b, d);
             var r4 = (uint)LeftShift64(out rem, ref a, d);
             var v1 = v.r2;
             var v2 = v.r1;
@@ -1533,8 +1522,7 @@ namespace HeliumParty.RadixDLT.Primitives
         private static uint DivRem128(out UInt128 rem, ref UInt128 a, ref UInt128 b)
         {
             var d = 32 - GetBitLength(b.r3);
-            UInt128 v;
-            LeftShift64(out v, ref b, d);
+            LeftShift64(out var v, ref b, d);
             var r4 = (uint)LeftShift64(out rem, ref a, d);
             var r3 = rem.r3;
             var r2 = rem.r2;
@@ -1551,13 +1539,11 @@ namespace HeliumParty.RadixDLT.Primitives
         private static void Remainder192(out UInt128 c, ref UInt256 a, ref UInt128 b)
         {
             var d = 32 - GetBitLength(b.r2);
-            UInt128 v;
-            LeftShift64(out v, ref b, d);
+            LeftShift64(out var v, ref b, d);
             var v1 = v.r2;
             var v2 = v.r1;
             var v3 = v.r0;
-            UInt256 rem;
-            LeftShift64(out rem, ref a, d);
+            LeftShift64(out var rem, ref a, d);
             var r6 = rem.r6;
             var r5 = rem.r5;
             var r4 = rem.r4;
@@ -1577,14 +1563,12 @@ namespace HeliumParty.RadixDLT.Primitives
         private static void Remainder256(out UInt128 c, ref UInt256 a, ref UInt128 b)
         {
             var d = 32 - GetBitLength(b.r3);
-            UInt128 v;
-            LeftShift64(out v, ref b, d);
+            LeftShift64(out var v, ref b, d);
             var v1 = v.r3;
             var v2 = v.r2;
             var v3 = v.r1;
             var v4 = v.r0;
-            UInt256 rem;
-            var r8 = (uint)LeftShift64(out rem, ref a, d);
+            var r8 = (uint)LeftShift64(out var rem, ref a, d);
             var r7 = rem.r7;
             var r6 = rem.r6;
             var r5 = rem.r5;
@@ -1741,14 +1725,12 @@ namespace HeliumParty.RadixDLT.Primitives
         {
             if (modulus.s1 == 0)
             {
-                UInt128 product;
-                Multiply64(out product, a.s0, b.s0);
+                Multiply64(out var product, a.s0, b.s0);
                 Create(out c, UInt128.Remainder(ref product, modulus.s0));
             }
             else
             {
-                UInt256 product;
-                Multiply(out product, ref a, ref b);
+                Multiply(out UInt256 product, ref a, ref b);
                 Remainder(out c, ref product, ref modulus);
             }
         }
@@ -1757,21 +1739,19 @@ namespace HeliumParty.RadixDLT.Primitives
         {
             if (modulus.s1 == 0)
             {
-                UInt128 product;
-                Multiply64(out product, a.s0, b.s0);
+                Multiply64(out var product, a.s0, b.s0);
                 Create(out a, UInt128.Remainder(ref product, modulus.s0));
             }
             else
             {
-                UInt256 product;
-                Multiply(out product, ref a, ref b);
+                Multiply(out UInt256 product, ref a, ref b);
                 Remainder(out a, ref product, ref modulus);
             }
         }
 
         public static void ModPow(out UInt128 result, ref UInt128 value, ref UInt128 exponent, ref UInt128 modulus)
         {
-            result = one;
+            result = One;
             var v = value;
             var e = exponent.s0;
             if (exponent.s1 != 0)
@@ -1814,6 +1794,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static ulong LeftShift64(out UInt128 c, ref UInt128 a, int d)
         {
+            c = Zero;
             if (d == 0)
             {
                 c = a;
@@ -1842,6 +1823,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void LeftShift(out UInt128 c, ref UInt128 a, int b)
         {
+            c = Zero;
             if (b < 64)
                 LeftShift64(out c, ref a, b);
             else if (b == 64)
@@ -1859,6 +1841,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void RightShift64(out UInt128 c, ref UInt128 a, int b)
         {
+            c = Zero;
             if (b == 0)
                 c = a;
             else
@@ -1870,6 +1853,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void RightShift(out UInt128 c, ref UInt128 a, int b)
         {
+            c = Zero;
             if (b < 64)
                 RightShift64(out c, ref a, b);
             else if (b == 64)
@@ -1886,6 +1870,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void ArithmeticRightShift64(out UInt128 c, ref UInt128 a, int b)
         {
+            c = Zero;
             if (b == 0)
                 c = a;
             else
@@ -1897,6 +1882,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void ArithmeticRightShift(out UInt128 c, ref UInt128 a, int b)
         {
+            c = Zero;
             if (b < 64)
                 ArithmeticRightShift64(out c, ref a, b);
             else if (b == 64)
@@ -1913,24 +1899,28 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void And(out UInt128 c, ref UInt128 a, ref UInt128 b)
         {
+            c = Zero;
             c.s0 = a.s0 & b.s0;
             c.s1 = a.s1 & b.s1;
         }
 
         public static void Or(out UInt128 c, ref UInt128 a, ref UInt128 b)
         {
+            c = Zero;
             c.s0 = a.s0 | b.s0;
             c.s1 = a.s1 | b.s1;
         }
 
         public static void ExclusiveOr(out UInt128 c, ref UInt128 a, ref UInt128 b)
         {
+            c = Zero;
             c.s0 = a.s0 ^ b.s0;
             c.s1 = a.s1 ^ b.s1;
         }
 
         public static void Not(out UInt128 c, ref UInt128 a)
         {
+            c = Zero;
             c.s0 = ~a.s0;
             c.s1 = ~a.s1;
         }
@@ -1947,6 +1937,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Negate(out UInt128 c, ref UInt128 a)
         {
+            c = Zero;
             c.s0 = 0 - a.s0;
             c.s1 = 0 - a.s1;
             if (a.s0 > 0)
@@ -1956,7 +1947,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Pow(out UInt128 result, ref UInt128 value, uint exponent)
         {
-            result = one;
+            result = One;
             while (exponent != 0)
             {
 
@@ -1976,8 +1967,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static UInt128 Pow(UInt128 value, uint exponent)
         {
-            UInt128 result;
-            Pow(out result, ref value, exponent);
+            Pow(out var result, ref value, exponent);
             return result;
         }
 
@@ -1992,8 +1982,7 @@ namespace HeliumParty.RadixDLT.Primitives
             var s = (ulong)Math.Sqrt(ConvertToDouble(ref a));
             if (a.s1 < maxRepSquaredHigh)
             {
-                UInt128 s2;
-                Square(out s2, s);
+                Square(out var s2, s);
                 var r = a.s0 - s2.s0;
                 if (r > long.MaxValue)
                     --s;
@@ -2014,8 +2003,7 @@ namespace HeliumParty.RadixDLT.Primitives
             var s = (ulong)Math.Ceiling(Math.Sqrt(ConvertToDouble(ref a)));
             if (a.s1 < maxRepSquaredHigh)
             {
-                UInt128 s2;
-                Square(out s2, s);
+                Square(out var s2, s);
                 var r = s2.s0 - a.s0;
                 if (r > long.MaxValue)
                     ++s;
@@ -2025,8 +2013,7 @@ namespace HeliumParty.RadixDLT.Primitives
                 return s;
             }
             s = FloorSqrt(ref a, s);
-            UInt128 square;
-            Square(out square, s);
+            Square(out var square, s);
             if (square.S0 != a.S0 || square.S1 != a.S1)
                 ++s;
             //Debug.Assert((BigInteger)(s - 1) * (s - 1) < a && (BigInteger)s * s >= a);
@@ -2036,14 +2023,12 @@ namespace HeliumParty.RadixDLT.Primitives
         private static ulong FloorSqrt(ref UInt128 a, ulong s)
         {
             var sprev = (ulong)0;
-            UInt128 div;
-            UInt128 sum;
             while (true)
             {
                 // Equivalent to:
                 // snext = (a / s + s) / 2;
-                Divide(out div, ref a, s);
-                Add(out sum, ref div, s);
+                Divide(out var div, ref a, s);
+                Add(out var sum, ref div, s);
                 var snext = sum.S0 >> 1;
                 if (sum.S1 != 0)
                     snext |= (ulong)1 << 63;
@@ -2062,16 +2047,13 @@ namespace HeliumParty.RadixDLT.Primitives
         public static ulong FloorCbrt(UInt128 a)
         {
             var s = (ulong)Math.Pow(ConvertToDouble(ref a), (double)1 / 3);
-            UInt128 s3;
-            Cube(out s3, s);
+            Cube(out var s3, s);
             if (a < s3)
                 --s;
             else
             {
-                UInt128 sum;
-                Multiply(out sum, 3 * s, s + 1);
-                UInt128 diff;
-                Subtract(out diff, ref a, ref s3);
+                Multiply(out var sum, 3 * s, s + 1);
+                Subtract(out var diff, ref a, ref s3);
                 if (LessThan(ref sum, ref diff))
                     ++s;
             }
@@ -2082,16 +2064,13 @@ namespace HeliumParty.RadixDLT.Primitives
         public static ulong CeilingCbrt(UInt128 a)
         {
             var s = (ulong)Math.Ceiling(Math.Pow(ConvertToDouble(ref a), (double)1 / 3));
-            UInt128 s3;
-            Cube(out s3, s);
+            Cube(out var s3, s);
             if (s3 < a)
                 ++s;
             else
             {
-                UInt128 sum;
-                Multiply(out sum, 3 * s, s + 1);
-                UInt128 diff;
-                Subtract(out diff, ref s3, ref a);
+                Multiply(out var sum, 3 * s, s + 1);
+                Subtract(out var diff, ref s3, ref a);
                 if (LessThan(ref sum, ref diff))
                     --s;
             }
@@ -2130,86 +2109,74 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static UInt128 Add(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Add(out c, ref a, ref b);
+            Add(out var c, ref a, ref b);
             return c;
         }
 
         public static UInt128 Subtract(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Subtract(out c, ref a, ref b);
+            Subtract(out var c, ref a, ref b);
             return c;
         }
 
         public static UInt128 Multiply(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Multiply(out c, ref a, ref b);
+            Multiply(out UInt128 c, ref a, ref b);
             return c;
         }
 
         public static UInt128 Divide(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Divide(out c, ref a, ref b);
+            Divide(out var c, ref a, ref b);
             return c;
         }
 
         public static UInt128 Remainder(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            Remainder(out c, ref a, ref b);
+            Remainder(out var c, ref a, ref b);
             return c;
         }
 
         public static UInt128 DivRem(UInt128 a, UInt128 b, out UInt128 remainder)
         {
-            UInt128 c;
-            Divide(out c, ref a, ref b);
+            Divide(out var c, ref a, ref b);
             Remainder(out remainder, ref a, ref b);
             return c;
         }
 
         public static UInt128 ModAdd(UInt128 a, UInt128 b, UInt128 modulus)
         {
-            UInt128 c;
-            ModAdd(out c, ref a, ref b, ref modulus);
+            ModAdd(out var c, ref a, ref b, ref modulus);
             return c;
         }
 
         public static UInt128 ModSub(UInt128 a, UInt128 b, UInt128 modulus)
         {
-            UInt128 c;
-            ModSub(out c, ref a, ref b, ref modulus);
+            ModSub(out var c, ref a, ref b, ref modulus);
             return c;
         }
 
         public static UInt128 ModMul(UInt128 a, UInt128 b, UInt128 modulus)
         {
-            UInt128 c;
-            ModMul(out c, ref a, ref b, ref modulus);
+            ModMul(out var c, ref a, ref b, ref modulus);
             return c;
         }
 
         public static UInt128 ModPow(UInt128 value, UInt128 exponent, UInt128 modulus)
         {
-            UInt128 result;
-            ModPow(out result, ref value, ref exponent, ref modulus);
+            ModPow(out var result, ref value, ref exponent, ref modulus);
             return result;
         }
 
         public static UInt128 Negate(UInt128 a)
         {
-            UInt128 c;
-            Negate(out c, ref a);
+            Negate(out var c, ref a);
             return c;
         }
 
         public static UInt128 GreatestCommonDivisor(UInt128 a, UInt128 b)
         {
-            UInt128 c;
-            GreatestCommonDivisor(out c, ref a, ref b);
+            GreatestCommonDivisor(out var c, ref a, ref b);
             return c;
         }
 
@@ -2363,9 +2330,8 @@ namespace HeliumParty.RadixDLT.Primitives
             {
                 // Extract the high 63 bits of a and b.
                 var norm = 63 - GetBitLength(a1.s1);
-                UInt128 ahat, bhat;
-                Shift(out ahat, ref a1, norm);
-                Shift(out bhat, ref b1, norm);
+                Shift(out var ahat, ref a1, norm);
+                Shift(out var bhat, ref b1, norm);
                 var uhat = (long)ahat.s1;
                 var vhat = (long)bhat.s1;
 
@@ -2373,8 +2339,7 @@ namespace HeliumParty.RadixDLT.Primitives
                 if (vhat == 0)
                 {
                     // Perform a normal step and try again.
-                    UInt128 rem;
-                    Remainder(out rem, ref a1, ref b1);
+                    Remainder(out var rem, ref a1, ref b1);
                     a1 = b1;
                     b1 = rem;
                     continue;
@@ -2417,8 +2382,7 @@ namespace HeliumParty.RadixDLT.Primitives
                 // Check whether a normal step is necessary.
                 if (x0 == 1 && y0 == 0)
                 {
-                    UInt128 rem;
-                    Remainder(out rem, ref a1, ref b1);
+                    Remainder(out var rem, ref a1, ref b1);
                     a1 = b1;
                     b1 = rem;
                     continue;
@@ -2480,16 +2444,9 @@ namespace HeliumParty.RadixDLT.Primitives
         private static void AddProducts(out UInt128 result, long x, ref UInt128 u, long y, ref UInt128 v)
         {
             // Compute x * u + y * v assuming y is negative and the result is positive and fits in 128 bits.
-            UInt128 product1;
-            Multiply(out product1, ref u, (ulong)x);
-            UInt128 product2;
-            Multiply(out product2, ref v, (ulong)(-y));
+            Multiply(out var product1, ref u, (ulong)x);
+            Multiply(out var product2, ref v, (ulong)(-y));
             Subtract(out result, ref product1, ref product2);
-        }
-
-        public static int Compare(UInt128 a, UInt128 b)
-        {
-            return a.CompareTo(b);
         }
 
         private static byte[] bitLength = Enumerable.Range(0, byte.MaxValue + 1)
@@ -2530,8 +2487,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Reduce(out UInt128 w, ref UInt128 u, ref UInt128 v, ref UInt128 n, ulong k0)
         {
-            UInt128 carry;
-            Multiply64(out carry, u.s0, v.s0);
+            Multiply64(out var carry, u.s0, v.s0);
             var t0 = carry.s0;
             Multiply64(out carry, u.s1, v.s0, carry.s1);
             var t1 = carry.s0;
@@ -2569,7 +2525,6 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static void Reduce(out UInt128 w, ref UInt128 t, ref UInt128 n, ulong k0)
         {
-            UInt128 carry;
             var t0 = t.s0;
             var t1 = t.s1;
             var t2 = (ulong)0;
@@ -2577,7 +2532,7 @@ namespace HeliumParty.RadixDLT.Primitives
             for (var i = 0; i < 2; i++)
             {
                 var m = t0 * k0;
-                Multiply64(out carry, m, n.s1, MultiplyHigh64(m, n.s0, t0));
+                Multiply64(out var carry, m, n.s1, MultiplyHigh64(m, n.s0, t0));
                 Add(ref carry, t1);
                 t0 = carry.s0;
                 Add(out carry, carry.s1, t2);
@@ -2592,16 +2547,16 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static UInt128 Reduce(UInt128 u, UInt128 v, UInt128 n, ulong k0)
         {
-            UInt128 w;
-            Reduce(out w, ref u, ref v, ref n, k0);
+            Reduce(out var w, ref u, ref v, ref n, k0);
             return w;
         }
 
         public static UInt128 Reduce(UInt128 t, UInt128 n, ulong k0)
         {
-            UInt128 w;
-            Reduce(out w, ref t, ref n, k0);
+            Reduce(out var w, ref t, ref n, k0);
             return w;
         }
+
+        #endregion
     }
 }
