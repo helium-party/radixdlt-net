@@ -12,13 +12,13 @@ namespace HeliumParty.RadixDLT.Atoms
         public const int HashBytesSize = 24;
         public const int ShardBytesSize = 8;
 
-        private readonly byte[] _bytes = new byte[HashBytesSize + ShardBytesSize];
+        public byte[] Bytes { get; } = new byte[HashBytesSize + ShardBytesSize];
 
         public AID(byte[] bytes)
         {
             if (bytes.Length != HashBytesSize + ShardBytesSize)
                 throw new ArgumentException($"{nameof(bytes)} should be length {HashBytesSize + ShardBytesSize} but was {bytes.Length}");
-            Array.Copy(bytes, _bytes, _bytes.Length);
+            Array.Copy(bytes, Bytes, Bytes.Length);
         }
 
         public AID(byte[] hashBytes, byte[] shardBytes)
@@ -28,13 +28,13 @@ namespace HeliumParty.RadixDLT.Atoms
             if (shardBytes.Length != ShardBytesSize)
                 throw new ArgumentException($"{nameof(shardBytes)} should be length {ShardBytesSize} but was {shardBytes.Length}");
 
-            _bytes = Arrays.ConcatArrays(hashBytes, shardBytes);
+            Bytes = Arrays.ConcatArrays(hashBytes, shardBytes);
         }
 
-        public AID(string hexBytes) : this(Bytes.FromHexString(hexBytes)) { }
+        public AID(string hexBytes) : this(Primitives.Bytes.FromHexString(hexBytes)) { }
 
-        public long Shard => Longs.FromByteArray(_bytes, HashBytesSize);
+        public long Shard => Longs.FromByteArray(Bytes, HashBytesSize);
 
-        public override string ToString() => Bytes.ToHexString(_bytes);
+        public override string ToString() => Primitives.Bytes.ToHexString(Bytes);
     }
 }

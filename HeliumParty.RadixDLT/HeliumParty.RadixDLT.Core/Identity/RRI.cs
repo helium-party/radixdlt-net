@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace HeliumParty.RadixDLT.Identity
 {
@@ -9,6 +10,19 @@ namespace HeliumParty.RadixDLT.Identity
 
         public RRI(RadixAddress address, string name)
         {
+            Address = address;
+            Name = name;
+        }
+
+        public RRI(string s)
+        {
+            var split = s.Split('/');
+            if (split.Length < 2)
+                throw new ArgumentException($"{nameof(RRI)} must be of the format /:address/:name");
+
+            var address = new RadixAddress(split[1]);
+            var name = s.Substring(split[1].Length + 2); // TODO is this correct?
+
             Address = address;
             Name = name;
         }

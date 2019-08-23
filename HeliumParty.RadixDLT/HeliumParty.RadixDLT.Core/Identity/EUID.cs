@@ -61,6 +61,8 @@ namespace HeliumParty.RadixDLT.Identity
 
         public long Low => _value.Low;
 
+        public byte[] ToByteArray() => _value.ToByteArray();
+
         public override string ToString()
         {
             return _value.ToString("x2");
