@@ -11,9 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Utils"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Core", "HeliumParty.RadixDLT.Core\HeliumParty.RadixDLT.Core.csproj", "{F4AF917F-E1B9-4BA2-AC3E-56463F9495C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeliumParty.RadixDLT.Dson", "HeliumParty.RadixDLT.Dson\HeliumParty.RadixDLT.Dson.csproj", "{23A77595-4111-448C-8755-999B6A10A2F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Dson", "HeliumParty.RadixDLT.Dson\HeliumParty.RadixDLT.Dson.csproj", "{23A77595-4111-448C-8755-999B6A10A2F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeliumParty.RadixDLT.Json", "HeliumParty.RadixDLT.Json\HeliumParty.RadixDLT.Json.csproj", "{80B4E46A-DD7D-4596-B6C8-9638165A7714}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Json", "HeliumParty.RadixDLT.Json\HeliumParty.RadixDLT.Json.csproj", "{80B4E46A-DD7D-4596-B6C8-9638165A7714}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{731E21F1-EEEE-49A4-BF31-3797E30A4EB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeliumParty.RadixDLT.Tests", "HeliumParty.RadixDLT.Tests\HeliumParty.RadixDLT.Tests.csproj", "{A2504061-F3EC-4A4E-948C-5FB50DA541B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +45,10 @@ Global
 		{80B4E46A-DD7D-4596-B6C8-9638165A7714}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80B4E46A-DD7D-4596-B6C8-9638165A7714}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80B4E46A-DD7D-4596-B6C8-9638165A7714}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2504061-F3EC-4A4E-948C-5FB50DA541B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2504061-F3EC-4A4E-948C-5FB50DA541B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2504061-F3EC-4A4E-948C-5FB50DA541B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2504061-F3EC-4A4E-948C-5FB50DA541B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,6 +59,7 @@ Global
 		{F4AF917F-E1B9-4BA2-AC3E-56463F9495C4} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
 		{23A77595-4111-448C-8755-999B6A10A2F7} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
 		{80B4E46A-DD7D-4596-B6C8-9638165A7714} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
+		{A2504061-F3EC-4A4E-948C-5FB50DA541B4} = {731E21F1-EEEE-49A4-BF31-3797E30A4EB3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C71E73C3-7FCD-49AD-A089-CA96355E339D}
