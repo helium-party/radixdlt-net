@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HeliumParty.RadixDLT.Json\HeliumParty.RadixDLT.Json.csproj" />
+    <ProjectReference Include="..\..\src\HeliumParty.RadixDLT.Crypto\HeliumParty.RadixDLT.Crypto.csproj" />
   </ItemGroup>
 
 </Project>

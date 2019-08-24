@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Crypto
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Core", "src\HeliumParty.RadixDLT.Core\HeliumParty.RadixDLT.Core.csproj", "{6679C65B-FCD4-4133-A584-40E72D3A707A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Tests", "tests\HeliumParty.RadixDLT.Tests\HeliumParty.RadixDLT.Tests.csproj", "{C3DAE492-BC43-4362-930A-608BD8E9000B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{6679C65B-FCD4-4133-A584-40E72D3A707A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6679C65B-FCD4-4133-A584-40E72D3A707A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6679C65B-FCD4-4133-A584-40E72D3A707A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3DAE492-BC43-4362-930A-608BD8E9000B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3DAE492-BC43-4362-930A-608BD8E9000B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3DAE492-BC43-4362-930A-608BD8E9000B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3DAE492-BC43-4362-930A-608BD8E9000B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{B8EE655B-B503-48D0-BCC4-BD0C3EB39A1E} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
 		{F8AEE9A3-E1DC-468A-AD8F-2CE087A5B630} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
 		{6679C65B-FCD4-4133-A584-40E72D3A707A} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
+		{C3DAE492-BC43-4362-930A-608BD8E9000B} = {731E21F1-EEEE-49A4-BF31-3797E30A4EB3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C71E73C3-7FCD-49AD-A089-CA96355E339D}
