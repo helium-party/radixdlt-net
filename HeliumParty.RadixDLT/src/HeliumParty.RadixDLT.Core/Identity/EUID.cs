@@ -4,7 +4,7 @@ using HeliumParty.RadixDLT.Primitives;
 
 namespace HeliumParty.RadixDLT.Identity
 {
-    public class EUID
+    public class EUID : IComparable<EUID>
     {
         // TODO add methods like RingClosest,... from former HeliumParty lib? (this comment is here as a remainder that these methods have already been written
         public static readonly EUID Zero = new EUID(0);
@@ -67,5 +67,20 @@ namespace HeliumParty.RadixDLT.Identity
         {
             return _value.ToString("x2");
         }
+
+        public override int GetHashCode() => _value.GetHashCode();
+
+        public override bool Equals(object obj)
+        {
+            if (obj == this)
+                return true;
+            if (!(obj is EUID))
+                return false;
+
+            var other = (EUID)obj;
+            return _value.Equals(other._value);
+        }
+
+        public int CompareTo(EUID other) => _value.CompareToUnsigned(other._value);
     }
 }

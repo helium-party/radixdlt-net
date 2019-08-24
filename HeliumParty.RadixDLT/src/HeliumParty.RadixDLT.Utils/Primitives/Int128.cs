@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace HeliumParty.RadixDLT.Primitives
 {
     public struct Int128 : IFormattable, IComparable, IComparable<Int128>, IEquatable<Int128>
     {
         private UInt128 _v;
+        public const int ByteCount = sizeof(long) * 2;
 
         public static Int128 MinValue { get; } = (Int128)((UInt128)1 << 127);
         public static Int128 MaxValue { get; } = (Int128)(((UInt128)1 << 127) - 1);
@@ -90,9 +92,33 @@ namespace HeliumParty.RadixDLT.Primitives
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Convert value to an array of bytes
+        /// The most significant byte will be returned in index zero
+        /// The array will always be <see cref="ByteCount"/> long, and will
+        /// be zero filled to suit the actual value
+        /// </summary>
+        /// <returns>An array of <see cref="ByteCount"/> bytes representing 
+        /// the value of this <see cref="Int128"/></returns>
         public byte[] ToByteArray()
         {
-            throw new NotImplementedException();
+            return ToByteArray(new byte[ByteCount], 0);
+        }
+
+        /// <summary>
+        /// Copy value into an array of bytes
+        /// The most significant byte will be returned in the 
+        /// index of the specified <paramref name="offset"/>
+        /// The array must be at least <paramref name="offset"/> + <see cref="ByteCount"/> long
+        /// </summary>
+        /// <param name="bytes">The array to place the value into</param>
+        /// <param name="offset">The offset within the array to place the bytes into</param>
+        /// <returns>The specified array with the inserted value</returns>
+        public byte[] ToByteArray(byte[] bytes, int offset)
+        {
+            Longs.CopyTo((long)_v.S1, bytes, offset);
+            Longs.CopyTo((long)_v.S0, bytes, offset + sizeof(long));
+            return bytes;
         }
 
         public override string ToString()
@@ -906,6 +932,20 @@ namespace HeliumParty.RadixDLT.Primitives
             if (!(obj is Int128))
                 throw new ArgumentException();
             return CompareTo((Int128)obj);
+        }
+
+        /// <summary>
+        /// Compares the current value with another <see cref="Int128"/>, treating both values as unsigned
+        /// </summary>
+        /// <param name="other">Value to compare to</param>
+        /// <returns> smaller 0 ... current value is smaller, 0 ... values are equal, greater 0 ... current value is greater</returns>
+        public int CompareToUnsigned(Int128 other)
+        {
+            var cmp = Longs.CompareUnsigned((long)_v.S1, (long)other.S1);
+            if (cmp == 0)
+                cmp = Longs.CompareUnsigned((long)_v.S0, (long)other.S0);
+
+            return cmp;
         }
 
         private static bool LessThan(ref UInt128 a, ref UInt128 b)

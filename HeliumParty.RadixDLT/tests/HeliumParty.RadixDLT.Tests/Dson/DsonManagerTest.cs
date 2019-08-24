@@ -1,4 +1,5 @@
-﻿using HeliumParty.RadixDLT.Atoms;
+﻿using System;
+using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Primitives;
 using Shouldly;
@@ -27,7 +28,6 @@ namespace HeliumParty.RadixDLT.Tests.Dson
         [Fact]
         public void TestEUIDDson()
         {
-            // TODO fails because Int128.ToByteArray() throws not implemented exception
             var euid = new EUID("1e340377ac58b9008ad12e1f2bae015d");
             var serializedEuid = _manager.ToDson(euid);
             var deserializedEuid = _manager.FromDson<EUID>(serializedEuid);
@@ -45,7 +45,7 @@ namespace HeliumParty.RadixDLT.Tests.Dson
             deserializedAddr.ShouldBe(addr);
         }
 
-        // TODO add TestInt128 once Int128.ToByteArray is implemented
+        //TODO implement TestUInt256 once implemented
 
         [Fact]
         public void TestRadixRRIDson()
