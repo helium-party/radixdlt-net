@@ -5,12 +5,12 @@ using HeliumParty.RadixDLT.Particles;
 
 namespace HeliumParty.RadixDLT.Atoms
 {
-    public class ParticleGroup<T> where T : Particle
+    public class ParticleGroup
     {
-        public ImmutableList<SpunParticle<T>> Particles { get; }
+        public ImmutableList<SpunParticle<Particle>> Particles { get; }
         public ImmutableDictionary<string, string> MetaData { get; }
 
-        public ParticleGroup(ImmutableList<SpunParticle<T>> particles, ImmutableDictionary<string, string> metaData)
+        public ParticleGroup(ImmutableList<SpunParticle<Particle>> particles, ImmutableDictionary<string, string> metaData)
         {
             Particles = particles;
             MetaData = metaData;
