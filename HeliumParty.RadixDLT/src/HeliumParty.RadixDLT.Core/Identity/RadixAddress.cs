@@ -8,8 +8,7 @@ namespace HeliumParty.RadixDLT.Identity
 {
     public class RadixAddress
     {
-        private readonly string _addressBase58;
-        private readonly ECPublicKey _pubKey;
+        private readonly string _addressBase58;        
 
         private EUID _euid;
         public EUID EUID
@@ -21,6 +20,7 @@ namespace HeliumParty.RadixDLT.Identity
                 return _euid;
             }
         }
+        public virtual ECPublicKey ECPublicKey { get; } // TODO : should this be converted to an auto property?
 
         /// <summary>
         ///     Create a RadixAddres from a base58 string
@@ -43,7 +43,7 @@ namespace HeliumParty.RadixDLT.Identity
             Array.Copy(raw, 1, publicKey, 0, raw.Length - 5);
 
             _addressBase58 = addressBase58;
-            _pubKey = new ECPublicKey(publicKey);
+            ECPublicKey = new ECPublicKey(publicKey);
         }
 
         /// <summary>
@@ -70,15 +70,13 @@ namespace HeliumParty.RadixDLT.Identity
 
             //_addressBase58 = Base58.ToBase58(addressBytes);
             _addressBase58 = Base58Encoding.Encode(addressBytes);
-            _pubKey = publicKey;
+            ECPublicKey = publicKey;
         }
 
         public override string ToString()
         {
             return _addressBase58;
-        }
-
-        public virtual ECPublicKey ECPublicKey => _pubKey; // TODO : should this be converted to an auto property?
+        }        
 
         public override bool Equals(object obj)
         {
