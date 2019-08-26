@@ -25,7 +25,13 @@ namespace HeliumParty.RadixDLT
 
         // TODO either add NewInstance(), or make methods static
 
-        public byte[] ToDson<T>(T obj) => ToDsonAsync(obj).Result;
+        public byte[] ToDson<T>(T obj)
+        {
+            
+
+
+            return ToDsonAsync(obj).Result;
+        }
 
         private async Task<byte[]> ToDsonAsync<T>(T obj)
         {
