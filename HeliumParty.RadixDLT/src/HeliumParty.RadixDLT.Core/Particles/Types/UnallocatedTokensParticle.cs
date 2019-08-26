@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Primitives;
+using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
@@ -12,10 +14,19 @@ namespace HeliumParty.RadixDLT.Particles.Types
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress>() { Address };
         public RadixAddress Address => TokenDefinitionReference.Address;
 
+        [CborProperty("tokenDefinitionReference"), JsonProperty(PropertyName = "tokenDefinitionReference")]
         public RRI TokenDefinitionReference { get; }
+
+        [CborProperty("granularity"), JsonProperty(PropertyName = "granularity")]
         public UInt256 Granularity { get; }
+
+        [CborProperty("nonce"), JsonProperty(PropertyName = "nonce")]
         public long Nonce { get; }
+
+        [CborProperty("amount"), JsonProperty(PropertyName = "amount")]
         public UInt256 Amount { get; }
+
+        [CborProperty("permissions"), JsonProperty(PropertyName = "permissions")]
         public IDictionary<TokenTransition, TokenPermission> TokenPermissions { get; }
 
         public UnallocatedTokensParticle(RRI tokenDefinitionReference, UInt256 granularity, long nonce, UInt256 amount, IDictionary<TokenTransition, TokenPermission> tokenPermissions)

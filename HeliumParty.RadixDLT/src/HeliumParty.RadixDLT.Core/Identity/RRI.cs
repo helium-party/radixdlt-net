@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Dahomey.Cbor.Attributes;
 
 namespace HeliumParty.RadixDLT.Identity
 {
@@ -7,7 +8,7 @@ namespace HeliumParty.RadixDLT.Identity
     {
         public RadixAddress Address { get; }
         public string Name { get; }
-
+        
         public RRI(RadixAddress address, string name)
         {
             Address = address;

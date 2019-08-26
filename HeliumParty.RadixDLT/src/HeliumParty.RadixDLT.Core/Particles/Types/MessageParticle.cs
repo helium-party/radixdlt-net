@@ -1,26 +1,38 @@
 ﻿using System.Collections.Generic;
+using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Identity.Managers;
+using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
     public class MessageParticle : Particle, IAccountable
     {
+        [CborProperty("from"), JsonProperty(PropertyName = "from")]
         public RadixAddress From { get; }
+
+        [CborProperty("to"), JsonProperty(PropertyName = "to")]
         public RadixAddress To { get; }
 
+        // TODO change to IDictionary onece Dahomey implemented this
         //aka content-type
-        public IDictionary<string, string> MetaData { get; }
+        [CborProperty("metaData"), JsonProperty(PropertyName = "metaData")]
+        public Dictionary<string, string> MetaData { get; }
+
         //aka data, message,...
+        [CborProperty("bytes"), JsonProperty(PropertyName = "bytes")]
         public byte[] Bytes { get; }
+
+        [CborProperty("nonce"), JsonProperty(PropertyName = "nonce")]
         public long Nonce { get; }
 
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress> { From, To };
 
-        public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes)
+        public MessageParticle(RadixAddress from, RadixAddress to, Dictionary<string, string> metaData, byte[] bytes)
             : this(from, to, metaData, bytes, RandomGenerator.GetRandomLong(), ConvertToEUID(from, to)) { }
 
-        public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes, long nonce, HashSet<EUID> destinations)
+        [CborConstructor]
+        public MessageParticle(RadixAddress from, RadixAddress to, Dictionary<string, string> metaData, byte[] bytes, long nonce, HashSet<EUID> destinations)
             : base(destinations)
         {
             From = from;
