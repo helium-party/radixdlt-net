@@ -25,6 +25,8 @@ namespace HeliumParty.RadixDLT.App.Identity
                 var signatures = new Dictionary<string, ECSignature>();
                 signatures.Add(EUID.ToString(), signature);
 
+                throw new NotImplementedException("DSON parsing is not yet implemented. unable to sign atom");
+
                 return new Atom()
                 {
                     ParticleGroups = atom.ParticleGroups,
