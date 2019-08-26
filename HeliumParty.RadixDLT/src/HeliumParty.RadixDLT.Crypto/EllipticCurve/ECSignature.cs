@@ -1,4 +1,6 @@
-﻿using HeliumParty.RadixDLT.Primitives;
+﻿using Dahomey.Cbor.Attributes;
+using HeliumParty.RadixDLT.Primitives;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Utilities.Encoders;
@@ -7,7 +9,10 @@ namespace HeliumParty.RadixDLT.EllipticCurve
 {
     public class ECSignature
     {
+        [CborProperty("r"), JsonProperty(PropertyName = "r")]
         private readonly byte[] _r;
+
+        [CborProperty("s"), JsonProperty(PropertyName = "s")]
         private readonly byte[] _s;
 
         public ECSignature(BigInteger r, BigInteger s)
