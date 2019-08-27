@@ -14,7 +14,7 @@ namespace HeliumParty.RadixDLT.App.Identity
     public class LocalRadixIdentity : BaseRadixIdentity, IRadixIdentity
     {
         private readonly ECKeyPair _keyPair;
-        public ECPublicKey PublicKey => throw new NotImplementedException();
+        public ECPublicKey PublicKey => _keyPair.PublicKey;
 
         public Task<Atom> Sign(Atom atom)
         {
