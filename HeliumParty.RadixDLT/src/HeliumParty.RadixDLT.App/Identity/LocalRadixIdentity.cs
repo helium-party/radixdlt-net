@@ -1,4 +1,5 @@
 ﻿using HeliumParty.RadixDLT.Atoms;
+using HeliumParty.RadixDLT.Core.Identity;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
 using HeliumParty.RadixDLT.Identity;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HeliumParty.RadixDLT.App.Identity
 {
-    public class LocalRadixIdentity : IRadixIdentity
+    public class LocalRadixIdentity : BaseRadixIdentity, IRadixIdentity
     {
         private readonly ECKeyPair _keyPair;
         public ECPublicKey PublicKey => throw new NotImplementedException();
@@ -20,8 +21,8 @@ namespace HeliumParty.RadixDLT.App.Identity
             return new Task<Atom>(() => 
             {
                 // to do : use our DSON lib to get a correct byte[] and hash it
-                var signature = new ECKeyManager().GetECSignature(_keyPair.PrivateKey, new byte[0]);
-                var EUID = new EUIDManager().GetEUID(_keyPair.PublicKey);
+                var signature = KeyManager.GetECSignature(_keyPair.PrivateKey, new byte[0]);
+                var EUID = EuidManager.GetEUID(_keyPair.PublicKey);
                 var signatures = new Dictionary<string, ECSignature>();
                 signatures.Add(EUID.ToString(), signature);
 
