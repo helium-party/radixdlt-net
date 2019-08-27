@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public abstract class TokenDefinitionParticle : Particle, IIdentifiable, IOwnable
     {
         [CborProperty("rri"), JsonProperty(PropertyName = "rri")]
@@ -24,6 +25,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
         [CborProperty("iconUrl"), JsonProperty(PropertyName = "iconUrl")]
         public string IconUrl { get; }
 
+        [CborConstructor, JsonConstructor]
         protected TokenDefinitionParticle(RRI rRI, string name, string description, UInt256 granularity, string iconUrl)
             : base(rRI.Address.EUID)
         {

@@ -7,15 +7,11 @@ using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Particles
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public abstract class Particle
     {
         [CborProperty("destinations"), JsonProperty(PropertyName = "destinations")]
         private readonly HashSet<EUID> _destinations; // TODO make immutable?
-
-        public Particle()
-        {
-            
-        }
 
         public Particle(EUID destination)
         {
@@ -25,6 +21,7 @@ namespace HeliumParty.RadixDLT.Particles
             _destinations = new HashSet<EUID>() { destination };
         }
 
+        [CborConstructor, JsonConstructor]
         public Particle(HashSet<EUID> destinations)
         {
             _destinations = destinations ?? throw new ArgumentNullException(nameof(destinations));

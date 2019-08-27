@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class UniqueParticle : Particle, IIdentifiable
     {
-        // TODO check if this rri should be serialized
         public RRI RRI => new RRI(Address, Name);
 
         [CborProperty("name"), JsonProperty(PropertyName = "name")]
@@ -18,6 +18,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
         [CborProperty("nonce"), JsonProperty(PropertyName = "nonce")]
         public long Nonce { get; }
 
+        [CborConstructor, JsonConstructor]
         public UniqueParticle(RadixAddress address, string name)
             : base(address.EUID)
         {

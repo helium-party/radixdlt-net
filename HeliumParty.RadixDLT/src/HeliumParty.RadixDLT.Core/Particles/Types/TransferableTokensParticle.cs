@@ -10,6 +10,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
     /// A particle which represents an amount of consumable and consuming, tranferable fungible tokens
     /// owned by some key owner and stored in an account.
     /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
     public class TransferableTokensParticle : Particle, IAccountable, IOwnable
     {
         [CborProperty("address"), JsonProperty(PropertyName = "address")]
@@ -35,6 +36,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
         [CborProperty("permissions"), JsonProperty(PropertyName = "permissions")]
         public IDictionary<TokenTransition, TokenPermission> TokenPermissions { get; }
 
+        [CborConstructor, JsonConstructor]
         public TransferableTokensParticle(RadixAddress address, RRI tokenDefinitionReference, UInt256 granularity, long planck, long nonce, UInt256 amount, IDictionary<TokenTransition, TokenPermission> tokenPermissions)
             : base(address.EUID)
         {

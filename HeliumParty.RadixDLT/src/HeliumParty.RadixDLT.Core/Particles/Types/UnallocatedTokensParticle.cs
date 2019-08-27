@@ -9,6 +9,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
     /// <summary>
     /// A particle which represents an amount of unallocated tokens which can be minted.
     /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
     public class UnallocatedTokensParticle : Particle, IAccountable, IOwnable
     {
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress>() { Address };
@@ -29,6 +30,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
         [CborProperty("permissions"), JsonProperty(PropertyName = "permissions")]
         public IDictionary<TokenTransition, TokenPermission> TokenPermissions { get; }
 
+        [CborConstructor, JsonConstructor]
         public UnallocatedTokensParticle(RRI tokenDefinitionReference, UInt256 granularity, long nonce, UInt256 amount, IDictionary<TokenTransition, TokenPermission> tokenPermissions)
             : base(tokenDefinitionReference.Address.EUID)
         {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Identity;
@@ -13,6 +12,7 @@ namespace HeliumParty.RadixDLT.Atoms
     /// (similar to a block in a blockchain) and defines the actions 
     /// that can be issued onto the ledger.
     /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
     public class Atom
     {
         public static string MetadataTimestampKey = "timestamp";
@@ -37,7 +37,7 @@ namespace HeliumParty.RadixDLT.Atoms
 
         public Atom(List<ParticleGroup> particleGroups, long timestamp) : this(particleGroups,
             new Dictionary<string, string>() { { MetadataTimestampKey, timestamp.ToString() } }) { }
-
+        
         public Atom(List<ParticleGroup> particleGroups, Dictionary<string, string> metadata)
         {
             if (particleGroups == null)

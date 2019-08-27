@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Atoms
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class ParticleGroup
     {
         [CborProperty("particles"), JsonProperty(PropertyName = "particles")]
@@ -15,7 +16,7 @@ namespace HeliumParty.RadixDLT.Atoms
         [CborProperty("metaData"), JsonProperty(PropertyName = "metaData")]
         public ImmutableDictionary<string, string> MetaData { get; }
 
-        [CborConstructor]
+        [CborConstructor, JsonConstructor]
         public ParticleGroup(ImmutableList<SpunParticle<Particle>> particles, ImmutableDictionary<string, string> metaData)
         {
             Particles = particles;

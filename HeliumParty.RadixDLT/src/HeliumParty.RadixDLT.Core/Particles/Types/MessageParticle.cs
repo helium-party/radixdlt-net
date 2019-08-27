@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class MessageParticle : Particle, IAccountable
     {
         [CborProperty("from"), JsonProperty(PropertyName = "from")]
@@ -13,11 +14,10 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         [CborProperty("to"), JsonProperty(PropertyName = "to")]
         public RadixAddress To { get; }
-
-        // TODO change to IDictionary onece Dahomey implemented this
+        
         //aka content-type
         [CborProperty("metaData"), JsonProperty(PropertyName = "metaData")]
-        public Dictionary<string, string> MetaData { get; }
+        public IDictionary<string, string> MetaData { get; }
 
         //aka data, message,...
         [CborProperty("bytes"), JsonProperty(PropertyName = "bytes")]
@@ -28,11 +28,11 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress> { From, To };
 
-        public MessageParticle(RadixAddress from, RadixAddress to, Dictionary<string, string> metaData, byte[] bytes)
+        public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes)
             : this(from, to, metaData, bytes, RandomGenerator.GetRandomLong(), ConvertToEUID(from, to)) { }
 
-        [CborConstructor]
-        public MessageParticle(RadixAddress from, RadixAddress to, Dictionary<string, string> metaData, byte[] bytes, long nonce, HashSet<EUID> destinations)
+        [CborConstructor, JsonConstructor]
+        public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes, long nonce, HashSet<EUID> destinations)
             : base(destinations)
         {
             From = from;
