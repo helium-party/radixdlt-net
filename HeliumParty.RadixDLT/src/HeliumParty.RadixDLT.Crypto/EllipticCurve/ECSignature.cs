@@ -1,4 +1,5 @@
-﻿using Dahomey.Cbor.Attributes;
+﻿using System.Linq;
+using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Primitives;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1;
@@ -7,6 +8,7 @@ using Org.BouncyCastle.Utilities.Encoders;
 
 namespace HeliumParty.RadixDLT.EllipticCurve
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class ECSignature
     {
         [CborProperty("r"), JsonProperty(PropertyName = "r")]
@@ -14,6 +16,13 @@ namespace HeliumParty.RadixDLT.EllipticCurve
 
         [CborProperty("s"), JsonProperty(PropertyName = "s")]
         private readonly byte[] _s;
+
+        [CborConstructor, JsonConstructor]
+        public ECSignature(byte[] r, byte[] s)
+        {
+            _r = Bytes.TrimLeadingZeros(r);
+            _s = Bytes.TrimLeadingZeros(s);
+        }
 
         public ECSignature(BigInteger r, BigInteger s)
         {
@@ -42,6 +51,15 @@ namespace HeliumParty.RadixDLT.EllipticCurve
             };
 
             return new ECSignature(new BigInteger(1, r), new BigInteger(1, s));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is ECSignature))
+                return false;
+
+            var other = (ECSignature)obj;
+            return _r.SequenceEqual(other._r) && _s.SequenceEqual(other._s);
         }
     }
 }
