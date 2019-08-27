@@ -1,6 +1,11 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using HeliumParty.RadixDLT.Atoms;
+using HeliumParty.RadixDLT.EllipticCurve;
+using HeliumParty.RadixDLT.EllipticCurve.Managers;
 using HeliumParty.RadixDLT.Identity;
+using HeliumParty.RadixDLT.Particles;
+using HeliumParty.RadixDLT.Particles.Types;
 using HeliumParty.RadixDLT.Primitives;
 using Shouldly;
 using Xunit;
@@ -15,6 +20,8 @@ namespace HeliumParty.RadixDLT.Tests.Dson
         {
             _manager = new DsonManager();
         }
+
+        #region Base Types
 
         [Fact]
         public void TestByteDson()
@@ -57,5 +64,34 @@ namespace HeliumParty.RadixDLT.Tests.Dson
         }
 
         // TODO add AID
+
+        #endregion
+
+        #region Crypto Layer
+
+        [Fact]
+        public void TestECSignature()
+        {
+            var eCKeyManager = new ECKeyManager();
+            var address = eCKeyManager.GetRandomKeyPair();
+            var signature = eCKeyManager.GetECSignature(address.PrivateKey, Bytes.FromBase64String("testtest"));
+            var serialized = _manager.ToDson(signature);
+
+            var deserialized = _manager.FromDson<ECSignature>(serialized);
+            deserialized.ShouldBe(signature);
+        }
+
+        [Fact]
+        public void TestECKEyPair()
+        {
+            var eCKeyManager = new ECKeyManager();
+            var address = eCKeyManager.GetRandomKeyPair();
+            var serialized = _manager.ToDson(address);
+
+            var deserialized = _manager.FromDson<ECKeyPair>(serialized);
+            deserialized.ShouldBe(address);
+        }
+
+        #endregion
     }
 }
