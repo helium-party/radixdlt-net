@@ -5,7 +5,7 @@
         /// <summary>
         /// An output mode that never results in output.  Of limited use.
         /// </summary>
-        None,
+        //None,
 
         /// <summary>
         /// An output mode for calculating hashes.

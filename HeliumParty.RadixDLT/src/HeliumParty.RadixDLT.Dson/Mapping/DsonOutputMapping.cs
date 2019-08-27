@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using System.Reflection;
 using Dahomey.Cbor;
 using Dahomey.Cbor.Attributes;
 using Dahomey.Cbor.Serialization;
-using Dahomey.Cbor.Serialization.Conventions;
 using Dahomey.Cbor.Serialization.Converters.Mappings;
 using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Identity;
-using HeliumParty.RadixDLT.Particles.Types;
 
 namespace HeliumParty.RadixDLT.Mapping
 {
@@ -36,10 +32,8 @@ namespace HeliumParty.RadixDLT.Mapping
             // initialize the default config for each output mode
             foreach (var mode in (OutputMode[])Enum.GetValues(typeof(OutputMode)))
                 _outputModeOptions.Add(mode, CborOptions.Default);
-            _outputModeOptions[OutputMode.None] = null; // TODO do we even require output mode none?
 
             // register output mode mappings
-
             #region Hash
 
             _outputModeOptions[OutputMode.Hash].Registry.ObjectMappingRegistry.Register<Atom>(om =>
@@ -48,7 +42,7 @@ namespace HeliumParty.RadixDLT.Mapping
                 om.ClearMemberMappings();
                 om.MapMember(o => o.ParticleGroups);
                 om.MapMember(o => o.MetaData);
-                om.MapMember(o => o.Id);
+                om.MapMember(o => o.Id); // TODO Test if this is auto excluded because there is no attribute
             });
             _outputModeOptions[OutputMode.Hash].Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
             {
@@ -89,14 +83,9 @@ namespace HeliumParty.RadixDLT.Mapping
 
         }
 
-        public static CborOptions GetCborOptions(OutputMode mode)
-        {
-            if (mode == null)
-                throw new ArgumentNullException(nameof(mode));
+        public static CborOptions GetCborOptions(OutputMode mode) => _outputModeOptions[mode];
 
-            return _outputModeOptions[mode];
-        }
-
+        // required for not serializing fields and properties by default
         public class OptInObjectMappingConventionProvider : IObjectMappingConventionProvider
         {
             public IObjectMappingConvention GetConvention(Type type)
