@@ -7,12 +7,12 @@ namespace HeliumParty.RadixDLT.Pbkdf
 {
     public static class PrivateKeyEncrypter
     {
-        public static ECPrivateKey Decrypt(string pasword, Keystore keystore)
+        public static ECPrivateKey Decrypt(string pasword, KeyStore keystore)
         {
             throw new NotImplementedException();
         }
 
-        public static Keystore Encrypt(string pasword, ECPrivateKey privatekey)
+        public static KeyStore Encrypt(string pasword, ECPrivateKey privatekey)
         {
             throw new NotImplementedException();
         }

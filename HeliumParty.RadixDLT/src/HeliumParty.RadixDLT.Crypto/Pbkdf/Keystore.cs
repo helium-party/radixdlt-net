@@ -1,12 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace HeliumParty.RadixDLT.Pbkdf
 {
-    public class Keystore
+    public class KeyStore
     {
         public string Id { get; set; }
+
+        [JsonProperty(PropertyName = "crypto")]
         public CryptoDetails CryptoDetails { get; set; }
 
     }
