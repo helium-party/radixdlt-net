@@ -11,28 +11,25 @@ namespace HeliumParty.RadixDLT.EllipticCurve
         private const string Keypairalgo = "ECDSA";
 
         [CborProperty("public"), JsonProperty(PropertyName = "public")]
-        private readonly byte[] _publicKey;
+        private byte[] _publicKey => PublicKey.Base64Array;
 
         [CborProperty("private"), JsonProperty(PropertyName = "private")]
-        private readonly byte[] _privateKey;
+        private byte[] _privateKey => PrivateKey.Base64Array;
 
-        public byte[] PublicKeyBytes => PublicKey.Base64Array;
-        public byte[] PrivateKeyBytes => PrivateKey.Base64Array;
-
-        public ECPublicKey PublicKey => new ECPublicKey(_publicKey);
-        public ECPrivateKey PrivateKey => new ECPrivateKey(_privateKey);
+        public ECPublicKey PublicKey { get; }
+        public ECPrivateKey PrivateKey { get; }
 
         public ECKeyPair(ECPrivateKey privateKey, ECPublicKey publicKey)
-        {
-            _publicKey = publicKey.Base64Array;
-            _privateKey = privateKey.Base64Array;
+        {            
+            PublicKey = publicKey;
+            PrivateKey = privateKey;
         }
 
         [CborConstructor, JsonConstructor]
         public ECKeyPair(byte[] privateKey, byte[] publicKey)
         {
-            _publicKey = publicKey;
-            _privateKey = privateKey;
+            PublicKey = new ECPublicKey(publicKey);
+            PrivateKey = new ECPrivateKey(privateKey);
         }
 
         public override bool Equals(object obj)
