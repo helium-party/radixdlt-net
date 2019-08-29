@@ -36,19 +36,19 @@ namespace HeliumParty.RadixDLT.Crypto.Tests.Pbkdf
         public void KeyStore_Should_SerializePerfectly()
         {
             _store.ShouldNotBeNull();
-            _store.Id.ShouldBe("51dac59689854c3c265696c5dd4cef57");
+            _store.Id.ShouldBe("37f64b70460674c17cb5a7f1745c2b04");
 
             _store.CryptoDetails.ShouldNotBeNull();
-            _store.CryptoDetails.CipherParams.IV.ShouldBe("64455195780e952aba831f77394eceb7");
+            _store.CryptoDetails.CipherParams.IV.ShouldBe("98190c80b8c4c592ff5a5ed62e4b0975");
             _store.CryptoDetails.Cipher.ShouldBe("aes-256-ctr");
-            _store.CryptoDetails.CipherText.ShouldBe("5016afca1361590792f548c6a6e99f8b85c4c3471aa1ae784f61010034873b3948aaebee56c5d45658e9bdebe5e635ea56891bad1802a7ae0c05b679d79f9e02");
-            _store.CryptoDetails.Mac.ShouldBe("cbd2d1661d66836bd93c6f855ea019d409af880f1a2a8318edeb3f2c34ce802f");
+            _store.CryptoDetails.CipherText.ShouldBe("b0772ad140ab17eb199f7d7f35b2417d7eb1c1b788b0f77bb03ee1dec37f527897ad6a182f9e46e7a7383024c663d62dfb3e529e9f94982e6ec512ad0621acbf");
+            _store.CryptoDetails.Mac.ShouldBe("3dfeb66ed3bda00f1bcc3ba6c36e9cb9cc19d4a3552c8c2f8675853a92d15d75");
 
             _store.CryptoDetails.Pbkdfparams.ShouldNotBeNull();
             _store.CryptoDetails.Pbkdfparams.Iterations.ShouldBe(100000);
             _store.CryptoDetails.Pbkdfparams.KeyLength.ShouldBe(32);
             _store.CryptoDetails.Pbkdfparams.Digest.ShouldBe("sha512");
-            _store.CryptoDetails.Pbkdfparams.Salt.ShouldBe("7ea95d11dc015939e32876a7e764580d5f38bf867eaacd47cd206d10ae05f02b");
+            _store.CryptoDetails.Pbkdfparams.Salt.ShouldBe("8484539e8aac5506030de872a437faf15377e36b031130cd2751d5adb996bbbf");
 
 
 
