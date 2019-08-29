@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HeliumParty.RadixDLT.Pbkdf
+namespace HeliumParty.RadixDLT.Encryption
 {
     public class CipherParams
     {

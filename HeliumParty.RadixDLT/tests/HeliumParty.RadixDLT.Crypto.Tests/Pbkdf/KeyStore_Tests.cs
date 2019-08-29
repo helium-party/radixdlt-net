@@ -1,16 +1,14 @@
 ﻿using HeliumParty.RadixDLT.Crypto.Tests.Resources;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
-using HeliumParty.RadixDLT.Pbkdf;
+using HeliumParty.RadixDLT.Encryption;
+
 using Newtonsoft.Json;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace HeliumParty.RadixDLT.Crypto.Tests.Pbkdf
-{    
+{
     public class KeyStore_Tests
     {
         private const string VALID_PRIVKEY_INBASE64 = "lA8N6h4uUEbmf+Pp4DS41UPBJ8LIlUwBkfjKThw0fuI=";
@@ -63,6 +61,21 @@ namespace HeliumParty.RadixDLT.Crypto.Tests.Pbkdf
             // assert
             privKey.ShouldNotBeNull();
             privKey.Base64.ShouldBe(VALID_PRIVKEY_INBASE64);
+        }
+
+        [Fact]
+        public void Should_Generate_Decryptable_KeyStore()
+        {
+            //arrange 
+            var privKey = new ECPrivateKey(RadixConstants.StandardEncoding.GetBytes(VALID_PRIVKEY_INBASE64));
+
+            //act
+            var store = PrivateKeyEncrypter.Encrypt(KEYSTORE_PASSPHRASE, privKey);
+            var decryptedKey = PrivateKeyEncrypter.Decrypt(KEYSTORE_PASSPHRASE, store);
+
+            //assert
+            decryptedKey.ShouldNotBeNull();
+            decryptedKey.Base64.ShouldBe(privKey.Base64);
         }
     }
 }

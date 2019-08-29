@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace HeliumParty.RadixDLT.Pbkdf
+namespace HeliumParty.RadixDLT.Encryption
 {
     public static class PrivateKeyEncrypter
     {
@@ -48,9 +48,50 @@ namespace HeliumParty.RadixDLT.Pbkdf
             return RadixHash.From(result).ToByteArray();
         }
 
-        public static KeyStore Encrypt(string password, ECPrivateKey privatekey)
+        public static KeyStore Encrypt(string password, ECPrivateKey privatekey, int keyLength = 32, int iterations = 10000)
         {
-            throw new NotImplementedException();
+            //generate salt
+            var salt = RandomGenerator.GetRandomBytes(32);
+            var derivedKey = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA512, iterations, keyLength);
+            
+
+            // init cipher
+            IBufferedCipher cipher = CipherUtilities.GetCipher("AES/CTR/NoPadding");
+
+            Random rand = new SecureRandom();
+            var iv = new byte[16];
+            // 2. Generate 16 random bytes using a secure random number generator. Call them IV
+            rand.NextBytes(iv);
+
+            cipher.Init(true, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", derivedKey), iv));
+
+            var privHexKey = Bytes.ToHexString(privatekey.Base64Array);
+            var encryptedPrivKey = cipher.DoFinal(RadixConstants.StandardEncoding.GetBytes(privHexKey));
+            var encryptedPrivKeyHex = Bytes.ToHexString(encryptedPrivKey);
+            var mac = Bytes.ToHexString(CalculateMac(derivedKey, encryptedPrivKey));
+
+            return new KeyStore()
+            {
+                Id = Bytes.ToHexString(RandomGenerator.GetRandomBytes(16)),
+                CryptoDetails = new CryptoDetails()
+                {
+                    Cipher = "aes-256-ctr",
+                    CipherText = encryptedPrivKeyHex,
+                    Mac = mac,
+                    CipherParams = new CipherParams()
+                    {
+                        IV = Bytes.ToHexString(iv)
+                    },
+                    Pbkdfparams = new Pbkdfparams()
+                    {
+                        Iterations = iterations,
+                        KeyLength = keyLength,
+                        Digest = "sha512",
+                        Salt = Bytes.ToHexString(salt)
+                    }
+                }
+            };
         }
+        
     }
 }
