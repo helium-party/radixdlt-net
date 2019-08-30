@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HeliumParty.RadixDLT.EllipticCurve;
@@ -6,7 +7,7 @@ using HeliumParty.RadixDLT.EllipticCurve.Managers;
 using Shouldly;
 using Xunit;
 
-namespace HeliumParty.RadixDLT.Tests.Crypto
+namespace HeliumParty.RadixDLT.Crypto.Tests
 {
     public class ECKeyManagerTest
     {
@@ -47,6 +48,23 @@ namespace HeliumParty.RadixDLT.Tests.Crypto
 
             pair2.PublicKey.Base64.ShouldBe(pair2.PublicKey.Base64);
             _manager.VerifyKeyPair(pair2).ShouldBe(true);
+        }
+
+        [Fact]
+        public void Should_CreateAValidKeyPair()
+        {
+            //arrange
+            var privkeyBase64 = "lA8N6h4uUEbmf+Pp4DS41UPBJ8LIlUwBkfjKThw0fuI=";
+            var pubkeyBase64 = "A3eCL5NJVVmJLXloK+zO9BFj36sHKGHHxG6Ytz5DX+qr";            
+
+            var privKey = new ECPrivateKey(Convert.FromBase64String(privkeyBase64));
+            //var addressbase58 = "JH11YADXCXF84r5G6ZVt6QkrsXNBa4X62rpTyaRiVWGrqTZrcjS";
+
+            //act
+            var pair = _manager.GetKeyPair(privKey);
+
+            //assert
+            pair.PublicKey.Base64.ShouldBe(pubkeyBase64);
         }
 
         [Fact]

@@ -31,8 +31,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
         }
 
         private static HashSet<EUID> ConvertToEUID(RadixAddress from, RadixAddress to)
-        {
-            var manager = new EUIDManager();
+        {            
             return new HashSet<EUID>() { from.EUID, to.EUID };
         }
     }

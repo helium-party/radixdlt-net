@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using HeliumParty.RadixDLT.Exceptions;
 using HeliumParty.RadixDLT.Hashing;
 using HeliumParty.RadixDLT.Primitives;
 using Org.BouncyCastle.Asn1.Sec;
@@ -208,9 +209,8 @@ namespace HeliumParty.RadixDLT.EllipticCurve.Managers
 
                 //  Compare MAC with MAC'. If not equal, decryption will fail.
                 byte[] pkMac = CalculateMAC(keyM, iv, pubkey, encrypted);
-                if (pkMac.Equals(mac))
-                    throw new ApplicationException
-                        ($"Decryption failed, mac mismatch , {Convert.ToBase64String(pkMac)} <> {Convert.ToBase64String(mac)}");
+                if (!pkMac.SequenceEqual(mac))
+                    throw new MacMismatchException(mac,pkMac);
 
                 //  Decrypt the cipher text with AES-256-CBC, using IV as initialization vector, key_e as decryption key,
                 //  and the cipher text as payload. The output is the padded input text.

@@ -19,6 +19,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Core",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Tests", "tests\HeliumParty.RadixDLT.Tests\HeliumParty.RadixDLT.Tests.csproj", "{C3DAE492-BC43-4362-930A-608BD8E9000B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.App", "src\HeliumParty.RadixDLT.App\HeliumParty.RadixDLT.App.csproj", "{ACE11745-27E1-42BD-BB3C-1D95FCCE5F96}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Crypto.Tests", "tests\HeliumParty.RadixDLT.Crypto.Tests\HeliumParty.RadixDLT.Crypto.Tests.csproj", "{274DBD49-2989-43D2-95DE-F1406B3EA63F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeliumParty.RadixDLT.App.Tests", "tests\HeliumParty.RadixDLT.App.Tests\HeliumParty.RadixDLT.App.Tests.csproj", "{8C29A737-0EC7-4B97-9165-5044E2A3FE02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +55,18 @@ Global
 		{C3DAE492-BC43-4362-930A-608BD8E9000B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3DAE492-BC43-4362-930A-608BD8E9000B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3DAE492-BC43-4362-930A-608BD8E9000B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACE11745-27E1-42BD-BB3C-1D95FCCE5F96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACE11745-27E1-42BD-BB3C-1D95FCCE5F96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACE11745-27E1-42BD-BB3C-1D95FCCE5F96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACE11745-27E1-42BD-BB3C-1D95FCCE5F96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{274DBD49-2989-43D2-95DE-F1406B3EA63F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{274DBD49-2989-43D2-95DE-F1406B3EA63F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{274DBD49-2989-43D2-95DE-F1406B3EA63F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{274DBD49-2989-43D2-95DE-F1406B3EA63F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C29A737-0EC7-4B97-9165-5044E2A3FE02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C29A737-0EC7-4B97-9165-5044E2A3FE02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C29A737-0EC7-4B97-9165-5044E2A3FE02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C29A737-0EC7-4B97-9165-5044E2A3FE02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +78,9 @@ Global
 		{F8AEE9A3-E1DC-468A-AD8F-2CE087A5B630} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
 		{6679C65B-FCD4-4133-A584-40E72D3A707A} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
 		{C3DAE492-BC43-4362-930A-608BD8E9000B} = {731E21F1-EEEE-49A4-BF31-3797E30A4EB3}
+		{ACE11745-27E1-42BD-BB3C-1D95FCCE5F96} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
+		{274DBD49-2989-43D2-95DE-F1406B3EA63F} = {731E21F1-EEEE-49A4-BF31-3797E30A4EB3}
+		{8C29A737-0EC7-4B97-9165-5044E2A3FE02} = {731E21F1-EEEE-49A4-BF31-3797E30A4EB3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C71E73C3-7FCD-49AD-A089-CA96355E339D}

@@ -6,7 +6,7 @@ using HeliumParty.RadixDLT.Primitives;
 
 namespace HeliumParty.RadixDLT.Identity.Managers
 {
-    public class EUIDManager
+    public class EUIDManager : IEUIDManager
     {
         public virtual EUID GetEUID(byte[] hash)
         {
