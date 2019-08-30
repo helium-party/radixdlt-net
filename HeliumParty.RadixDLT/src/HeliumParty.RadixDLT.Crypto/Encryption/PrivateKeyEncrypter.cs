@@ -51,7 +51,9 @@ namespace HeliumParty.RadixDLT.Encryption
         public static KeyStore Encrypt(string password, ECPrivateKey privatekey, int keyLength = 32, int iterations = 10000)
         {
             //generate salt
-            var salt = RandomGenerator.GetRandomBytes(32);
+            var salt = RadixConstants.StandardEncoding.GetBytes(Bytes.ToHexString(RandomGenerator.GetRandomBytes(32)));
+
+
             var derivedKey = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA512, iterations, keyLength);
             
 
@@ -64,11 +66,13 @@ namespace HeliumParty.RadixDLT.Encryption
             rand.NextBytes(iv);
 
             cipher.Init(true, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", derivedKey), iv));
+            
 
             var privHexKey = Bytes.ToHexString(privatekey.Base64Array);
             var encryptedPrivKey = cipher.DoFinal(RadixConstants.StandardEncoding.GetBytes(privHexKey));
             var encryptedPrivKeyHex = Bytes.ToHexString(encryptedPrivKey);
-            var mac = Bytes.ToHexString(CalculateMac(derivedKey, encryptedPrivKey));
+
+            var mac = Bytes.ToHexString(CalculateMac(derivedKey, Bytes.FromHexString(encryptedPrivKeyHex)));
 
             return new KeyStore()
             {
@@ -87,7 +91,7 @@ namespace HeliumParty.RadixDLT.Encryption
                         Iterations = iterations,
                         KeyLength = keyLength,
                         Digest = "sha512",
-                        Salt = Bytes.ToHexString(salt)
+                        Salt = RadixConstants.StandardEncoding.GetString(salt)//Bytes.ToHexString(salt)
                     }
                 }
             };
