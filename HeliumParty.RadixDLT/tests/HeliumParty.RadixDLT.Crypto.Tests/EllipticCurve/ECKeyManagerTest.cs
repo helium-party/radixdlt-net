@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
-using HeliumParty.RadixDLT.Identity;
 using Shouldly;
 using Xunit;
 
