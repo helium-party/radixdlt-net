@@ -6,7 +6,7 @@ using HeliumParty.RadixDLT.EllipticCurve.Managers;
 using Shouldly;
 using Xunit;
 
-namespace HeliumParty.RadixDLT.Tests.Crypto
+namespace HeliumParty.RadixDLT.Crypto.Tests
 {
     public class ECKeyManagerTest
     {
