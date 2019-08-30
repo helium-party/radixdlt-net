@@ -7,10 +7,10 @@ using System.IO;
 
 namespace HeliumParty.RadixDLT.Identity
 {
-    public class RadixIdentityManager
+    public class RadixIdentityManager : IRadixIdentityManager
     {
         protected IECKeyManager _keyManager;
-        
+
         public IECKeyManager KeyManager
         {
             get
@@ -33,7 +33,7 @@ namespace HeliumParty.RadixDLT.Identity
         /// <returns></returns>
         public virtual IRadixIdentity FromPrivateKeyBase64(string privateKey)
         {
-            var ecPrivKey = new ECPrivateKey(RadixConstants.StandardEncoding.GetBytes(privateKey));
+            var ecPrivKey = new ECPrivateKey(Convert.FromBase64String(privateKey));
             return GetIdentity(ecPrivKey);
         }
 
@@ -62,7 +62,8 @@ namespace HeliumParty.RadixDLT.Identity
 
                 var ecPrivKey = new ECPrivateKey(bytes);
                 return GetIdentity(ecPrivKey);
-            } else
+            }
+            else
             {
                 using (var stream = File.Create(file.FullName))
                 {
@@ -109,7 +110,8 @@ namespace HeliumParty.RadixDLT.Identity
                 var store = JsonConvert.DeserializeObject<KeyStore>(jsonstr);
 
                 return LoadKeyStore(store, password);
-            } else
+            }
+            else
             {
                 var keyPair = KeyManager.GetRandomKeyPair();
                 var store = PrivateKeyEncrypter.Encrypt(password, keyPair.PrivateKey);
@@ -145,7 +147,7 @@ namespace HeliumParty.RadixDLT.Identity
         {
             var pair = localIdentity.KeyPair;
 
-            return PrivateKeyEncrypter.Encrypt(password,pair.PrivateKey);
+            return PrivateKeyEncrypter.Encrypt(password, pair.PrivateKey);
         }
 
     }
