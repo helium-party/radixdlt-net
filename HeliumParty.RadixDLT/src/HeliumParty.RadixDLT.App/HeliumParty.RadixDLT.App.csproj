@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HeliumParty.RadixDLT.Json\HeliumParty.RadixDLT.Json.csproj" />
+    <ProjectReference Include="..\HeliumParty.RadixDLT.Network\HeliumParty.RadixDLT.Network.csproj" />
   </ItemGroup>
 
 </Project>
