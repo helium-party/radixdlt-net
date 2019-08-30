@@ -1,12 +1,11 @@
 ﻿using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
-using HeliumParty.RadixDLT.Identity;
+using HeliumParty.RadixDLT.Encryption;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-namespace HeliumParty.RadixDLT.App.Identity
+namespace HeliumParty.RadixDLT.Identity
 {
     public class RadixIdentityManager
     {
@@ -32,7 +31,7 @@ namespace HeliumParty.RadixDLT.App.Identity
         /// </summary>
         /// <param name="privateKey"></param>
         /// <returns></returns>
-        public IRadixIdentity FromPrivateKeyBase64(string privateKey)
+        public virtual IRadixIdentity FromPrivateKeyBase64(string privateKey)
         {
             var ecPrivKey = new ECPrivateKey(RadixConstants.StandardEncoding.GetBytes(privateKey));
             return GetIdentity(ecPrivKey);
@@ -42,17 +41,18 @@ namespace HeliumParty.RadixDLT.App.Identity
         ///     Generate a new Radix Identity that is not yet stored anywhere.
         /// </summary>
         /// <returns></returns>
-        public IRadixIdentity CreateNew()
+        public virtual IRadixIdentity CreateNew()
         {
             return new LocalRadixIdentity(_keyManager.GetRandomKeyPair());
         }
 
         /// <summary>
         ///     Load up a private key from a file. If the file does not exist it will create a file with a random private key
+        ///     Warning : unencrypted
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public IRadixIdentity LoadOrCreateFile(FileInfo file)
+        public virtual IRadixIdentity LoadOrCreateFile(FileInfo file)
         {
             if (file.Exists)
             {
@@ -80,10 +80,11 @@ namespace HeliumParty.RadixDLT.App.Identity
 
         /// <summary>
         ///     Load up a private key from a file. If the file does not exist it will create a file with a random private key
+        ///     Warning : unencrypted
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public IRadixIdentity LoadOrCreateFile(string file)
+        public virtual IRadixIdentity LoadOrCreateFile(string file)
         {
             var info = new FileInfo(file);
             return LoadOrCreateFile(info);
@@ -91,7 +92,61 @@ namespace HeliumParty.RadixDLT.App.Identity
 
         protected virtual IRadixIdentity GetIdentity(ECPrivateKey privKey)
         {
-            return new LocalRadixIdentity(_keyManager.GetKeyPair(privKey));
+            return new LocalRadixIdentity(KeyManager.GetKeyPair(privKey));
         }
+
+        /// <summary>
+        ///     This will load or create a json serialized KeyStore object.
+        ///     Wich in turn contains the encrypted privatekey
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public virtual IRadixIdentity LoadOrCreateEncryptedFile(FileInfo file, string password)
+        {
+            if (file.Exists)
+            {
+                var jsonstr = File.ReadAllText(file.FullName);
+                var store = JsonConvert.DeserializeObject<KeyStore>(jsonstr);
+
+                return LoadKeyStore(store, password);
+            } else
+            {
+                var keyPair = KeyManager.GetRandomKeyPair();
+                var store = PrivateKeyEncrypter.Encrypt(password, keyPair.PrivateKey);
+                var jsonStr = JsonConvert.SerializeObject(store, Formatting.Indented);
+
+                File.WriteAllText(file.FullName, jsonStr);
+
+                return new LocalRadixIdentity(keyPair);
+            }
+        }
+
+        /// <summary>
+        ///     This will load or create a json serialized KeyStore object.
+        ///     Wich in turn contains the encrypted privatekey
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public virtual IRadixIdentity LoadOrCreateEncryptedFile(string file, string password)
+        {
+            var info = new FileInfo(file);
+            return LoadOrCreateEncryptedFile(info, password);
+        }
+
+        public virtual IRadixIdentity LoadKeyStore(KeyStore store, string password)
+        {
+            var privKey = PrivateKeyEncrypter.Decrypt(password, store);
+            var keypair = KeyManager.GetKeyPair(privKey);
+
+            return new LocalRadixIdentity(keypair);
+        }
+
+        public virtual KeyStore CreateStore(LocalExposedRadixIdentity localIdentity, string password)
+        {
+            var pair = localIdentity.KeyPair;
+
+            return PrivateKeyEncrypter.Encrypt(password,pair.PrivateKey);
+        }
+
     }
 }

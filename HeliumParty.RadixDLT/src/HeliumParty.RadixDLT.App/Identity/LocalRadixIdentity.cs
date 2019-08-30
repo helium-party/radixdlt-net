@@ -9,11 +9,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeliumParty.RadixDLT.App.Identity
+namespace HeliumParty.RadixDLT.Identity
 {
     public class LocalRadixIdentity : BaseRadixIdentity, IRadixIdentity
     {
-        private readonly ECKeyPair _keyPair;
+        protected readonly ECKeyPair _keyPair;
         public ECPublicKey PublicKey => _keyPair.PublicKey;
 
         public Task<Atom> Sign(Atom atom)
@@ -40,6 +40,14 @@ namespace HeliumParty.RadixDLT.App.Identity
         public LocalRadixIdentity(ECKeyPair keyPair)
         {
             _keyPair = keyPair;            
+        }
+    }
+
+    public class LocalExposedRadixIdentity : LocalRadixIdentity
+    {
+        public ECKeyPair KeyPair => _keyPair;
+        public LocalExposedRadixIdentity(ECKeyPair keyPair) : base(keyPair)
+        {
         }
     }
 }

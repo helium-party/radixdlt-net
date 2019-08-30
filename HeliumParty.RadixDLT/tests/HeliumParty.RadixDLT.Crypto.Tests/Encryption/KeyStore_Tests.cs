@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
-namespace HeliumParty.RadixDLT.Crypto.Tests.Pbkdf
+namespace HeliumParty.RadixDLT.Crypto.Tests.Encryption
 {
     public class KeyStore_Tests
     {
