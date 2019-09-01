@@ -4,8 +4,9 @@ using System.Text;
 
 namespace HeliumParty.RadixDLT.Configuration
 {
-    public interface IBootstrapConfig
+    public enum RadixUniverseType
     {
-        RadixUniverseConfig Config { get; set; }
+        RADIX_PUBLIC = 1,
+        RADIX_DEVELOPMENT = 2
     }
 }
