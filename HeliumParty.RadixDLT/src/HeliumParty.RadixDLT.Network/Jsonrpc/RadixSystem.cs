@@ -7,6 +7,6 @@ namespace HeliumParty.RadixDLT.Jsonrpc
     public class RadixSystem : Radix.Serialization.Client.SerializableObject
     {
         private ShardSpace _Shards;
-        ShardSpace GetShards() => _Shards;
+        public ShardSpace GetShards() => _Shards;
     }
 }

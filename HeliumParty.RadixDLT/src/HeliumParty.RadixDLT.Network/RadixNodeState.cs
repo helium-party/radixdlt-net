@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HeliumParty.RadixDLT.Jsonrpc;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,19 +10,14 @@ namespace HeliumParty.RadixDLT
         private readonly RadixNode _Node;
         private readonly WebSocketStatus _Status;
         private readonly NodeRunnerData _Data;
-        private readonly int _Version;
+        private readonly int? _Version;
         private readonly RadixUniverseConfig _UniverseConfig;
 
         public RadixNodeState(RadixNode node, WebSocketStatus status, NodeRunnerData data,
-            int version, RadixUniverseConfig universeConfig)
+            int? version, RadixUniverseConfig universeConfig)
         {
-            if (node == null)
-                throw new ArgumentNullException(nameof(node));
-            if (status == null)
-                throw new ArgumentNullException(nameof(status));
-            
-            _Node = node;
-            _Status = status;
+            _Node = node ?? throw new ArgumentNullException(nameof(node));
+            _Status = status ?? throw new ArgumentNullException(nameof(status));
             _Data = data;
             _Version = version;
             _UniverseConfig = universeConfig;
@@ -42,10 +38,10 @@ namespace HeliumParty.RadixDLT
             return new RadixNodeState(node, status, data, null, universeConfig);
         }
 
-        public int GetVersion() => _Version;
-        public NodeRunnerData GetData() => (_Data == null) ? default(_Data) : _Data;
+        public int? GetVersion() => _Version;
+        public NodeRunnerData GetData() => _Data ?? default(NodeRunnerData);
         public WebSocketStatus GetStatus() => _Status;
-        public RadixUniverseConfig GetUniverseConfig() => (_UniverseConfig == null) ? default(RadixUniverseConfig) : _UniverseConfig;
+        public RadixUniverseConfig GetUniverseConfig() => _UniverseConfig ?? default(RadixUniverseConfig);
 
 
     }
