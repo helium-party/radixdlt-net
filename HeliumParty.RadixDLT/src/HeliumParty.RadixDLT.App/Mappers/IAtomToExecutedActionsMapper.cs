@@ -5,11 +5,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HeliumParty.RadixDLT.Mapper
+namespace HeliumParty.RadixDLT.Mappers
 {
-    public interface IAtomToExecutedActionsMapper<T>
+    public interface IAtomToExcetedActionsMapper
     {
-        //class<T> ActionClass(); need a work around
+
+    }
+    public interface IAtomToExecutedActionsMapper<T> : IAtomToExcetedActionsMapper
+    {
+        Type ActionClass(); 
         Task<T> Map(Atom a, IRadixIdentity Identity);
     }
 }
