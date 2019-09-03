@@ -2,7 +2,7 @@
 using Shouldly;
 using Xunit;
 
-namespace HeliumParty.RadixDLT.Tests.Utils.Primitives
+namespace HeliumParty.RadixDLT.Utils.Tests.Primitives
 {
     public class Int128Test
     {

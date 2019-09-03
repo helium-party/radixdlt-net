@@ -1,7 +1,7 @@
 ﻿using Shouldly;
 using Xunit;
 
-namespace HeliumParty.RadixDLT.Tests.Utils
+namespace HeliumParty.RadixDLT.Utils.Tests
 {
     public class Base58EncodingTest
     {

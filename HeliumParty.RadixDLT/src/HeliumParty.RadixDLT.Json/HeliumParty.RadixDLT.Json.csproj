@@ -9,8 +9,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\HeliumParty.RadixDLT.Dson\HeliumParty.RadixDLT.Dson.csproj" />
-  </ItemGroup>
-
 </Project>
