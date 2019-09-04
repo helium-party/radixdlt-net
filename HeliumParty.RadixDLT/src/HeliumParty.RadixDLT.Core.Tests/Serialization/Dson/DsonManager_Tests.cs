@@ -115,31 +115,21 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         }
 
         [Fact]
-        public void TestECKEyPairDson()
+        public void ECKeyPair_Parsing_Test()
         {
             var eCKeyManager = new ECKeyManager();
             var address = eCKeyManager.GetRandomKeyPair();
-            var serialized = _manager.ToDson(address);
+            var serialized = _manager.ToDson(address, OutputMode.Hash);
 
             var deserialized = _manager.FromDson<ECKeyPair>(serialized);
-            deserialized.ShouldBe(address);
+            deserialized.PublicKey.Base64.ShouldBe(address.PublicKey.Base64);
         }
 
         #endregion
 
         #region Core Layer
 
-        //[Fact]
-        public void TestFixedSupplyTokenDefinitionParticleDson()
-        {
-            //TODO implement once UInt256 is working
-        }
 
-        //[Fact]
-        public void TestMutableSupplyTokenDefinitionParticleDson()
-        {
-            //TODO implement once UInt256 is working
-        }
 
         [Fact]
         public void TestMessageParticleDson()
@@ -163,18 +153,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var rriParticle = new RRIParticle(new RRI(address, "test"));
             var serialized = _manager.ToDson(rriParticle);
             var deserialized = _manager.FromDson<RRIParticle>(serialized);
-        }
-
-        //[Fact]
-        public void TestTransferableTokensParticleDson()
-        {
-            //TODO implement once UInt256 is working
-        }
-
-        //[Fact]
-        public void TestUnallocatedTokensParticleDson()
-        {
-            //TODO implement once UInt256 is working
         }
 
         [Fact]

@@ -6,6 +6,7 @@ using Dahomey.Cbor.Attributes;
 using Dahomey.Cbor.Serialization;
 using Dahomey.Cbor.Serialization.Converters.Mappings;
 using HeliumParty.RadixDLT.Atoms;
+using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Particles;
 
@@ -17,15 +18,42 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
         static DsonOutputMapping()
         {
+            CborOptions.Default.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider());
             CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
+            CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
+            CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(
+                typeof(ECPrivateKey), 
+                new DsonObjectConverter<ECPrivateKey>(x => x.Base64Array, y => new ECPrivateKey(y)));
+
+            CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(
+                typeof(ECPublicKey),
+                new DsonObjectConverter<ECPublicKey>(x => x.Base64Array, y => new ECPublicKey(y)));
+
+
+
+            //CborOptions.Default.Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
+            //{
+            //    om.AutoMap();
+            //    om.ClearMemberMappings();
+            //    om.MapMember(o => o.PrivateKey);
+            //    om.MapMember(o => o.PublicKey);
+            //});
 
             // initialize the default config for each output mode
             foreach (var mode in (OutputMode[])Enum.GetValues(typeof(OutputMode)))
             {
-                var defopt = CborOptions.Default;
-                defopt.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider());
-                _outputModeOptions.Add(mode, defopt);
+                _outputModeOptions.Add(mode, CborOptions.Default);
             }
+
+            //_outputModeOptions[OutputMode.Hash].Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
+            //{
+            //    om.AutoMap();
+            //    om.ClearMemberMappings();
+            //    om.MapMember(o => o.PrivateKey);
+            //    om.MapMember(o => o.PublicKey);
+            //});
+
+
         }
 
         //static DsonOutputMapping()
@@ -102,16 +130,6 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
         //    #endregion
 
         //}
-
-        public static Dictionary<OutputMode, CborOptions> GetDsonOptions()
-        {
-            return null;
-        }
-
-        public static string Test()
-        {
-            return "test";
-        }
 
         public static CborOptions GetDsonOptions(OutputMode mode)
         {

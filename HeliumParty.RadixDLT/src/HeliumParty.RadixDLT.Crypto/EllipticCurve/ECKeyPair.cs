@@ -5,8 +5,13 @@
         private const string Curvealgo = "secp256k1";
         private const string Keypairalgo = "ECDSA";
 
-        public ECPublicKey PublicKey { get; }
-        public ECPrivateKey PrivateKey { get; }
+        public ECPublicKey PublicKey { get; protected set; }
+        public ECPrivateKey PrivateKey { get; protected set; }
+
+        public ECKeyPair()
+        {
+
+        }
 
         public ECKeyPair(ECPrivateKey privateKey, ECPublicKey publicKey)
         {
