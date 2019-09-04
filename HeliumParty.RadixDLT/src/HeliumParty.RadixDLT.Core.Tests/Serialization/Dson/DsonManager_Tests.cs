@@ -47,8 +47,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var o2 = _manager.FromDson<IntObject>(dson);
 
             //assert
-            o.IntValue.ShouldBe(o2.IntValue);
-            o.IntSecondValue.ShouldBe(o2.IntSecondValue);
+            o2.IntValue.ShouldBe(o.IntValue);
+            o2.IntSecondValue.ShouldBe(o.IntSecondValue);
         }
 
 

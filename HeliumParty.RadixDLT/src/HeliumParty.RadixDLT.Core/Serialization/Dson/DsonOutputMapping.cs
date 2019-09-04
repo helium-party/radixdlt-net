@@ -18,39 +18,33 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
         static DsonOutputMapping()
         {
-            CborOptions.Default.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider());
+            //CborOptions.Default.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider());
             CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
-            CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
-            CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(
-                typeof(ECPrivateKey), 
-                new DsonObjectConverter<ECPrivateKey>(x => x.Base64Array, y => new ECPrivateKey(y)));
-
-            CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(
-                typeof(ECPublicKey),
-                new DsonObjectConverter<ECPublicKey>(x => x.Base64Array, y => new ECPublicKey(y)));
-
-
-
-            //CborOptions.Default.Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
-            //{
-            //    om.AutoMap();
-            //    om.ClearMemberMappings();
-            //    om.MapMember(o => o.PrivateKey);
-            //    om.MapMember(o => o.PublicKey);
-            //});
+            //CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
 
             // initialize the default config for each output mode
             foreach (var mode in (OutputMode[])Enum.GetValues(typeof(OutputMode)))
             {
-                _outputModeOptions.Add(mode, CborOptions.Default);
+                var options = new CborOptions();
+                options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider());
+                options.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
+                options.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
+                options.Registry.ConverterRegistry.RegisterConverter(
+                    typeof(ECPrivateKey),
+                    new DsonObjectConverter<ECPrivateKey>(x => x.Base64Array, y => new ECPrivateKey(y)));
+
+                options.Registry.ConverterRegistry.RegisterConverter(
+                    typeof(ECPublicKey),
+                    new DsonObjectConverter<ECPublicKey>(x => x.Base64Array, y => new ECPublicKey(y)));
+                _outputModeOptions.Add(mode, options);
             }
 
-            //_outputModeOptions[OutputMode.Hash].Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
+            //_outputModeOptions[OutputMode.Persist].Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
             //{
             //    om.AutoMap();
             //    om.ClearMemberMappings();
-            //    om.MapMember(o => o.PrivateKey);
             //    om.MapMember(o => o.PublicKey);
+                
             //});
 
 
@@ -133,7 +127,9 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
         public static CborOptions GetDsonOptions(OutputMode mode)
         {
-            return _outputModeOptions[mode];
+            var options = _outputModeOptions[mode];
+
+            return options;
         }
 
         /// <summary>
