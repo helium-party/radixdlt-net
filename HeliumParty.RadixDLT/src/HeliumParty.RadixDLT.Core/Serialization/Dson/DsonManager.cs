@@ -18,7 +18,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 //var t = DsonOutputMapping.GetDsonOptions();
                 var options = DsonOutputMapping.GetDsonOptions(mode);
                 await Cbor.SerializeAsync(obj, ms, options);
-                return ms.ToArray();
+                return ms.ToArray();                
             }
         }
 

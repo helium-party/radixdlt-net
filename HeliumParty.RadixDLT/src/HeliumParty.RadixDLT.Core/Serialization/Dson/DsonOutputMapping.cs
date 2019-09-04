@@ -21,7 +21,11 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
             // initialize the default config for each output mode
             foreach (var mode in (OutputMode[])Enum.GetValues(typeof(OutputMode)))
-                _outputModeOptions.Add(mode, CborOptions.Default);
+            {
+                var defopt = CborOptions.Default;
+                defopt.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider());
+                _outputModeOptions.Add(mode, defopt);
+            }
         }
 
         //static DsonOutputMapping()

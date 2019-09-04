@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
+using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
@@ -23,6 +24,32 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         {
             _manager = new DsonManager();
         }
+
+
+        #region naming convention
+
+        class IntObject
+        {
+            public int IntValue { get; set; }
+
+            [CborProperty("Test.From")]
+            public int IntSecondValue { get; set; }
+        }
+
+        [Fact]
+        public void Dson_NamingConventions_Test()
+        {
+            var o = new IntObject() { IntValue = 300 , IntSecondValue = 20};
+
+            var dson = _manager.ToDson(o);            
+
+            var o2 = _manager.FromDson<IntObject>(dson);
+            o.IntValue.ShouldBe(o2.IntValue);
+            o.IntSecondValue.ShouldBe(o2.IntSecondValue);
+        }
+
+
+        #endregion
 
         #region Base Types
 
