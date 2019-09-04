@@ -34,6 +34,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             [CborProperty("Test.From")]
             public int IntSecondValue { get; set; }
+
+            public string HiddenValue { get; set; }
         }
 
         [Fact]
@@ -44,7 +46,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             //act
             var dson = _manager.ToDson(o);            
-            var o2 = _manager.FromDson<IntObject>(dson);
+            var o2 = _manager.FromDson<IntObject>(dson, OutputMode.All);
 
             //assert
             o2.IntValue.ShouldBe(o.IntValue);
@@ -61,7 +63,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         {
             var bytes = Bytes.FromHexString("0123456789abcdef");
             var serializedBytes = await _manager.ToDsonAsync(bytes, OutputMode.All);
-            var deserializedBytes = _manager.FromDson<byte[]>(serializedBytes);
+            var deserializedBytes = _manager.FromDson<byte[]>(serializedBytes, OutputMode.All);
             deserializedBytes.ShouldBe(bytes);
         }
 
@@ -70,7 +72,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         {
             var euid = new EUID("1e340377ac58b9008ad12e1f2bae015d");
             var serializedEuid = await _manager.ToDsonAsync(euid, OutputMode.All);
-            var deserializedEuid = _manager.FromDson<EUID>(serializedEuid);
+            var deserializedEuid = _manager.FromDson<EUID>(serializedEuid, OutputMode.All);
             deserializedEuid.ShouldBe(euid);
         }
 
@@ -81,7 +83,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         {
             var addr = new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc");
             var serializedAddr = _manager.ToDson(addr);
-            var deserializedAddr = _manager.FromDson<RadixAddress>(serializedAddr);
+            var deserializedAddr = _manager.FromDson<RadixAddress>(serializedAddr, OutputMode.All);
             deserializedAddr.ShouldBe(addr);
         }
 
@@ -92,7 +94,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         {
             var rri = new RRI(new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc"), "uniqueString");
             var serializedRri = _manager.ToDson(rri);
-            var deserializedRri = _manager.FromDson<RRI>(serializedRri);
+            var deserializedRri = _manager.FromDson<RRI>(serializedRri, OutputMode.All);
             deserializedRri.ShouldBe(rri);
         }
 

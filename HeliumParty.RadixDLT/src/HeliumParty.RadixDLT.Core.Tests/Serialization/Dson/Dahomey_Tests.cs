@@ -1,5 +1,6 @@
 ﻿using Dahomey.Cbor;
 using HeliumParty.RadixDLT.Primitives;
+using HeliumParty.RadixDLT.Serialization;
 using HeliumParty.RadixDLT.Serialization.Dson;
 using Shouldly;
 using System;
@@ -33,7 +34,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             using (var ms = new System.IO.MemoryStream())
             {
                 ms.Write(serializedBytes, 0, serializedBytes.Length); 
-                deserializedBytes = await Cbor.DeserializeAsync<byte[]>(ms, CborOptions.Default);
+                deserializedBytes = await Cbor.DeserializeAsync<byte[]>(ms, options);
             }
 
             deserializedBytes.ShouldBe(bytes);
@@ -63,5 +64,29 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             deserializedBytes.ShouldBe(bytes);
         }
+
+        //class TestClass
+        //{
+        //    [SerializationOutput(OutputMode.Hash | OutputMode.Persist | OutputMode.All)]
+        //    public string VisibleField { get; set; }
+        //    [SerializationOutput(OutputMode.None)]
+        //    public string HiddenField { get; set; }
+        //}
+
+        //[Fact]
+        //public async Task Should_Not_Serialize_Forbidden_Fields()
+        //{
+        //    var options = CborOptions.Default;
+        //    options.Registry.ConverterRegistry.RegisterConverter(typeof(TestClass),
+        //        new DsonObjectConverter<TestClass>(OutputMode.Persist);
+
+        //    CborOptions.Default.Registry.ObjectMappingRegistry.Register<TestClass>(om =>
+        //    {
+        //        om.AutoMap();
+        //        om.ClearMemberMappings();
+        //        om.MapMember(o => o.VisibleField);
+
+        //    });
+        //}
     }
 }

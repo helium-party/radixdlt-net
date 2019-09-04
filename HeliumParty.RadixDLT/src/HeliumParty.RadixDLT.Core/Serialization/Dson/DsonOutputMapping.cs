@@ -19,7 +19,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
         static DsonOutputMapping()
         {
             //CborOptions.Default.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider());
-            CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
+            //CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
             //CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
 
             // initialize the default config for each output mode
@@ -39,13 +39,13 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 _outputModeOptions.Add(mode, options);
             }
 
-            //_outputModeOptions[OutputMode.Persist].Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
-            //{
-            //    om.AutoMap();
-            //    om.ClearMemberMappings();
-            //    om.MapMember(o => o.PublicKey);
-                
-            //});
+            _outputModeOptions[OutputMode.Persist].Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
+            {
+                om.AutoMap();
+                om.ClearMemberMappings();
+                om.MapMember(o => o.PublicKey);
+
+            });
 
 
         }

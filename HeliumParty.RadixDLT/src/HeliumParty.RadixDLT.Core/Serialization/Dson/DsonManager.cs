@@ -22,14 +22,14 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             }
         }
 
-        public T FromDson<T>(byte[] bytes) => FromDsonAsync<T>(bytes).Result;
+        public T FromDson<T>(byte[] bytes, OutputMode mode = OutputMode.All) => FromDsonAsync<T>(bytes, mode).Result;
 
-        public async Task<T> FromDsonAsync<T>(byte[] bytes)
+        public async Task<T> FromDsonAsync<T>(byte[] bytes, OutputMode mode = OutputMode.All)
         {
             using (var ms = new System.IO.MemoryStream())
             {
                 ms.Write(bytes, 0, bytes.Length); // TODO modify this once .net standard 2.1 is used
-                return await Cbor.DeserializeAsync<T>(ms, CborOptions.Default);
+                return await Cbor.DeserializeAsync<T>(ms, DsonOutputMapping.GetDsonOptions(mode));
             }
         }
     }
