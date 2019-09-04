@@ -39,11 +39,14 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         [Fact]
         public void Dson_NamingConventions_Test()
         {
+            //arrange
             var o = new IntObject() { IntValue = 300 , IntSecondValue = 20};
 
+            //act
             var dson = _manager.ToDson(o);            
-
             var o2 = _manager.FromDson<IntObject>(dson);
+
+            //assert
             o.IntValue.ShouldBe(o2.IntValue);
             o.IntSecondValue.ShouldBe(o2.IntSecondValue);
         }
@@ -54,9 +57,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         #region Base Types
 
         [Fact]
-        public async Task TestByteDson()
+        public async Task Byte_Parsing_Test()
         {
-            var t = DsonOutputMapping.Test();
             var bytes = Bytes.FromHexString("0123456789abcdef");
             var serializedBytes = await _manager.ToDsonAsync(bytes, OutputMode.All);
             var deserializedBytes = _manager.FromDson<byte[]>(serializedBytes);
@@ -64,10 +66,10 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         }
 
         [Fact]
-        public void TestEUIDDson()
+        public async Task EUID_Parsing_Test()
         {
             var euid = new EUID("1e340377ac58b9008ad12e1f2bae015d");
-            var serializedEuid = _manager.ToDson(euid);
+            var serializedEuid = await _manager.ToDsonAsync(euid, OutputMode.All);
             var deserializedEuid = _manager.FromDson<EUID>(serializedEuid);
             deserializedEuid.ShouldBe(euid);
         }
