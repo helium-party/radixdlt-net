@@ -6,8 +6,8 @@ namespace HeliumParty.RadixDLT.Particles.Types
 {
     public class MessageParticle : Particle, IAccountable
     {
-        public RadixAddress From { get; }
-        public RadixAddress To { get; }
+        public RadixAddress From { get; protected set; }
+        public RadixAddress To { get; protected set; }
 
         //aka content-type
         public IDictionary<string, string> MetaData { get; }
@@ -16,6 +16,11 @@ namespace HeliumParty.RadixDLT.Particles.Types
         public long Nonce { get; }
 
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress> { From, To };
+
+        public MessageParticle() : base()
+        {
+
+        }
 
         public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes)
             : this(from, to, metaData, bytes, RandomGenerator.GetRandomLong(), ConvertToEUID(from, to)) { }

@@ -9,10 +9,11 @@ using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Particles;
+using Org.BouncyCastle.Math;
 
 namespace HeliumParty.RadixDLT.Serialization.Dson
 {
-    public class DsonOutputMapping
+    public static class DsonOutputMapping
     {
         private static Dictionary<OutputMode, CborOptions> _outputModeOptions = new Dictionary<OutputMode, CborOptions>();
 
@@ -30,25 +31,26 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider(mode));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
-                options.Registry.ConverterRegistry.RegisterConverter(
-                    typeof(ECPrivateKey),
-                    new DsonObjectConverter<ECPrivateKey>(x => x.Base64Array, y => new ECPrivateKey(y)));
+                options.Registry.ConverterRegistry.RegisterConverter(typeof(ECPrivateKey),new DsonObjectConverter<ECPrivateKey>(x => x.Base64Array, y => new ECPrivateKey(y)));
+                options.Registry.ConverterRegistry.RegisterConverter(typeof(ECPublicKey),new DsonObjectConverter<ECPublicKey>(x => x.Base64Array, y => new ECPublicKey(y)));
+                options.Registry.ConverterRegistry.RegisterConverter(typeof(BigInteger), new DsonObjectConverter<BigInteger>(x => x.ToByteArray(), y => new BigInteger(1,y)));
+                options.Registry.ConverterRegistry.RegisterConverter(typeof(RadixAddress), new DsonObjectConverter<RadixAddress>(x => Base58Encoding.Decode(x.ToString()), y => new RadixAddress(Base58Encoding.Encode(y))));
+                options.Registry.ConverterRegistry.RegisterConverter(typeof(RRI), new DsonObjectConverter<RRI>(x => RadixConstants.StandardEncoding.GetBytes(x.ToString()), y => new RRI(RadixConstants.StandardEncoding.GetString(y))));
+                options.Registry.ConverterRegistry.RegisterConverter(typeof(AID), new DsonObjectConverter<AID>(x => x.Bytes, y => new AID(y)));
 
-                options.Registry.ConverterRegistry.RegisterConverter(
-                    typeof(ECPublicKey),
-                    new DsonObjectConverter<ECPublicKey>(x => x.Base64Array, y => new ECPublicKey(y)));
+
+                //hide the private key
+                options.Registry.ObjectMappingRegistry.Register<ECKeyPair>(om => 
+                {
+                    om.ClearMemberMappings();
+                    om.MapMember(m => m.PublicKey);
+                });
+
+                
+                
+
                 _outputModeOptions.Add(mode, options);
             }
-
-            //_outputModeOptions[OutputMode.Persist].Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
-            //{
-            //    om.AutoMap();
-            //    om.ClearMemberMappings();
-            //    om.MapMember(o => o.PublicKey);
-
-            //});
-
-
         }
 
         //static DsonOutputMapping()
@@ -126,7 +128,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
         //}
 
-        public static CborOptions GetDsonOptions(OutputMode mode)
+        public static CborOptions GetDsonOptions(OutputMode mode = OutputMode.All)
         {
             var options = _outputModeOptions[mode];
 
@@ -149,26 +151,26 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
         }
 
         // required for not serializing fields and properties by default
-        public class OptInObjectMappingConventionProvider : IObjectMappingConventionProvider
-        {
-            public IObjectMappingConvention GetConvention(Type type)
-            {
-                // here you could filter which type should be optIn and return null for other types
-                return new OptInObjectMappingConvention();
-            }
-        }
-        public class OptInObjectMappingConvention : IObjectMappingConvention
-        {
-            private readonly DefaultObjectMappingConvention _defaultConvention = new DefaultObjectMappingConvention();
+        //public class OptInObjectMappingConventionProvider : IObjectMappingConventionProvider
+        //{
+        //    public IObjectMappingConvention GetConvention(Type type)
+        //    {
+        //        // here you could filter which type should be optIn and return null for other types
+        //        return new OptInObjectMappingConvention();
+        //    }
+        //}
+        //public class OptInObjectMappingConvention : IObjectMappingConvention
+        //{
+        //    private readonly DefaultObjectMappingConvention _defaultConvention = new DefaultObjectMappingConvention();
 
-            public void Apply<T>(SerializationRegistry registry, ObjectMapping<T> objectMapping) where T : class
-            {
-                _defaultConvention.Apply(registry, objectMapping);
+        //    public void Apply<T>(SerializationRegistry registry, ObjectMapping<T> objectMapping) where T : class
+        //    {
+        //        _defaultConvention.Apply(registry, objectMapping);
 
-                // restrict to members holding CborPropertyAttribute
-                objectMapping.SetMemberMappings(objectMapping.MemberMappings
-                    .Where(m => m.MemberInfo.IsDefined(typeof(CborPropertyAttribute), true)).ToList());
-            }
-        }
+        //        // restrict to members holding CborPropertyAttribute
+        //        objectMapping.SetMemberMappings(objectMapping.MemberMappings
+        //            .Where(m => m.MemberInfo.IsDefined(typeof(CborPropertyAttribute), true)).ToList());
+        //    }
+        //}
     }
 }

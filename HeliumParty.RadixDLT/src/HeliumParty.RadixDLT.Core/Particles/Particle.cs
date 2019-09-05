@@ -9,6 +9,8 @@ namespace HeliumParty.RadixDLT.Particles
     {
         private readonly HashSet<EUID> _destinations; // TODO make immutable?
 
+        protected Particle() { }
+
         public Particle(EUID destination)
         {
             if (destination == null)

@@ -6,11 +6,12 @@
         private const string Keypairalgo = "ECDSA";
 
         public ECPublicKey PublicKey { get; protected set; }
+        
         public ECPrivateKey PrivateKey { get; protected set; }
 
         public ECKeyPair()
         {
-
+            //for cbor lib
         }
 
         public ECKeyPair(ECPrivateKey privateKey, ECPublicKey publicKey)

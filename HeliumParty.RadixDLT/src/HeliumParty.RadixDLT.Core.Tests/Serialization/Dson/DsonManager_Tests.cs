@@ -87,18 +87,18 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         // TODO add TestHash once implemented
 
         [Fact]
-        public void TestRadixAddressDson()
+        public void RadixAddress_Parsing_Test()
         {
             var addr = new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc");
             var serializedAddr = _manager.ToDson(addr);
-            var deserializedAddr = _manager.FromDson<RadixAddress>(serializedAddr, OutputMode.All);
+            var deserializedAddr = _manager.FromDson<RadixAddress>(serializedAddr);
             deserializedAddr.ShouldBe(addr);
         }
 
         //TODO implement TestUInt256 once implemented
 
         [Fact]
-        public void TestRadixRRIDson()
+        public void AID_Parsing_Test()
         {
             var rri = new RRI(new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc"), "uniqueString");
             var serializedRri = _manager.ToDson(rri);
@@ -113,15 +113,16 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         #region Crypto Layer
 
         [Fact]
-        public void TestECSignatureDson()
+        public void ECSignature_Parsing_Test()
         {
             var eCKeyManager = new ECKeyManager();
-            var address = eCKeyManager.GetRandomKeyPair();
-            var signature = eCKeyManager.GetECSignature(address.PrivateKey, Bytes.FromBase64String("testtest"));
+            var pair = eCKeyManager.GetRandomKeyPair();
+            var signature = eCKeyManager.GetECSignature(pair.PrivateKey, Bytes.FromBase64String("testtest"));
             var serialized = _manager.ToDson(signature);
 
             var deserialized = _manager.FromDson<ECSignature>(serialized);
-            deserialized.ShouldBe(signature);
+            deserialized.R.ShouldBe(signature.R);
+            deserialized.S.ShouldBe(signature.S);
         }
 
         [Fact]
@@ -133,6 +134,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             var deserialized = _manager.FromDson<ECKeyPair>(serialized);
             deserialized.PublicKey.Base64.ShouldBe(address.PublicKey.Base64);
+            deserialized.PrivateKey.ShouldBeNull();
         }
 
         #endregion
@@ -142,8 +144,9 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
 
         [Fact]
-        public void TestMessageParticleDson()
+        public void MessageParticle_Parsing_Test()
         {
+            //arrange
             var eCKeyManager = new ECKeyManager();
             var address1 = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
             var address2 = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
@@ -151,8 +154,14 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             {
                 address1.EUID, address2.EUID
             });
+
+            //act
             var serialized = _manager.ToDson(messageParticle);
             var deserialized = _manager.FromDson<MessageParticle>(serialized);
+
+            //assert
+            deserialized.From.ShouldBe(address1);
+            deserialized.To.ShouldBe(address2);
         }
 
         [Fact]
@@ -166,13 +175,19 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         }
 
         [Fact]
-        public void TestUniqeParticleDson()
+        public void UniqueParticlle_Parsing_Test()
         {
+            //arrange
             var eCKeyManager = new ECKeyManager();
             var address = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
             var uniqeParticle = new UniqueParticle(address, "test");
+
+            //act
             var serialized = _manager.ToDson(uniqeParticle);
             var deserialized = _manager.FromDson<UniqueParticle>(serialized);
+
+            //assert
+            deserialized.Address.ShouldBe(uniqeParticle.Address);
         }
 
         //[Fact]
