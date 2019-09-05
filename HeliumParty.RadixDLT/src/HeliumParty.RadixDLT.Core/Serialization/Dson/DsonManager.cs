@@ -6,10 +6,9 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 {
     public class DsonManager
     {
-        public byte[] ToDson<T>(T obj, OutputMode mode = OutputMode.All)
-        {
-            return ToDsonAsync(obj, mode).Result;
-        }
+        public byte[] ToDson<T>(T obj, OutputMode mode = OutputMode.All) => ToDsonAsync(obj, mode).Result;        
+
+        public T FromDson<T>(byte[] bytes, OutputMode mode = OutputMode.All) => FromDsonAsync<T>(bytes, mode).Result;
 
         public async Task<byte[]> ToDsonAsync<T>(T obj, OutputMode mode)
         {
@@ -22,7 +21,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             }
         }
 
-        public T FromDson<T>(byte[] bytes, OutputMode mode = OutputMode.All) => FromDsonAsync<T>(bytes, mode).Result;
+       
 
         public async Task<T> FromDsonAsync<T>(byte[] bytes, OutputMode mode = OutputMode.All)
         {

@@ -21,12 +21,13 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             //CborOptions.Default.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider());
             //CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
             //CborOptions.Default.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
+            
 
             // initialize the default config for each output mode
             foreach (var mode in (OutputMode[])Enum.GetValues(typeof(OutputMode)))
             {
                 var options = new CborOptions();
-                options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider());
+                options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider(mode));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
                 options.Registry.ConverterRegistry.RegisterConverter(
@@ -39,13 +40,13 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 _outputModeOptions.Add(mode, options);
             }
 
-            _outputModeOptions[OutputMode.Persist].Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
-            {
-                om.AutoMap();
-                om.ClearMemberMappings();
-                om.MapMember(o => o.PublicKey);
+            //_outputModeOptions[OutputMode.Persist].Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
+            //{
+            //    om.AutoMap();
+            //    om.ClearMemberMappings();
+            //    om.MapMember(o => o.PublicKey);
 
-            });
+            //});
 
 
         }

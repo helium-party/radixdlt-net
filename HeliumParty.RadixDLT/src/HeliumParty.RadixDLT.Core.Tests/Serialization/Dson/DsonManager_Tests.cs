@@ -26,31 +26,39 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         }
 
 
-        #region naming convention
+        #region mapping convention
 
-        class IntObject
+        class TestClass
         {
+            [SerializationOutput(OutputMode.All)]
             public int IntValue { get; set; }
-
-            [CborProperty("Test.From")]
+            [SerializationOutput(OutputMode.Hash)]
             public int IntSecondValue { get; set; }
-
+            [SerializationOutput(OutputMode.Hidden)]
             public string HiddenValue { get; set; }
+            public string DummyValue { get; set; }
+            public byte[] DummyBin { get; set; }
         }
 
         [Fact]
-        public void Dson_NamingConventions_Test()
+        public void Dson_MappingConventions_Test()
         {
             //arrange
-            var o = new IntObject() { IntValue = 300 , IntSecondValue = 20};
+            var o = new TestClass() {
+                IntValue = 300 , IntSecondValue = 20, HiddenValue="secret", DummyValue="known",
+                DummyBin = Bytes.FromHexString("0123456789abcdef")
+        };
 
             //act
             var dson = _manager.ToDson(o);            
-            var o2 = _manager.FromDson<IntObject>(dson, OutputMode.All);
+            var o2 = _manager.FromDson<TestClass>(dson, OutputMode.All);
 
             //assert
             o2.IntValue.ShouldBe(o.IntValue);
             o2.IntSecondValue.ShouldBe(o.IntSecondValue);
+            o2.HiddenValue.ShouldBeNull();
+            o2.DummyValue.ShouldBe(o.DummyValue);
+            o2.DummyBin.ShouldBe(Bytes.FromHexString("0123456789abcdef"));
         }
 
 

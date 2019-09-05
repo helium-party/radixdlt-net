@@ -96,13 +96,4 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             writer.WriteByteString(bytes);
         }
     }
-
-    public class DsonObjectForOutputConverter<T> : DsonObjectConverter<T>
-    {
-        private readonly OutputMode _mode;
-        public DsonObjectForOutputConverter(Func<T, byte[]> convertTToBytes, Func<byte[], T> convertBytesToT , OutputMode mode) : base(convertTToBytes, convertBytesToT)
-        {
-            _mode = mode;
-        }
-    }
 }

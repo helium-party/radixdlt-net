@@ -73,6 +73,23 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         //    public string HiddenField { get; set; }
         //}
 
+        class Person
+        {
+            //do not serialize Id field on insert/creation of object
+            public string Id { get; set; }
+            public string SomeField { get; set; }
+        }
+
+        class PersonInsert
+        {
+            public string SomeField { get; set; }
+        }
+
+        class PersonDelete
+        {
+            public string Id { get; set; }
+        }
+
         //[Fact]
         //public async Task Should_Not_Serialize_Forbidden_Fields()
         //{
