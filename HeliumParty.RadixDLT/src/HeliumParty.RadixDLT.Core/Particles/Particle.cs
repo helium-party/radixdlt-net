@@ -7,7 +7,8 @@ namespace HeliumParty.RadixDLT.Particles
 {
     public abstract class Particle
     {
-        private readonly HashSet<EUID> _destinations; // TODO make immutable?
+        //private readonly HashSet<EUID> _destinations; 
+        public HashSet<EUID> Destinations { get; protected set; }
 
         protected Particle() { }
 
@@ -16,12 +17,12 @@ namespace HeliumParty.RadixDLT.Particles
             if (destination == null)
                 throw new ArgumentNullException(nameof(destination));
 
-            _destinations = new HashSet<EUID>() { destination };
+            Destinations = new HashSet<EUID>() { destination };
         }
 
         public Particle(HashSet<EUID> destinations)
         {
-            _destinations = destinations ?? throw new ArgumentNullException(nameof(destinations));
+            Destinations = destinations ?? throw new ArgumentNullException(nameof(destinations));
         }
     }
 }

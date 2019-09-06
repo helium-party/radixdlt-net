@@ -1,19 +1,21 @@
 ﻿using System.Collections.Generic;
+using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Identity.Managers;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
+    [CborDiscriminator("radix.particles.message")]
     public class MessageParticle : Particle, IAccountable
     {
         public RadixAddress From { get; protected set; }
         public RadixAddress To { get; protected set; }
 
         //aka content-type
-        public IDictionary<string, string> MetaData { get; }
+        public IDictionary<string, string> MetaData { get; protected set; }
         //aka data, message,...
-        public byte[] Bytes { get; }
-        public long Nonce { get; }
+        public byte[] Bytes { get; protected set; }
+        public long Nonce { get; protected set; }
 
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress> { From, To };
 

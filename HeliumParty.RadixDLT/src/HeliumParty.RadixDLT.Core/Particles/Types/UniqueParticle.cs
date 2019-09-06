@@ -1,7 +1,9 @@
-﻿using HeliumParty.RadixDLT.Identity;
+﻿using Dahomey.Cbor.Attributes;
+using HeliumParty.RadixDLT.Identity;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
+    [CborDiscriminator("radix.particles.unique")]
     public class UniqueParticle : Particle, IIdentifiable
     {
         public RRI RRI => new RRI(Address, Name);
