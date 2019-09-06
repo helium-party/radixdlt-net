@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
+using Dahomey.Cbor;
 using Dahomey.Cbor.Attributes;
+using Dahomey.Cbor.ObjectModel;
 using HeliumParty.RadixDLT.Atoms;
+using HeliumParty.RadixDLT.Core.Tests.Resources;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
 using HeliumParty.RadixDLT.Identity;
@@ -11,6 +14,7 @@ using HeliumParty.RadixDLT.Particles.Types;
 using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization;
 using HeliumParty.RadixDLT.Serialization.Dson;
+using PeterO.Cbor;
 using Shouldly;
 using Xunit;
 
@@ -238,6 +242,38 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             //assert
             deserialized.Particle.RRI.Name.ShouldBe(rriParticle.RRI.Name);
+        }
+
+        [Fact]
+        public async Task MessageParticle_Deserializing_Test()
+        {
+            //arrange
+            var data = ResourceParser.GetResource("messageParticle3.dson");
+
+
+            ////act
+            //var particle = _manager.FromDson<MessageParticle>(data);
+
+            ////assert
+            //particle.ShouldNotBeNull();
+            //particle.From.ToString().ShouldBe("JEbhKQzBn4qJzWJFBbaPioA2GTeaQhuUjYWkanTE6N8VvvPpvM8");
+            //particle.To.ToString().ShouldBe("JEbhKQzBn4qJzWJFBbaPioA2GTeaQhuUjYWkanTE6N8VvvPpvM8");
+
+            ////nonce = -1078420281873860475
+
+            //var d = _manager.FromDson<CborObject>(data);
+            CborObject d = null;
+            using (var ms = new System.IO.MemoryStream())
+            {
+                ms.Write(data, 0, data.Length); // TODO modify this once .net standard 2.1 is used
+                d= await Cbor.DeserializeAsync<CborObject>(ms, CborOptions.Default);
+            }
+
+            var cbor = CBORObject.DecodeFromBytes(
+                            data, CBOREncodeOptions.Default);
+
+            d.ShouldNotBeNull();
+            cbor.ShouldNotBeNull();
         }
 
 
