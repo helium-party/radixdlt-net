@@ -150,7 +150,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var eCKeyManager = new ECKeyManager();
             var address1 = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
             var address2 = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
-            var messageParticle = new MessageParticle(address1, address2, new Dictionary<string, string> { { "key", "value" } }, Bytes.FromBase64String("testtest"), 0L, new HashSet<EUID>
+            var messageParticle = new MessageParticle(address1, address2, new Dictionary<string, string> { { "key", "value" } }, Bytes.FromBase64String("testtest"), 30L, new HashSet<EUID>
             {
                 address1.EUID, address2.EUID
             });
@@ -162,20 +162,24 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             //assert
             deserialized.From.ShouldBe(address1);
             deserialized.To.ShouldBe(address2);
+            deserialized.Nonce.ShouldBe(messageParticle.Nonce);
+            deserialized.MetaData.ShouldBe(messageParticle.MetaData);
         }
 
         [Fact]
-        public void TestRRIParticleDson()
+        public void RRIParticle_Parsing_Test()
         {
             var eCKeyManager = new ECKeyManager();
             var address = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
             var rriParticle = new RRIParticle(new RRI(address, "test"));
             var serialized = _manager.ToDson(rriParticle);
             var deserialized = _manager.FromDson<RRIParticle>(serialized);
+
+            deserialized.RRI.Address.ECPublicKey.Base64.ShouldBe(address.ECPublicKey.Base64);
         }
 
         [Fact]
-        public void UniqueParticlle_Parsing_Test()
+        public void UniqueParticle_Parsing_Test()
         {
             //arrange
             var eCKeyManager = new ECKeyManager();
@@ -190,35 +194,34 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             deserialized.Address.ShouldBe(uniqeParticle.Address);
         }
 
-        //[Fact]
-        //public void TestSpunParticleDson()
-        //{
-        //    var eCKeyManager = new ECKeyManager();
-        //    var address = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
-        //    var rriParticle = new RRIParticle(new RRI(address, "test"));
-        //    var spunParticle = new SpunParticle(rriParticle, Spin.Up);
+        [Fact]
+        public void ParticleList_Parsing_Test()
+        {
+            //arrange
+            //arrange
+            var particles = new List<Particle>();
+            var eCKeyManager = new ECKeyManager();
+            var address1 = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
+            var address2 = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
+            var messageParticle = new MessageParticle(address1, address2, new Dictionary<string, string> { { "key", "value" } }, Bytes.FromBase64String("testtest"), 0L, new HashSet<EUID>
+            {
+                address1.EUID, address2.EUID
+            });
+            var address = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
+            var uniqeParticle = new UniqueParticle(address, "test");
 
-        //    var serialized = _manager.ToDson(spunParticle);
-        //    var x = Bytes.ToHexString(serialized);
-        //    var deserialized = _manager.FromDson<SpunParticle>(serialized);
-        //}
+            particles.Add(messageParticle);
+            particles.Add(uniqeParticle);
 
-        //[Fact]
-        //public void TestParticleGroupDson()
-        //{
-        //    var eCKeyManager = new ECKeyManager();
-        //    var address = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
-        //    var rriParticle = new RRIParticle(new RRI(address, "test"));
-        //    var spunParticle = new SpunParticle(rriParticle, Spin.Up);
-        //    // TODO implement this once TestSpunParticle is working
-        //    //var particleList = new List<SpunParticle>();
-        //    //var particleGroup = new ParticleGroup(new List<SpunParticle>{spunParticle, spunParticle}.ToImmutableList(), ImmutableDictionary<string, string>.Empty );
+            //act
+            var serialized = _manager.ToDson(particles);
+            var deserialized = _manager.FromDson<List<Particle>>(serialized);
 
-        //    var serialized = _manager.ToDson(spunParticle);
-        //    var deserialized = _manager.FromDson<ParticleGroup>(serialized);
-        //}
+            //assert
+            deserialized.ShouldNotBeNull();
 
-        // TODO add unit test for Atom once TestParticleGroup is working
+
+        }
 
         #endregion
     }
