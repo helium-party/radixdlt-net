@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Identity;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
+    [CborDiscriminator("radix.particles.rri")]
     public class RRIParticle : Particle, IAccountable
     {
         public RRI RRI { get; protected set; }

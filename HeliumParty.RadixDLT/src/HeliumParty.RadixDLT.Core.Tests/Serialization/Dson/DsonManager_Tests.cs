@@ -219,9 +219,27 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             //assert
             deserialized.ShouldNotBeNull();
-
-
+            deserialized.Count.ShouldBe(particles.Count);
         }
+
+        [Fact]
+        public void SpunParticle_Parsing_Test()
+        {
+            //arrange
+            var eCKeyManager = new ECKeyManager();
+            var address = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
+            var rriParticle = new RRIParticle(new RRI(address, "test"));
+            var spunParticle = new SpunParticle<RRIParticle>(rriParticle, Spin.Up);
+
+            //act
+            var serialized = _manager.ToDson(spunParticle);
+            var x = Bytes.ToHexString(serialized);
+            var deserialized = _manager.FromDson<SpunParticle<RRIParticle>>(serialized);
+
+            //assert
+            deserialized.Particle.RRI.Name.ShouldBe(rriParticle.RRI.Name);
+        }
+
 
         #endregion
     }
