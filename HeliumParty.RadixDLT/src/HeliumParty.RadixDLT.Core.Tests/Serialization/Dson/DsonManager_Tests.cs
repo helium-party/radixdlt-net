@@ -250,33 +250,16 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             //arrange
             var data = ResourceParser.GetResource("messageParticle3.dson");
 
+            //act
+            var mp = await _manager.FromDsonAsync<MessageParticle>(data);            
 
-            ////act
-            //var particle = _manager.FromDson<MessageParticle>(data);
+            //assert
+            mp.ShouldNotBeNull();
+            mp.Nonce.ShouldBe(2181035975144481159);
+            mp.From.ToString().ShouldBe("JEbhKQzBn4qJzWJFBbaPioA2GTeaQhuUjYWkanTE6N8VvvPpvM8");
+            mp.To.ToString().ShouldBe("JEbhKQzBn4qJzWJFBbaPioA2GTeaQhuUjYWkanTE6N8VvvPpvM8");
 
-            ////assert
-            //particle.ShouldNotBeNull();
-            //particle.From.ToString().ShouldBe("JEbhKQzBn4qJzWJFBbaPioA2GTeaQhuUjYWkanTE6N8VvvPpvM8");
-            //particle.To.ToString().ShouldBe("JEbhKQzBn4qJzWJFBbaPioA2GTeaQhuUjYWkanTE6N8VvvPpvM8");
-
-            ////nonce = -1078420281873860475
-
-            //var d = _manager.FromDson<CborObject>(data);
-            CborObject d = null;
-            using (var ms = new System.IO.MemoryStream())
-            {
-                ms.Write(data, 0, data.Length); // TODO modify this once .net standard 2.1 is used
-                d= await Cbor.DeserializeAsync<CborObject>(ms, CborOptions.Default);
-            }
-
-            var cbor = CBORObject.DecodeFromBytes(
-                            data, CBOREncodeOptions.Default);
-
-            d.ShouldNotBeNull();
-            cbor.ShouldNotBeNull();
         }
-
-
         #endregion
     }
 

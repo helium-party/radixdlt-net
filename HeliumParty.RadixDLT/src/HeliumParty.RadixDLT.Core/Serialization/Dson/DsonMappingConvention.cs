@@ -12,7 +12,8 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
     {
         public string GetPropertyName(string name)
         {
-            return name.ToLowerInvariant();
+            //return name.ToLowerInvariant();
+            return char.ToLowerInvariant(name[0]) + name.Substring(1);
         }
     }
     public class DsonObjectMappingConvention : IObjectMappingConvention
