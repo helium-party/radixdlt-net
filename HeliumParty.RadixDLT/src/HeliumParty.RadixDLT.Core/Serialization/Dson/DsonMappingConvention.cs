@@ -8,18 +8,10 @@ using System.Text;
 
 namespace HeliumParty.RadixDLT.Serialization.Dson
 {
-    public class DsonNamingConvention : INamingConvention
-    {
-        public string GetPropertyName(string name)
-        {
-            //return name.ToLowerInvariant();
-            return char.ToLowerInvariant(name[0]) + name.Substring(1);
-        }
-    }
     public class DsonObjectMappingConvention : IObjectMappingConvention
     {
         private readonly IObjectMappingConvention defaultObjectMappingConvention = new DefaultObjectMappingConvention();
-        private readonly INamingConvention DsonNamingConvention = new DsonNamingConvention();
+        private readonly INamingConvention DsonNamingConvention = new CamelCaseNamingConvention();
         private readonly OutputMode _outputMode;
         
         public DsonObjectMappingConvention(OutputMode outputMode)

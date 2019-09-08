@@ -14,7 +14,6 @@ using HeliumParty.RadixDLT.Particles.Types;
 using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization;
 using HeliumParty.RadixDLT.Serialization.Dson;
-using PeterO.Cbor;
 using Shouldly;
 using Xunit;
 
