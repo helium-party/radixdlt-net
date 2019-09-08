@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
 using Dahomey.Cbor;
 using Dahomey.Cbor.Attributes;
@@ -232,15 +233,15 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var eCKeyManager = new ECKeyManager();
             var address = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
             var rriParticle = new RRIParticle(new RRI(address, "test"));
-            var spunParticle = new SpunParticle<RRIParticle>(rriParticle, Spin.Up);
+            var spunParticle = new SpunParticle(rriParticle, Spin.Up);
 
             //act
             var serialized = _manager.ToDson(spunParticle);
             var x = Bytes.ToHexString(serialized);
-            var deserialized = _manager.FromDson<SpunParticle<RRIParticle>>(serialized);
+            var deserialized = _manager.FromDson<SpunParticle>(serialized);
 
             //assert
-            deserialized.Particle.RRI.Name.ShouldBe(rriParticle.RRI.Name);
+            ((RRIParticle)deserialized.Particle).RRI.Name.ShouldBe(rriParticle.RRI.Name);
         }
 
         [Fact]
@@ -258,6 +259,51 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             mp.From.ToString().ShouldBe("JEbhKQzBn4qJzWJFBbaPioA2GTeaQhuUjYWkanTE6N8VvvPpvM8");
             mp.To.ToString().ShouldBe("JEbhKQzBn4qJzWJFBbaPioA2GTeaQhuUjYWkanTE6N8VvvPpvM8");
 
+        }
+
+        [Fact]
+        public async Task ParticleGroup_Parsing_Test()
+        {
+            //arrange
+            var eCKeyManager = new ECKeyManager();
+            var address1 = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
+            var address2 = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
+            var messageParticle = new MessageParticle(address1, address2, new Dictionary<string, string> { { "key", "value" } }, Bytes.FromBase64String("testtest"), 30L, new HashSet<EUID>
+            {
+                address1.EUID, address2.EUID
+            });
+
+            var spunp = new SpunParticle(messageParticle, Spin.Down);
+            var listbuilder = ImmutableList.CreateBuilder<SpunParticle>();
+            listbuilder.Add(spunp);
+
+            var mdatabuilder = ImmutableDictionary.CreateBuilder<string, string>();
+            mdatabuilder.Add(new KeyValuePair<string, string>("Test", "Test"));
+
+            var group = 
+                new ParticleGroup(listbuilder.ToImmutableList() , mdatabuilder.ToImmutableDictionary());
+
+            //act
+            var dson = await _manager.ToDsonAsync(group,OutputMode.All);
+            var deserialized = await _manager.FromDsonAsync<ParticleGroup>(dson, OutputMode.All);
+
+            //assert
+            deserialized.ShouldNotBeNull();
+            deserialized.Particles.Count.ShouldBe(1);
+            deserialized.Particles.First().Particle.ShouldBeOfType<MessageParticle>();
+        }
+
+        [Fact]
+        public async Task Atom_Deserializing_Test()
+        {
+            //arrange
+            var data = ResourceParser.GetResource("atom.dson");
+
+            //act
+            var atom = await _manager.FromDsonAsync<CborObject>(data);
+
+            //assert
+            atom.ShouldNotBeNull();
         }
         #endregion
     }

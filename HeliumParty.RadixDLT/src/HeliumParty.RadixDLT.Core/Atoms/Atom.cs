@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Particles;
 
@@ -9,6 +10,7 @@ namespace HeliumParty.RadixDLT.Atoms
     /// (similar to a block in a blockchain) and defines the actions 
     /// that can be issued onto the ledger.
     /// </summary>
+    [CborDiscriminator("radix.atom")]
     public class Atom
     {
         public static string MetadataTimestampKey = "timestamp";

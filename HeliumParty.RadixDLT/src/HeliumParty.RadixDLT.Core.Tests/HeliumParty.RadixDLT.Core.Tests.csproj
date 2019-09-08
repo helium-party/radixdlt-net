@@ -7,12 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\atom.dson" />
     <None Remove="Resources\messageParticle.dson" />
     <None Remove="Resources\messageParticle2.dson" />
     <None Remove="Resources\messageParticle3.dson" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\atom.dson" />
     <EmbeddedResource Include="Resources\messageParticle.dson" />
     <EmbeddedResource Include="Resources\messageParticle2.dson" />
     <EmbeddedResource Include="Resources\messageParticle3.dson" />
