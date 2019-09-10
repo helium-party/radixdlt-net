@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Dahomey.Cbor;
 using Dahomey.Cbor.Attributes;
 using Dahomey.Cbor.Serialization;
@@ -9,6 +10,7 @@ using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Particles;
+using HeliumParty.RadixDLT.Primitives;
 using Org.BouncyCastle.Math;
 
 namespace HeliumParty.RadixDLT.Serialization.Dson
@@ -27,9 +29,16 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             // initialize the default config for each output mode
             foreach (var mode in (OutputMode[])Enum.GetValues(typeof(OutputMode)))
             {
+                var discriminator = new DsonDiscriminator();
+                discriminator.RegisterAssembly(Assembly.GetAssembly(typeof(Particle)));
+
+
                 var options = new CborOptions();
                 options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider(mode));
+                options.DiscriminatorConvention = discriminator;
+
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
+                //options.Registry.ConverterRegistry.RegisterConverter(typeof(UInt256), new DsonObjectConverter<byte[]>(x => x, y => y));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(ECPrivateKey),new DsonObjectConverter<ECPrivateKey>(x => x.Base64Array, y => new ECPrivateKey(y)));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(ECPublicKey),new DsonObjectConverter<ECPublicKey>(x => x.Base64Array, y => new ECPublicKey(y)));

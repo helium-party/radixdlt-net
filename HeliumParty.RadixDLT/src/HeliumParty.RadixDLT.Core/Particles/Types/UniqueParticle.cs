@@ -11,7 +11,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
         public RadixAddress Address { get; protected set; }
         public long Nonce { get; protected set; }
 
-        public UniqueParticle()
+        protected UniqueParticle() : base ()
         {
 
         }

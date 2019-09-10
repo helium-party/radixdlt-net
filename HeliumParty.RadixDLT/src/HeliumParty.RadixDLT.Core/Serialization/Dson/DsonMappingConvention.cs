@@ -79,7 +79,8 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
             }
             
-            objectMapping.SetNamingConvention(DsonNamingConvention);
+            objectMapping.SetNamingConvention(DsonNamingConvention); 
+            
         }
     }
 

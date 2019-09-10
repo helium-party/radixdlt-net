@@ -19,7 +19,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress> { From, To };
 
-        public MessageParticle() : base()
+        protected MessageParticle() : base()
         {
 
         }

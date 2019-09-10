@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Dahomey.Cbor;
 using Dahomey.Cbor.Attributes;
@@ -15,6 +16,7 @@ using HeliumParty.RadixDLT.Particles.Types;
 using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization;
 using HeliumParty.RadixDLT.Serialization.Dson;
+using PeterO.Cbor;
 using Shouldly;
 using Xunit;
 
@@ -99,7 +101,19 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             deserializedAddr.ShouldBe(addr);
         }
 
-        //TODO implement TestUInt256 once implemented
+        [Fact]
+        public void UInt256_Parsing_Test()
+        {
+            var numb = new UInt256();
+            numb.s0 = 1000;
+
+            var parsed = _manager.ToDson(numb);
+            var numb2 = _manager.FromDson<UInt256>(parsed);
+            UInt256 x = new BigInteger();
+            var refrnc = _manager.FromDson<CborObject>(parsed);
+
+            refrnc.ShouldNotBeNull();
+        }
 
         [Fact]
         public void AID_Parsing_Test()
@@ -239,6 +253,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var serialized = _manager.ToDson(spunParticle);
             var x = Bytes.ToHexString(serialized);
             var deserialized = _manager.FromDson<SpunParticle>(serialized);
+            var cborobj = _manager.FromDson<CborObject>(serialized);
 
             //assert
             ((RRIParticle)deserialized.Particle).RRI.Name.ShouldBe(rriParticle.RRI.Name);
@@ -251,6 +266,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var data = ResourceParser.GetResource("messageParticle3.dson");
 
             //act
+            var cbor = await _manager.FromDsonAsync<CborObject>(data);
             var mp = await _manager.FromDsonAsync<MessageParticle>(data);            
 
             //assert
@@ -280,11 +296,11 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var mdatabuilder = ImmutableDictionary.CreateBuilder<string, string>();
             mdatabuilder.Add(new KeyValuePair<string, string>("Test", "Test"));
 
-            var group = 
-                new ParticleGroup(listbuilder.ToImmutableList() , mdatabuilder.ToImmutableDictionary());
+            var group =
+                new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
 
             //act
-            var dson = await _manager.ToDsonAsync(group,OutputMode.All);
+            var dson = await _manager.ToDsonAsync(group, OutputMode.All);
             var deserialized = await _manager.FromDsonAsync<ParticleGroup>(dson, OutputMode.All);
 
             //assert
@@ -297,13 +313,15 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         public async Task Atom_Deserializing_Test()
         {
             //arrange
-            var data = ResourceParser.GetResource("atom.dson");
+            var data = ResourceParser.GetResource("messageatom.dson");
 
             //act
-            var atom = await _manager.FromDsonAsync<CborObject>(data);
+            var atom = await _manager.FromDsonAsync<Atom>(data);
+            var cbor = CBORObject.DecodeFromBytes(data, CBOREncodeOptions.Default);
 
             //assert
             atom.ShouldNotBeNull();
+            cbor.ShouldNotBeNull();
         }
         #endregion
     }
