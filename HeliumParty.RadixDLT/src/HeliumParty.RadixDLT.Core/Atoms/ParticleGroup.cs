@@ -8,7 +8,7 @@ namespace HeliumParty.RadixDLT.Atoms
 {
     [CborDiscriminator("radix.particle_group")]
     public class ParticleGroup
-    {
+    {        
         public ImmutableList<SpunParticle> Particles { get; protected set; }
         public ImmutableDictionary<string, string> MetaData { get; protected set; }
 

@@ -1,4 +1,6 @@
 ﻿using Dahomey.Cbor;
+using Dahomey.Cbor.Attributes;
+using Dahomey.Cbor.ObjectModel;
 using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization;
 using HeliumParty.RadixDLT.Serialization.Dson;
@@ -65,45 +67,121 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             deserializedBytes.ShouldBe(bytes);
         }
 
-        //class TestClass
-        //{
-        //    [SerializationOutput(OutputMode.Hash | OutputMode.Persist | OutputMode.All)]
-        //    public string VisibleField { get; set; }
-        //    [SerializationOutput(OutputMode.None)]
-        //    public string HiddenField { get; set; }
-        //}
-
-        class Person
+        public abstract class Animal
         {
-            //do not serialize Id field on insert/creation of object
-            public string Id { get; set; }
-            public string SomeField { get; set; }
+            public int Sound { get; set; }
         }
 
-        class PersonInsert
+        [CborDiscriminator("dog.dog")]
+        public class Dog : Animal
         {
-            public string SomeField { get; set; }
+            public int OtherSound { get; set; }
         }
 
-        class PersonDelete
+        [Fact]
+        public async Task Should_Deserialize_AccordingToDiscriminator()
         {
-            public string Id { get; set; }
+            CborOptions options = new CborOptions();
+            options.Registry.DefaultDiscriminatorConvention.RegisterAssembly(typeof(Dog).Assembly);
+
+            var dog = new Dog()
+            {
+                Sound = 5,
+                OtherSound = 11
+            };
+
+            byte[] serializedBytes = null;
+            using (var ms = new MemoryStream())
+            {
+                await Cbor.SerializeAsync(dog, ms, options);
+                serializedBytes = ms.ToArray();
+            }
+
+            Animal animal = null;
+            using (var ms = new MemoryStream())
+            {
+                ms.Write(serializedBytes, 0, serializedBytes.Length);
+                animal = await Cbor.DeserializeAsync<Animal>(ms, options);
+            }
+
+            animal.ShouldBeOfType<Dog>();
+
+
         }
 
-        //[Fact]
-        //public async Task Should_Not_Serialize_Forbidden_Fields()
-        //{
-        //    var options = CborOptions.Default;
-        //    options.Registry.ConverterRegistry.RegisterConverter(typeof(TestClass),
-        //        new DsonObjectConverter<TestClass>(OutputMode.Persist);
+        public abstract class SerializableObject
+        {
+            public string _T { get; set; }
+        }
 
-        //    CborOptions.Default.Registry.ObjectMappingRegistry.Register<TestClass>(om =>
-        //    {
-        //        om.AutoMap();
-        //        om.ClearMemberMappings();
-        //        om.MapMember(o => o.VisibleField);
+        [CborDiscriminator("Car")]
+        public class Car : SerializableObject
+        {
+            public double Value { get; set; }
+        }
 
-        //    });
-        //}
+        [CborDiscriminator("Volvo")]
+        public class Volvo : Car
+        {
+            public string EngineType { get; set; }
+
+            public Volvo()
+            {
+                Value = 120;
+            }
+        }
+
+        [CborDiscriminator("Volvo_V60")]
+        public class Volvo_V60 : Volvo
+        {
+            public string Options { get; set; }
+
+            public Volvo_V60():base()
+            {
+                EngineType = "ELEC";
+            }
+        }
+
+        [Fact]
+        public async Task Should_Deserialize_List_AccordingToDiscriminator()
+        {
+            //arrange
+            var car = new Car()
+            {
+                Value = 100
+            };
+            var volvo = new Volvo()
+            {                
+                EngineType = "DIESEL_PETROL"
+            };
+            var v60 = new Volvo_V60()
+            {
+                Options = "someoptions"
+            };
+
+            var carlist = new List<SerializableObject>() { car,
+                volvo, v60 };
+
+            CborOptions options = new CborOptions();
+            options.Registry.DefaultDiscriminatorConvention.RegisterAssembly(typeof(Car).Assembly);
+
+            byte[] serializedBytes = null;
+            using (var ms = new MemoryStream())
+            {
+                await Cbor.SerializeAsync(carlist, ms, options);
+                serializedBytes = ms.ToArray();
+            }
+
+            //List<Car> cbor = null;
+            CborObject cbor = null;
+            using (var ms = new MemoryStream())
+            {
+                ms.Write(serializedBytes, 0, serializedBytes.Length);
+                cbor = await Cbor.DeserializeAsync<CborObject>(ms, options);
+            }
+
+            cbor.ShouldNotBeNull();
+
+        }
     }
 }

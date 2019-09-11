@@ -30,7 +30,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             foreach (var mode in (OutputMode[])Enum.GetValues(typeof(OutputMode)))
             {
                 var discriminator = new DsonDiscriminator();
-                discriminator.RegisterAssembly(Assembly.GetAssembly(typeof(Particle)));
+                discriminator.RegisterAssembly(Assembly.GetAssembly(typeof(Atom)));
 
 
                 var options = new CborOptions();
