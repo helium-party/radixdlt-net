@@ -17,7 +17,7 @@ namespace HeliumParty.RadixDLT.Atoms
         public static string MetadataPowNonceKey = "powNonce";
 
         public List<ParticleGroup> ParticleGroups { get; set; }
-        //public Dictionary<string, ECSignature> Signatures { get; set; }
+        public Dictionary<string, ECSignature> Signatures { get; set; }
         public Dictionary<string, string> MetaData { get; set; }
         //public AID Id { get; set; }
     }

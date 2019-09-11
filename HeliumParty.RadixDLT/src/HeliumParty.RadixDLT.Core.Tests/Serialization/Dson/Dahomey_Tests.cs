@@ -109,58 +109,25 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
         }
 
-        public abstract class SerializableObject
+
+
+        [CborDiscriminator("somediscriminator")]
+        public class Car 
         {
-            public string _T { get; set; }
+            public string Description{ get; set; }
         }
 
-        [CborDiscriminator("Car")]
-        public class Car : SerializableObject
-        {
-            public double Value { get; set; }
-        }
 
-        [CborDiscriminator("Volvo")]
-        public class Volvo : Car
-        {
-            public string EngineType { get; set; }
-
-            public Volvo()
-            {
-                Value = 120;
-            }
-        }
-
-        [CborDiscriminator("Volvo_V60")]
-        public class Volvo_V60 : Volvo
-        {
-            public string Options { get; set; }
-
-            public Volvo_V60():base()
-            {
-                EngineType = "ELEC";
-            }
-        }
-
+        
         [Fact]
-        public async Task Should_Deserialize_List_AccordingToDiscriminator()
+        public async Task Should_Serialize_Discriminator()
         {
             //arrange
             var car = new Car()
             {
-                Value = 100
+                Description = "n"
             };
-            var volvo = new Volvo()
-            {                
-                EngineType = "DIESEL_PETROL"
-            };
-            var v60 = new Volvo_V60()
-            {
-                Options = "someoptions"
-            };
-
-            var carlist = new List<SerializableObject>() { car,
-                volvo, v60 };
+            
 
             CborOptions options = new CborOptions();
             options.Registry.DefaultDiscriminatorConvention.RegisterAssembly(typeof(Car).Assembly);
@@ -168,7 +135,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             byte[] serializedBytes = null;
             using (var ms = new MemoryStream())
             {
-                await Cbor.SerializeAsync(carlist, ms, options);
+                await Cbor.SerializeAsync(car, ms, options);
                 serializedBytes = ms.ToArray();
             }
 
@@ -182,6 +149,18 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             cbor.ShouldNotBeNull();
 
+            var actualoutput = Bytes.ToHexString(serializedBytes);
+            cbor.Add("_t", "somediscriminator");
+
+            byte[] serializedBytes2 = null;
+            using (var ms = new MemoryStream())
+            {
+                await Cbor.SerializeAsync(cbor, ms, options);
+                serializedBytes2 = ms.ToArray();
+            }
+
+            var expectedOutput = Bytes.ToHexString(serializedBytes2);
+            expectedOutput.ShouldNotBeNull();
         }
     }
 }
