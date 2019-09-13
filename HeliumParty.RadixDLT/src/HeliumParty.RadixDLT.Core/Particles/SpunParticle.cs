@@ -2,7 +2,7 @@
 
 namespace HeliumParty.RadixDLT.Particles
 {
-    [CborDiscriminator("radix.spun_particle")]
+    [CborDiscriminator("radix.spun_particle",Policy =CborDiscriminatorPolicy.Always)]
     public class SpunParticle//<T> where T : Particle
     {
         public Spin Spin { get; protected set; }

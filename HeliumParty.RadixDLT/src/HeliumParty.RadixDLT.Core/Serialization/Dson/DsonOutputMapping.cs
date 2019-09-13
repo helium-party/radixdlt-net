@@ -31,7 +31,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             {
                 var discriminator = new DsonDiscriminator();
                 discriminator.RegisterAssembly(Assembly.GetAssembly(typeof(Atom)));
-
+                discriminator.RegisterType(typeof(ECSignature), RadixConstants.StandardEncoding.GetBytes("crypto.ecdsa_signature"));
 
                 var options = new CborOptions();
                 options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider(mode));
@@ -53,6 +53,11 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 {
                     om.ClearMemberMappings();
                     om.MapMember(m => m.PublicKey);
+                });
+
+                options.Registry.ObjectMappingRegistry.Register<ECSignature>(om => 
+                {
+                    om.AutoMap().SetDiscriminator("crypto.ecdsa_signature").SetDiscriminatorPolicy(CborDiscriminatorPolicy.Always);
                 });
 
                 

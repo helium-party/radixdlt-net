@@ -6,9 +6,9 @@ using HeliumParty.RadixDLT.Particles;
 
 namespace HeliumParty.RadixDLT.Atoms
 {
-    [CborDiscriminator("radix.particle_group")]
-    public class ParticleGroup
-    {        
+    [CborDiscriminator("radix.particle_group", Policy = CborDiscriminatorPolicy.Always)]
+    public class ParticleGroup : SerializableObject
+    {           
         public ImmutableList<SpunParticle> Particles { get; protected set; }
         public ImmutableDictionary<string, string> MetaData { get; protected set; }
 

@@ -323,8 +323,10 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             });
 
             var spunp = new SpunParticle(messageParticle, Spin.Down);
+            var spunp2 = new SpunParticle(messageParticle, Spin.Down);
             var listbuilder = ImmutableList.CreateBuilder<SpunParticle>();
             listbuilder.Add(spunp);
+            listbuilder.Add(spunp2);
 
             var mdatabuilder = ImmutableDictionary.CreateBuilder<string, string>();
             mdatabuilder.Add(new KeyValuePair<string, string>("Test", "Test"));
@@ -333,10 +335,15 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
                 new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
 
 
+
+
+            var metaData = new Dictionary<string, string>();
+            metaData.Add("work", "please");
+
             var cAtom = new Atom()
             {
                 ParticleGroups = new List<ParticleGroup>() { group },
-                MetaData = new Dictionary<string, string>()
+                MetaData = metaData
             };
 
             var data = ResourceParser.GetResource("messageatom.dson");
@@ -344,13 +351,13 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             //act
             var cdsonatom = _manager.ToDson(cAtom);
 
-            var cboratom = await _manager.FromDsonAsync<CborObject>(data);
-            var cborownatom = await _manager.FromDsonAsync<CborObject>(cdsonatom);
+            //var cboratom = await _manager.FromDsonAsync<Atom>(data);
+            var cborownatom = await _manager.FromDsonAsync<Atom>(cdsonatom);
             //var cbor = CBORObject.DecodeFromBytes(data, CBOREncodeOptions.Default);
 
 
             //assert
-            cboratom.ShouldNotBeNull();
+            //cboratom.ShouldNotBeNull();
             cborownatom.ShouldNotBeNull();
         }
         #endregion
