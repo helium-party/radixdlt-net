@@ -39,7 +39,7 @@ namespace HeliumParty.RadixDLT.Serialization
         /// <summary>
         ///     This should never be serialized
         /// </summary>
-        Hidden,
+        Never,
         /// <summary>
         ///     With this mode, only serialize those that have the same mode.
         /// </summary>

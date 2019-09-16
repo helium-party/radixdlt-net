@@ -40,7 +40,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             public int IntValue { get; set; }
             [SerializationOutput(OutputMode.Hash)]
             public int IntSecondValue { get; set; }
-            [SerializationOutput(OutputMode.Hidden)]
+            [SerializationOutput(OutputMode.Never)]
             public string HiddenValue { get; set; }
             public string DummyValue { get; set; }
             public byte[] DummyBin { get; set; }

@@ -1,14 +1,12 @@
 ﻿using Dahomey.Cbor;
 using Dahomey.Cbor.Attributes;
 using Dahomey.Cbor.ObjectModel;
+using HeliumParty.RadixDLT.Core.Tests.Resources;
 using HeliumParty.RadixDLT.Primitives;
-using HeliumParty.RadixDLT.Serialization;
 using HeliumParty.RadixDLT.Serialization.Dson;
 using Shouldly;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -72,7 +70,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             public int Sound { get; set; }
         }
 
-        [CborDiscriminator("dog.dog")]
+        [CborDiscriminator("dog.dog", Policy = CborDiscriminatorPolicy.Always)]
         public class Dog : Animal
         {
             public int OtherSound { get; set; }
@@ -161,6 +159,43 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             var expectedOutput = Bytes.ToHexString(serializedBytes2);
             expectedOutput.ShouldNotBeNull();
+        }
+
+
+        public abstract class DummyParticle
+        {
+
+        }
+
+        [CborDiscriminator("radix.particles.message", Policy = CborDiscriminatorPolicy.Always)]
+        public class DummyMessageParticle : DummyParticle
+        {
+            public long nonce { get; protected set; }
+        }
+
+        [Fact]
+        public async Task ShouldDeserialize_Foreign_Cbor_ToParticle_Test()
+        {
+            //CborOptions options = DsonOutputMapping.GetDsonOptions(OutputMode.All);
+            CborOptions options = new CborOptions();
+            var discriminator = new DsonDiscriminator();
+            discriminator.RegisterAssembly(Assembly.GetAssembly(typeof(DummyParticle)));
+            options.DiscriminatorConvention = discriminator;
+
+
+
+
+            var data = ResourceParser.GetResource("messageParticle3.dson");
+            DummyParticle particle = null;
+            using (var ms = new MemoryStream())
+            {
+                ms.Write(data, 0, data.Length);
+                particle = await Cbor.DeserializeAsync<DummyParticle>(ms, options);//fails
+                //particle = await Cbor.DeserializeAsync<DummyMessageParticle>(ms, options);//works               
+            }
+
+            particle.ShouldBeOfType<DummyMessageParticle>();
+            ((DummyMessageParticle)particle).nonce.ShouldBe(2181035975144481159);
         }
     }
 }

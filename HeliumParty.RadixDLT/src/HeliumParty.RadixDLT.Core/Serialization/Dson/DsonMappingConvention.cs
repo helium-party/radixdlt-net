@@ -48,7 +48,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                             case OutputMode.All:
                                 {
                                     shouldSerialize = true;
-                                    if (oa.ValidOn == OutputMode.Hidden)
+                                    if (oa.ValidOn == OutputMode.Never)
                                         shouldSerialize = false;
                                     break;
                                 }
