@@ -4,7 +4,7 @@ using HeliumParty.RadixDLT.Identity;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
-    [CborDiscriminator("radix.particles.rri")]
+    [CborDiscriminator("radix.particles.rri", Policy = CborDiscriminatorPolicy.Always)]
     public class RRIParticle : Particle, IAccountable
     {
         public RRI RRI { get; protected set; }
@@ -12,6 +12,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress>() { RRI.Address };
         
+        [CborConstructor]
         protected RRIParticle()
             : base()
         {

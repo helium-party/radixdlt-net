@@ -197,5 +197,46 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             particle.ShouldBeOfType<DummyMessageParticle>();
             ((DummyMessageParticle)particle).nonce.ShouldBe(2181035975144481159);
         }
+
+
+        public class ConstTest
+        {
+            public int Value { get; set; }
+
+            protected ConstTest()
+            {
+
+            }
+
+            public ConstTest(int value)
+            {
+                Value = value;
+            }
+        }
+
+        [Fact]
+        public async Task ProtectedConstructorTest()
+        {
+            var test = new ConstTest(100);
+            CborOptions options = new CborOptions();
+
+
+            byte[] serializedBytes = null;
+            using (var ms = new MemoryStream())
+            {
+                await Cbor.SerializeAsync(test, ms, options);
+                serializedBytes = ms.ToArray();
+            }
+
+            ConstTest deserialized = null;
+            using (var ms = new System.IO.MemoryStream())
+            {
+                ms.Write(serializedBytes, 0, serializedBytes.Length);
+                deserialized = await Cbor.DeserializeAsync<ConstTest>(ms, options);
+            }
+
+            deserialized.Value.ShouldBe(100);
+
+        }
     }
 }
