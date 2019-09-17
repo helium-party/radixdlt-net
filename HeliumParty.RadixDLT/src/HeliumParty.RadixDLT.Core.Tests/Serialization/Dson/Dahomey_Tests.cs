@@ -2,6 +2,8 @@
 using Dahomey.Cbor.Attributes;
 using Dahomey.Cbor.ObjectModel;
 using HeliumParty.RadixDLT.Core.Tests.Resources;
+using HeliumParty.RadixDLT.Particles;
+using HeliumParty.RadixDLT.Particles.Types;
 using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization.Dson;
 using Shouldly;
@@ -164,13 +166,18 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
         public abstract class DummyParticle
         {
-
+            protected DummyParticle() { }
         }
 
         [CborDiscriminator("radix.particles.message", Policy = CborDiscriminatorPolicy.Always)]
         public class DummyMessageParticle : DummyParticle
         {
             public long nonce { get; protected set; }
+
+            public DummyMessageParticle() : base()
+            {
+
+            }
         }
 
         [Fact]
@@ -181,9 +188,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var discriminator = new DsonDiscriminator();
             discriminator.RegisterAssembly(Assembly.GetAssembly(typeof(DummyParticle)));
             options.DiscriminatorConvention = discriminator;
-
-
-
 
             var data = ResourceParser.GetResource("messageParticle3.dson");
             DummyParticle particle = null;
@@ -196,6 +200,11 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             particle.ShouldBeOfType<DummyMessageParticle>();
             ((DummyMessageParticle)particle).nonce.ShouldBe(2181035975144481159);
+
+
+            var manager = new DsonManager();
+            var particle2 = manager.FromDson<Particle>(data);
+            (particle2 as MessageParticle).Nonce.ShouldBe(2181035975144481159);
         }
 
 
@@ -219,8 +228,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         {
             var test = new ConstTest(100);
             CborOptions options = new CborOptions();
-
-
+            
             byte[] serializedBytes = null;
             using (var ms = new MemoryStream())
             {
@@ -229,6 +237,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             }
 
             ConstTest deserialized = null;
+            
             using (var ms = new System.IO.MemoryStream())
             {
                 ms.Write(serializedBytes, 0, serializedBytes.Length);

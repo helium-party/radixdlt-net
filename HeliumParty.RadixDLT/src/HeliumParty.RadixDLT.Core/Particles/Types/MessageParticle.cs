@@ -5,7 +5,7 @@ using HeliumParty.RadixDLT.Identity.Managers;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
-    [CborDiscriminator("radix.particles.message",Policy = CborDiscriminatorPolicy.Always)]
+    [CborDiscriminator("radix.particles.message", Policy = CborDiscriminatorPolicy.Always)]
     public class MessageParticle : Particle, IAccountable
     {
         public RadixAddress From { get; protected set; }

@@ -12,9 +12,8 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress>() { RRI.Address };
         
-        [CborConstructor]
         protected RRIParticle()
-            : base()
+            :base()
         {
 
         }

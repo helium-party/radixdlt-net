@@ -174,8 +174,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             });
 
             //act
-            var serialized = _manager.ToDson(messageParticle);
-            var deserialized = _manager.FromDson<MessageParticle>(serialized);
+            var serialized = _manager.ToDson<Particle>(messageParticle);
+            var deserialized = (MessageParticle)_manager.FromDson<Particle>(serialized);
 
             //assert
             deserialized.From.ShouldBe(address1);
@@ -190,10 +190,10 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var eCKeyManager = new ECKeyManager();
             var address = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
             var rriParticle = new RRIParticle(new RRI(address, "test"));
-            var serialized = _manager.ToDson(rriParticle);
-            var deserialized = _manager.FromDson<RRIParticle>(serialized);
+            var serialized = _manager.ToDson<Particle>(rriParticle);
+            var deserialized = _manager.FromDson<Particle>(serialized);
 
-            deserialized.RRI.Address.ECPublicKey.Base64.ShouldBe(address.ECPublicKey.Base64);
+            ((RRIParticle)deserialized).RRI.Address.ECPublicKey.Base64.ShouldBe(address.ECPublicKey.Base64);
         }
 
         [Fact]
@@ -351,13 +351,13 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             //act
             var cdsonatom = _manager.ToDson(cAtom);
 
-            //var cboratom = await _manager.FromDsonAsync<Atom>(data);
+            var cboratom = await _manager.FromDsonAsync<Atom>(data);
             var cborownatom = await _manager.FromDsonAsync<Atom>(cdsonatom);
             //var cbor = CBORObject.DecodeFromBytes(data, CBOREncodeOptions.Default);
 
 
             //assert
-            //cboratom.ShouldNotBeNull();
+            cboratom.ShouldNotBeNull();
             cborownatom.ShouldNotBeNull();
         }
         #endregion
