@@ -21,7 +21,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
         public void Apply<T>(SerializationRegistry registry, ObjectMapping<T> objectMapping) where T : class
         {
-            //defaultObjectMappingConvention.Apply<T>(registry, objectMapping);
+            defaultObjectMappingConvention.Apply<T>(registry, objectMapping);
 
             objectMapping.ClearMemberMappings();
             var props = typeof(T).GetProperties();
