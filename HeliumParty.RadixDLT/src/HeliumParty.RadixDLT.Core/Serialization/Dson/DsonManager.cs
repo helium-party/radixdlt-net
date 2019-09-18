@@ -63,6 +63,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 var options = new CborOptions();
                 options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider(mode));
                 options.DiscriminatorConvention = discriminator;
+                options.DiscriminatorPolicy = CborDiscriminatorPolicy.Always;
 
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
                 //options.Registry.ConverterRegistry.RegisterConverter(typeof(UInt256), new DsonObjectConverter<byte[]>(x => x, y => y));
