@@ -9,7 +9,7 @@ using System.Text;
 
 namespace HeliumParty.RadixDLT.Address
 {
-    public class RadixUniverseConfig // TODO: SerializableObject??
+    public class RadixUniverseConfig // TODO: SerializableObject?? --> We might not want to have it in this project!
     {
         public int Magic { get; }
         public ImmutableList<Atom> Genesis { get; }
