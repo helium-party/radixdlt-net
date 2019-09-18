@@ -1,8 +1,10 @@
-﻿using System;
+﻿using HeliumParty.RadixDLT.Serialization;
+using System;
 using System.Collections.Generic;
 
 namespace HeliumParty.RadixDLT.Identity
 {
+    [SerializationPrefix(Dson=0x06)]
     public class RRI
     {
         public RadixAddress Address { get; }

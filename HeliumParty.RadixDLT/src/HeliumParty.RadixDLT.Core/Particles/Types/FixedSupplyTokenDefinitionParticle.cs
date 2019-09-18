@@ -1,16 +1,33 @@
-﻿using HeliumParty.RadixDLT.Identity;
+﻿using Dahomey.Cbor.Attributes;
+using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Primitives;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
-    public class FixedSupplyTokenDefinitionParticle : TokenDefinitionParticle
+    [CborDiscriminator("radix.particles.fixed_supply_token_definition")]
+    public class FixedSupplyTokenDefinitionParticle : Particle//, IIdentifiable, IOwnable
     {
-        public UInt256 Supply { get; }
+        public RRI RRI { get; protected set; }
+        public RadixAddress Address => RRI.Address;
+        public string Name { get; protected set; }
+        public string Description { get; protected set; }
+        //public UInt256 Granularity { get; protected set; }
+        public string IconUrl { get; protected set; }
+        //public UInt256 Supply { get; protected set; }
 
-        public FixedSupplyTokenDefinitionParticle(RRI rRI, string name, string description, UInt256 granularity, string iconUrl, UInt256 supply)
-            : base(rRI, name, description, granularity, iconUrl)
+        protected FixedSupplyTokenDefinitionParticle() : base()
         {
-            Supply = supply;
+
+        }
+
+        public FixedSupplyTokenDefinitionParticle(RRI rRI, string name, string description, UInt256 granularity, string iconUrl, UInt256 supply)            
+        {
+            RRI = rRI;
+            Name = name;
+            Description = description;
+            //Granularity = granularity;
+            IconUrl = iconUrl;
+            //Supply = supply;
         }
     }
 }

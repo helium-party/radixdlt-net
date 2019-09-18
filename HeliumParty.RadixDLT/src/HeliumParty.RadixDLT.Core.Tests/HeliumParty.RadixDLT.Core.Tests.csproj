@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\atom.dson" />
+    <None Remove="Resources\messageatom.dson" />
+    <None Remove="Resources\messageParticle.dson" />
+    <None Remove="Resources\messageParticle2.dson" />
+    <None Remove="Resources\messageParticle3.dson" />
+    <None Remove="Resources\messageParticle4.dson" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\atom.dson" />
+    <EmbeddedResource Include="Resources\messageatom.dson" />
+    <EmbeddedResource Include="Resources\messageParticle.dson" />
+    <EmbeddedResource Include="Resources\messageParticle2.dson" />
+    <EmbeddedResource Include="Resources\messageParticle3.dson" />
+    <EmbeddedResource Include="Resources\messageParticle4.dson" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="PeterO.Cbor" Version="4.0.0" />
+    <PackageReference Include="Shouldly" Version="3.0.2" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HeliumParty.RadixDLT.Core\HeliumParty.RadixDLT.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,5 +1,6 @@
 ﻿using System;
 using HeliumParty.RadixDLT.Primitives;
+using HeliumParty.RadixDLT.Serialization;
 
 namespace HeliumParty.RadixDLT.Atoms
 {
@@ -7,6 +8,7 @@ namespace HeliumParty.RadixDLT.Atoms
     /// An Atom ID, made up of 192 bits of truncated hash and 64 bits of a selected shard.    
     /// The Atom ID is used so that Atoms can be located using just their hid.
     /// </summary>
+    [SerializationPrefix(Dson= 0x08)]
     public class AID
     {
         public const int HashBytesSize = 24;

@@ -101,7 +101,7 @@ namespace HeliumParty.RadixDLT.EllipticCurve.Managers
             ECDsaSigner verifier = new ECDsaSigner();
             verifier.Init(false, new ECPublicKeyParameters(domainParams.Curve.DecodePoint(publicKey.Base64Array), domainParams));
 
-            return verifier.VerifySignature(data, signature.R, signature.S);
+            return verifier.VerifySignature(data, signature.RInt, signature.SInt);
         }
 
         public virtual bool VerifyKeyPair(ECKeyPair keyPair)
