@@ -8,6 +8,7 @@ using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Identity;
+using HeliumParty.RadixDLT.Primitives;
 using Org.BouncyCastle.Math;
 
 namespace HeliumParty.RadixDLT.Serialization.Dson
@@ -63,10 +64,10 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 var options = new CborOptions();
                 options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider(mode));
                 options.DiscriminatorConvention = discriminator;
-                options.DiscriminatorPolicy = CborDiscriminatorPolicy.Always;
+                
 
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
-                //options.Registry.ConverterRegistry.RegisterConverter(typeof(UInt256), new DsonObjectConverter<byte[]>(x => x, y => y));
+                options.Registry.ConverterRegistry.RegisterConverter(typeof(UInt256), new DsonObjectConverter<UInt256>(x => x, y => y)); //implicit conversion
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(ECPrivateKey), new DsonObjectConverter<ECPrivateKey>(x => x.Base64Array, y => new ECPrivateKey(y)));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(ECPublicKey), new DsonObjectConverter<ECPublicKey>(x => x.Base64Array, y => new ECPublicKey(y)));
