@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace HeliumParty.RadixDLT.Primitives
 {
@@ -24,6 +25,41 @@ namespace HeliumParty.RadixDLT.Primitives
         public static implicit operator BigInteger(UInt256 a)
         {
             return (BigInteger)a.s3 << 192 | (BigInteger)a.s2 << 128 | (BigInteger)a.s1 << 64 | a.s0;
+        }
+
+        public static implicit operator UInt256(byte[] bigint)
+        {
+            if (bigint.Length > 32)
+                throw new Exception($"cannot parse byte[] to UInt256. array was to big : length {bigint.Length}");
+
+            var b = new UInt256();
+
+            b.s0 = BitConverter.ToUInt64(bigint,0);
+
+            if (bigint.Length >= 16)
+                b.s1 = BitConverter.ToUInt64(bigint, 8);
+            else b.s1 = 0;
+
+            if (bigint.Length >= 24)
+                b.s2 = BitConverter.ToUInt64(bigint, 16);
+            else b.s2 = 0;
+
+            if (bigint.Length == 32)
+                b.s3 = BitConverter.ToUInt64(bigint, 24);
+            else b.s3 = 0;
+
+            return b;
+        }
+
+
+        public static implicit operator byte[](UInt256 b)
+        {
+            var b1 = BitConverter.GetBytes(b.s0);
+            var b2 = BitConverter.GetBytes(b.s1);
+            var b3 = BitConverter.GetBytes(b.s2);
+            var b4 = BitConverter.GetBytes(b.s3);
+
+            return Arrays.ConcatArrays(b1, b2, b3, b4);            
         }
 
         public override string ToString()
