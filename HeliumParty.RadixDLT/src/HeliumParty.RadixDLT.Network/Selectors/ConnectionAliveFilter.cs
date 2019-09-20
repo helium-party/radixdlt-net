@@ -5,10 +5,5 @@
     /// </summary>
     public class ConnectionAliveFilter
     {
-        public bool Test(RadixNodeState nodeState)
-        {
-            return nodeState.Status ==
-        }
-        
     }
 }

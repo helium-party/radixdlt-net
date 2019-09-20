@@ -14,12 +14,12 @@ namespace HeliumParty.RadixDLT
         private readonly RadixNode _Node;
         private readonly NodeRunnerData _Data;
 
-        public Address.RadixUniverseConfig UniverseConfig { get; }
+        public Universe.RadixUniverseConfig UniverseConfig { get; }
         public WebSocketStatus Status { get; }
         public int? Version { get; }
 
         public RadixNodeState(RadixNode node, WebSocketStatus status, NodeRunnerData data,
-            int? version, Address.RadixUniverseConfig universeConfig)
+            int? version, Universe.RadixUniverseConfig universeConfig)
         {
             _Node = node ?? throw new ArgumentNullException(nameof(node));
             Status = status;
@@ -38,7 +38,7 @@ namespace HeliumParty.RadixDLT
             return new RadixNodeState(node, status, data, null, null);
         }
 
-        public static RadixNodeState From(RadixNode node, WebSocketStatus status, NodeRunnerData data, Address.RadixUniverseConfig universeConfig)
+        public static RadixNodeState From(RadixNode node, WebSocketStatus status, NodeRunnerData data, Universe.RadixUniverseConfig universeConfig)
         {
             return new RadixNodeState(node, status, data, null, universeConfig);
         }

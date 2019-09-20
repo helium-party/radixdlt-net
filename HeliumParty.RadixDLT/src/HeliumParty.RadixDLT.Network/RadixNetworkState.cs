@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 namespace HeliumParty.RadixDLT
 {
     /// <summary>
-    /// Current state of nodes connected to
+    /// The current state of all the nodes we are connected to
     /// </summary>
     public class RadixNetworkState
     {
