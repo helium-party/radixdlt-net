@@ -1,4 +1,4 @@
-﻿using HeliumParty.RadixDLT.Address;
+﻿using HeliumParty.RadixDLT.Universe;
 
 namespace HeliumParty.RadixDLT.Actions
 {

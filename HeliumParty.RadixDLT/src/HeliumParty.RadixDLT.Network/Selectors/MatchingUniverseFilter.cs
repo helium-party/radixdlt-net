@@ -1,4 +1,6 @@
-﻿namespace HeliumParty.RadixDLT.Selectors
+﻿using HeliumParty.RadixDLT.Universe;
+
+namespace HeliumParty.RadixDLT.Selectors
 {
     /// <summary>
     /// A universe filter that checks if peers have the same <see cref="RadixUniverseConfig"/>

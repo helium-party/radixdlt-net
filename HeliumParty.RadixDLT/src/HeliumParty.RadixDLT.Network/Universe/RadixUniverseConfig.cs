@@ -5,9 +5,8 @@ using HeliumParty.RadixDLT.Identity;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Text;
 
-namespace HeliumParty.RadixDLT.Address
+namespace HeliumParty.RadixDLT.Universe
 {
     public class RadixUniverseConfig // TODO: SerializableObject?? --> We might not want to have it in this project!
     {

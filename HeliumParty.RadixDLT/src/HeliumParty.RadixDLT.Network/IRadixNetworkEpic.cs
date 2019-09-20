@@ -1,4 +1,5 @@
-﻿using System.Reactive;
+﻿using System;
+using System.Reactive;
 
 namespace HeliumParty.RadixDLT
 {
@@ -17,6 +18,6 @@ namespace HeliumParty.RadixDLT
         /// <param name="actions">Stream of actions comming in</param>
         /// <param name="networkState">Stream of states comming in</param>
         /// <returns>Stream of new actions</returns>
-        ObservableBase<IRadixNodeAction> Epic(ObservableBase<IRadixNodeAction> actions, ObservableBase<RadixNetworkState> networkState);
+        IObservable<IRadixNodeAction> Epic(IObservable<IRadixNodeAction> actions, IObservable<RadixNetworkState> networkState);
     }
 }
