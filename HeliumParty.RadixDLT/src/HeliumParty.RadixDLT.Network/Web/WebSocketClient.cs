@@ -97,6 +97,11 @@ namespace HeliumParty.RadixDLT.Web
             throw new NotImplementedException();
         }
 
+        public bool Close()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool SendMessage(string message)
         {
             if (_Logger.IsDebugEnabled)

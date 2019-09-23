@@ -6,7 +6,7 @@ namespace HeliumParty.RadixDLT.Actions
     /// A dispatchable fetch atoms action which represents an atom observed event 
     /// from a specific node for an atom fetch flow.
     /// </summary>
-    public class FetchAtomsOversavtionAction : IFetchAtomsAction
+    public class FetchAtomsObservationAction : IFetchAtomsAction
     {
         public string UUID { get; }
         public RadixAddress Address { get; }
@@ -17,7 +17,7 @@ namespace HeliumParty.RadixDLT.Actions
         /// </summary>
         public AtomObservation Observation { get; }
 
-        public FetchAtomsOversavtionAction(
+        public FetchAtomsObservationAction(
             string uuid, 
             RadixAddress address, 
             RadixNode node, 
