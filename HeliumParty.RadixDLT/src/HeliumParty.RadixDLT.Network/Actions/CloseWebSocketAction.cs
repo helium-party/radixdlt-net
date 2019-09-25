@@ -7,10 +7,12 @@
     {
         public RadixNode Node { get; }
 
-        public CloseWebSocketAction(RadixNode node)
+        private CloseWebSocketAction(RadixNode node)
         {
             Node = node ?? throw new System.ArgumentNullException(nameof(node));
         }
+
+        public static CloseWebSocketAction From(RadixNode node) => new CloseWebSocketAction(node);
 
         public override string ToString() => $"CLOSE_WEBSOCKET_ACTION {Node}";
     }
