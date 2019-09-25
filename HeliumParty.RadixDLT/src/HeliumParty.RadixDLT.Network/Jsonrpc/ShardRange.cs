@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HeliumParty.RadixDLT.Jsonrpc
+﻿namespace HeliumParty.RadixDLT.Jsonrpc
 {
-    public class ShardRange
+    public class ShardRange : Range<long>
     {
-
+        // TODO : Serialization missing...
+        public ShardRange(long low, long high) : base(low, high) { }
     }
 }

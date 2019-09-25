@@ -70,8 +70,8 @@ namespace HeliumParty.RadixDLT.Epics
                                 return state.NodeStateCollection.ContainsKey(node) ? null : Actions.AddNodeAction.From(node);
                             })
                             .Where(addNode => addNode != null);
-                        })
-                    ).SelectMany(i => i);
+                        }))
+                .SelectMany(i => i);   // transform the list of actions back into our usual 'IObservable<IRadixNodeAction>' - observable
 
             return Observable.Merge(
                 addSeeds,
