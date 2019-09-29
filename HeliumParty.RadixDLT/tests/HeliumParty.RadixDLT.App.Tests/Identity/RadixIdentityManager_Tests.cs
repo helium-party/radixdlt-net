@@ -1,17 +1,18 @@
-﻿using HeliumParty.RadixDLT.App.Tests.Resources;
+﻿using HeliumParty.BaseTest;
+using HeliumParty.RadixDLT.App.Tests.Resources;
 using HeliumParty.RadixDLT.Encryption;
 using HeliumParty.RadixDLT.Identity;
 using Newtonsoft.Json;
 using Shouldly;
 using System;
-using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Text;
 using Xunit;
 
 namespace HeliumParty.RadixDLT.App.Tests.Identity
 {
-    public class RadixIdentityManager_Tests
+    public class RadixIdentityManager_Tests : HbIntegratedBaseTest
     {
         private const string PRIVATEKEY_INBASE64 = "lA8N6h4uUEbmf+Pp4DS41UPBJ8LIlUwBkfjKThw0fuI=";
         private const string PUBLICKEY_INBASE64 = "A3eCL5NJVVmJLXloK+zO9BFj36sHKGHHxG6Ytz5DX+qr";
@@ -19,7 +20,7 @@ namespace HeliumParty.RadixDLT.App.Tests.Identity
 
         public RadixIdentityManager_Tests()
         {
-            _IdentityManager = new RadixIdentityManager();
+            _IdentityManager = IocContainer.GetService<IRadixIdentityManager>();
         }
 
         [Fact]
