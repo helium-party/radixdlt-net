@@ -2,20 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HeliumParty.BaseTest;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
 using Shouldly;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HeliumParty.RadixDLT.Crypto.Tests
 {
-    public class ECKeyManagerTest
+    public class ECKeyManagerTest : HbIntegratedBaseTest
     {
         private readonly IECKeyManager _manager;
 
         public ECKeyManagerTest()
         {
-            _manager = new ECKeyManager();
+            _manager = IocContainer.GetService<IECKeyManager>();
         }
 
         [Fact]

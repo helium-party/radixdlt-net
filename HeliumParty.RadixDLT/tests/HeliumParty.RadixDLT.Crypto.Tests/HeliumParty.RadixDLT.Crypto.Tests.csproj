@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\HeliumParty.BaseTest\HeliumParty.BaseTest.csproj" />
     <ProjectReference Include="..\..\src\HeliumParty.RadixDLT.Crypto\HeliumParty.RadixDLT.Crypto.csproj" />
   </ItemGroup>
 
