@@ -14,22 +14,34 @@ namespace HeliumParty.DependencyInjection
         {
             var types = AssemblyHelper
                 .GetAllTypes(assembly)
-                .Where(
-                    type => (
-                                type != null &&
-                                type.IsClass &&
-                                !type.IsAbstract &&
-                                !type.IsGenericType
-                            )
-                            &&
-                            (
-                                type.GetInterfaces().Contains(typeof(ITransientDependency)) ||
-                                type.GetInterfaces().Contains(typeof(ISingletonDependency)) ||
-                                type.GetInterfaces().Contains(typeof(IScopedDependency))
-                            )
-                ).ToArray();
+                .Where(AddTypeFilter()).ToArray();
 
             AddTypes(services, types);
+        }
+
+        public virtual void AddAssemblies(IServiceCollection services, Assembly[] assemblies)
+        {
+            var types = AssemblyHelper
+                .GetAllTypes(assemblies)
+                .Where(AddTypeFilter()).ToArray();
+
+            AddTypes(services, types);
+        }
+
+        private static Func<Type, bool> AddTypeFilter()
+        {
+            return type => (
+                                            type != null &&
+                                            type.IsClass &&
+                                            !type.IsAbstract &&
+                                            !type.IsGenericType
+                                        )
+                                        &&
+                                        (
+                                            type.GetInterfaces().Contains(typeof(ITransientDependency)) ||
+                                            type.GetInterfaces().Contains(typeof(ISingletonDependency)) ||
+                                            type.GetInterfaces().Contains(typeof(IScopedDependency))
+                                        );
         }
 
         public virtual void AddTypes(IServiceCollection services, params Type[] types)

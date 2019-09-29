@@ -24,8 +24,38 @@ namespace HeliumParty.DependencyInjection
                 .Where(s => s.EndsWith(".dll") || s.EndsWith(".exe"));
         }
 
+        public static IReadOnlyList<Type> GetAllTypes(Assembly assembly, bool includeDependentAssemblies = false)
+        {
+            //var assemblies = assembly.GetReferencedAssemblies().ToList();
+
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            var types = new List<Type>();
+            
+            foreach(var a in assemblies)
+            {
+                try
+                {
+                    types.AddRange(a.GetTypes());
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    types.AddRange(ex.Types);
+                }
+            }
+
+            return types;
+        }
+
         public static IReadOnlyList<Type> GetAllTypes(Assembly assembly)
         {
+            //var assemblies = assembly.GetReferencedAssemblies().ToList();
+
+            //var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            //var types = new List<Type>();
+
+           
             try
             {
                 return assembly.GetTypes();
@@ -33,7 +63,19 @@ namespace HeliumParty.DependencyInjection
             catch (ReflectionTypeLoadException ex)
             {
                 return ex.Types;
+            }            
+        }
+
+        public static IReadOnlyList<Type> GetAllTypes(Assembly[] assemblies)
+        {
+            var types = new List<Type>();
+
+            foreach (var a in assemblies)
+            {
+                types.AddRange(GetAllTypes(a));
             }
+
+            return types;
         }
     }
 }
