@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using HeliumParty.DependencyInjection;
 using HeliumParty.RadixDLT.Exceptions;
 using HeliumParty.RadixDLT.Hashing;
 using HeliumParty.RadixDLT.Primitives;
@@ -21,7 +22,7 @@ using Org.BouncyCastle.Security;
 
 namespace HeliumParty.RadixDLT.EllipticCurve.Managers
 {
-    public class ECKeyManager : IECKeyManager
+    public class ECKeyManager : IECKeyManager , ITransientDependency
     {
         private const string Curvealgo = "secp256k1";
         private const string Keypairalgo = "ECDSA";
