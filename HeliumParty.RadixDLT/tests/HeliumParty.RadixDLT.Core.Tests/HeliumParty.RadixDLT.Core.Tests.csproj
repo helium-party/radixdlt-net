@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HeliumParty.RadixDLT.Core\HeliumParty.RadixDLT.Core.csproj" />
+    <ProjectReference Include="..\..\src\HeliumParty.BaseTest\HeliumParty.BaseTest.csproj" />
+    <ProjectReference Include="..\..\src\HeliumParty.RadixDLT.Core\HeliumParty.RadixDLT.Core.csproj" />
   </ItemGroup>
-
 </Project>

@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HeliumParty.DependencyInjection\HeliumParty.DependencyInjection.csproj" />
     <ProjectReference Include="..\HeliumParty.RadixDLT.Utils\HeliumParty.RadixDLT.Utils.csproj" />
   </ItemGroup>
 

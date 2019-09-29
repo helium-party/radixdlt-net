@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Dahomey.Cbor;
 using Dahomey.Cbor.Attributes;
+using HeliumParty.DependencyInjection;
 using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Identity;
@@ -13,10 +14,10 @@ using Org.BouncyCastle.Math;
 
 namespace HeliumParty.RadixDLT.Serialization.Dson
 {
-    public class DsonManager
+    public class DsonManager : IDsonManager , ITransientDependency
     {
         private readonly Dictionary<OutputMode, CborOptions> _outputModeOptions;// = new Dictionary<OutputMode, CborOptions>();
-        public byte[] ToDson<T>(T obj, OutputMode mode = OutputMode.All) => ToDsonAsync(obj, mode).Result;        
+        public byte[] ToDson<T>(T obj, OutputMode mode = OutputMode.All) => ToDsonAsync(obj, mode).Result;
 
         public T FromDson<T>(byte[] bytes, OutputMode mode = OutputMode.All) => FromDsonAsync<T>(bytes, mode).Result;
 
@@ -33,7 +34,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 //var t = DsonOutputMapping.GetDsonOptions();
                 var options = GetDsonOptions(mode);
                 await Cbor.SerializeAsync(obj, ms, options);
-                return ms.ToArray();                
+                return ms.ToArray();
             }
         }
 
@@ -64,7 +65,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 var options = new CborOptions();
                 options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider(mode));
                 options.DiscriminatorConvention = discriminator;
-                
+
 
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(UInt256), new DsonObjectConverter<UInt256>(x => x, y => y)); //implicit conversion

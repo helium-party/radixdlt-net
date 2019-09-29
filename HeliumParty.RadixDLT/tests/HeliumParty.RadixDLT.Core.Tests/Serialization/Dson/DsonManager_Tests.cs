@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
-using Dahomey.Cbor;
-using Dahomey.Cbor.Attributes;
 using Dahomey.Cbor.ObjectModel;
+using HeliumParty.BaseTest;
 using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.Core.Tests.Resources;
 using HeliumParty.RadixDLT.EllipticCurve;
@@ -16,19 +14,19 @@ using HeliumParty.RadixDLT.Particles.Types;
 using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization;
 using HeliumParty.RadixDLT.Serialization.Dson;
-using PeterO.Cbor;
 using Shouldly;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 {
-    public class DsonManager_Tests
+    public class DsonManager_Tests : HbIntegratedBaseTest
     {
-        private readonly DsonManager _manager;
+        private readonly IDsonManager _manager;
 
         public DsonManager_Tests()
         {
-            _manager = new DsonManager();
+            _manager = IocContainer.GetService<IDsonManager>();
         }
 
 

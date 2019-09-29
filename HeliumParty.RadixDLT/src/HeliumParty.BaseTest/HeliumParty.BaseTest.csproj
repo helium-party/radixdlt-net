@@ -2,11 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>HeliumParty.RadixDLT</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HeliumParty.RadixDLT.Json\HeliumParty.RadixDLT.Json.csproj" />
+    <ProjectReference Include="..\HeliumParty.DependencyInjection\HeliumParty.DependencyInjection.csproj" />
   </ItemGroup>
 
 </Project>

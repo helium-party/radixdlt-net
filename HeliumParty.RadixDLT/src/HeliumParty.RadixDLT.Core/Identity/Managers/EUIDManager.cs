@@ -1,4 +1,5 @@
 ﻿using System;
+using HeliumParty.DependencyInjection;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Hashing;
 using HeliumParty.RadixDLT.Particles;
@@ -6,7 +7,7 @@ using HeliumParty.RadixDLT.Primitives;
 
 namespace HeliumParty.RadixDLT.Identity.Managers
 {
-    public class EUIDManager : IEUIDManager
+    public class EUIDManager : IEUIDManager , ITransientDependency
     {
         public virtual EUID GetEUID(byte[] hash)
         {

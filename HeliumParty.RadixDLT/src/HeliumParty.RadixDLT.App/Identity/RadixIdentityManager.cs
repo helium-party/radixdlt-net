@@ -1,29 +1,40 @@
-﻿using HeliumParty.RadixDLT.EllipticCurve;
+﻿using HeliumParty.DependencyInjection;
+using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
 using HeliumParty.RadixDLT.Encryption;
+using HeliumParty.RadixDLT.Identity.Managers;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 
 namespace HeliumParty.RadixDLT.Identity
 {
-    public class RadixIdentityManager : IRadixIdentityManager
+    public class RadixIdentityManager : IRadixIdentityManager , ITransientDependency
     {
-        protected IECKeyManager _keyManager;
+        private readonly IECKeyManager _keyManager;
+        private readonly IEUIDManager _euidManager;
 
-        public IECKeyManager KeyManager
+        public RadixIdentityManager(IECKeyManager keyManager, IEUIDManager euidManager)
         {
-            get
-            {
-                if (_keyManager == null)
-                    _keyManager = new ECKeyManager();
-                return _keyManager;
-            }
-            set
-            {
-                _keyManager = value;
-            }
+            _keyManager = keyManager;
+            _euidManager = euidManager;
         }
+
+        //public IECKeyManager KeyManager
+        //{
+        //    get
+        //    {
+        //        if (_keyManager == null)
+        //            _keyManager = new ECKeyManager();
+        //        return _keyManager;
+        //    }
+        //    set
+        //    {
+        //        _keyManager = value;
+        //    }
+        //}
+
+
 
 
         /// <summary>
@@ -43,7 +54,7 @@ namespace HeliumParty.RadixDLT.Identity
         /// <returns></returns>
         public virtual IRadixIdentity CreateNew()
         {
-            return new LocalRadixIdentity(_keyManager.GetRandomKeyPair());
+            return new LocalRadixIdentity(_keyManager, _euidManager, _keyManager.GetRandomKeyPair());
         }
 
         /// <summary>
@@ -73,7 +84,7 @@ namespace HeliumParty.RadixDLT.Identity
                         writer.Write(pair.PrivateKey.Base64Array);
                         writer.Close();
 
-                        return new LocalRadixIdentity(pair);
+                        return new LocalRadixIdentity(_keyManager, _euidManager, pair);
                     }
                 }
             }
@@ -93,7 +104,7 @@ namespace HeliumParty.RadixDLT.Identity
 
         protected virtual IRadixIdentity GetIdentity(ECPrivateKey privKey)
         {
-            return new LocalRadixIdentity(KeyManager.GetKeyPair(privKey));
+            return new LocalRadixIdentity(_keyManager, _euidManager, _keyManager.GetKeyPair(privKey));
         }
 
         /// <summary>
@@ -113,13 +124,13 @@ namespace HeliumParty.RadixDLT.Identity
             }
             else
             {
-                var keyPair = KeyManager.GetRandomKeyPair();
+                var keyPair = _keyManager.GetRandomKeyPair();
                 var store = PrivateKeyEncrypter.Encrypt(password, keyPair.PrivateKey);
                 var jsonStr = JsonConvert.SerializeObject(store, Formatting.Indented);
 
                 File.WriteAllText(file.FullName, jsonStr);
 
-                return new LocalRadixIdentity(keyPair);
+                return new LocalRadixIdentity(_keyManager, _euidManager, keyPair);
             }
         }
 
@@ -138,9 +149,9 @@ namespace HeliumParty.RadixDLT.Identity
         public virtual IRadixIdentity LoadKeyStore(KeyStore store, string password)
         {
             var privKey = PrivateKeyEncrypter.Decrypt(password, store);
-            var keypair = KeyManager.GetKeyPair(privKey);
+            var keypair = _keyManager.GetKeyPair(privKey);
 
-            return new LocalRadixIdentity(keypair);
+            return new LocalRadixIdentity(_keyManager,_euidManager,keypair);
         }
 
         public virtual KeyStore CreateStore(LocalExposedRadixIdentity localIdentity, string password)

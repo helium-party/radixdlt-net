@@ -21,8 +21,8 @@ namespace HeliumParty.RadixDLT.Identity
             return new Task<Atom>(() => 
             {
                 // to do : use our DSON lib to get a correct byte[] and hash it
-                var signature = KeyManager.GetECSignature(_keyPair.PrivateKey, new byte[0]);
-                var EUID = EuidManager.GetEUID(_keyPair.PublicKey);
+                var signature = _keyManager.GetECSignature(_keyPair.PrivateKey, new byte[0]);
+                var EUID = _euidManager.GetEUID(_keyPair.PublicKey);
                 var signatures = new Dictionary<string, ECSignature>();
                 signatures.Add(EUID.ToString(), signature);
 
@@ -37,7 +37,9 @@ namespace HeliumParty.RadixDLT.Identity
             });
         }
 
-        public LocalRadixIdentity(ECKeyPair keyPair)
+        public LocalRadixIdentity(
+            IECKeyManager keyManager, IEUIDManager euidManager, ECKeyPair keyPair)
+            : base(keyManager, euidManager)
         {
             _keyPair = keyPair;            
         }
@@ -46,7 +48,8 @@ namespace HeliumParty.RadixDLT.Identity
     public class LocalExposedRadixIdentity : LocalRadixIdentity
     {
         public ECKeyPair KeyPair => _keyPair;
-        public LocalExposedRadixIdentity(ECKeyPair keyPair) : base(keyPair)
+        public LocalExposedRadixIdentity(IECKeyManager keyManager, IEUIDManager euidManager, ECKeyPair keyPair) 
+            : base(keyManager, euidManager, keyPair)
         {
         }
     }
