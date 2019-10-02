@@ -31,7 +31,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             _manager = new DsonManager();
         }
 
-
         #region mapping convention
 
         class TestClass
@@ -40,7 +39,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             public int IntValue { get; set; }
             [SerializationOutput(OutputMode.Hash)]
             public int IntSecondValue { get; set; }
-            [SerializationOutput(OutputMode.Never)]
+            [SerializationOutput(OutputMode.None)]
             public string HiddenValue { get; set; }
             public string DummyValue { get; set; }
             public byte[] DummyBin { get; set; }
@@ -53,10 +52,10 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var o = new TestClass() {
                 IntValue = 300 , IntSecondValue = 20, HiddenValue="secret", DummyValue="known",
                 DummyBin = Bytes.FromHexString("0123456789abcdef")
-        };
+            };
 
             //act
-            var dson = _manager.ToDson(o);            
+            var dson = _manager.ToDson(o, OutputMode.All);
             var o2 = _manager.FromDson<TestClass>(dson, OutputMode.All);
 
             //assert
@@ -66,7 +65,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             o2.DummyValue.ShouldBe(o.DummyValue);
             o2.DummyBin.ShouldBe(Bytes.FromHexString("0123456789abcdef"));
         }
-
 
         #endregion
 
@@ -116,7 +114,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         //}
 
         [Fact]
-        public void AID_Parsing_Test()
+        public void RRI_Parsing_Test()
         {
             var rri = new RRI(new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc"), "uniqueString");
             var serializedRri = _manager.ToDson(rri);
@@ -148,7 +146,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         {
             var eCKeyManager = new ECKeyManager();
             var address = eCKeyManager.GetRandomKeyPair();
-            var serialized = _manager.ToDson(address, OutputMode.Hash);
+            var serialized = _manager.ToDson(address, OutputMode.All);
 
             var deserialized = _manager.FromDson<ECKeyPair>(serialized);
             deserialized.PublicKey.Base64.ShouldBe(address.PublicKey.Base64);
@@ -158,8 +156,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         #endregion
 
         #region Core Layer
-
-
 
         [Fact]
         public void MessageParticle_Parsing_Test()
@@ -215,7 +211,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         [Fact]
         public void ParticleList_Parsing_Test()
         {
-            //arrange
             //arrange
             var particles = new List<Particle>();
             var eCKeyManager = new ECKeyManager();
@@ -360,6 +355,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             cboratom.ShouldNotBeNull();
             cborownatom.ShouldNotBeNull();
         }
+
         #endregion
     }
 
