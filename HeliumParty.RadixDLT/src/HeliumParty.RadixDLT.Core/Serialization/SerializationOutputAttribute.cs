@@ -7,9 +7,9 @@ namespace HeliumParty.RadixDLT.Serialization
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class SerializationOutputAttribute : Attribute
     {
-        public OutputMode ValidOn { get;}        
+        public OutputMode[] ValidOn { get; }        
 
-        public SerializationOutputAttribute(OutputMode validOn)
+        public SerializationOutputAttribute(params OutputMode[] validOn)
         {
             ValidOn = validOn;
         }
