@@ -32,7 +32,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             _euidmanager = IocContainer.GetService<IEUIDManager>();
         }
 
-
         #region mapping convention
 
         class TestClass
@@ -41,7 +40,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             public int IntValue { get; set; }
             [SerializationOutput(OutputMode.Hash)]
             public int IntSecondValue { get; set; }
-            [SerializationOutput(OutputMode.Never)]
+            [SerializationOutput(OutputMode.None)]
             public string HiddenValue { get; set; }
             public string DummyValue { get; set; }
             public byte[] DummyBin { get; set; }
@@ -54,7 +53,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var o = new TestClass() {
                 IntValue = 300 , IntSecondValue = 20, HiddenValue="secret", DummyValue="known",
                 DummyBin = Bytes.FromHexString("0123456789abcdef")
-        };
+            };
 
             //act
             var dson = _dsonmanager.ToDson(o);            
@@ -67,7 +66,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             o2.DummyValue.ShouldBe(o.DummyValue);
             o2.DummyBin.ShouldBe(Bytes.FromHexString("0123456789abcdef"));
         }
-
 
         #endregion
 
@@ -117,7 +115,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         //}
 
         [Fact]
-        public void AID_Parsing_Test()
+        public void RRI_Parsing_Test()
         {
             var rri = new RRI(new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc"), "uniqueString");
             var serializedRri = _dsonmanager.ToDson(rri);
@@ -159,8 +157,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         #endregion
 
         #region Core Layer
-
-
 
         [Fact]
         public void MessageParticle_Parsing_Test()
@@ -221,7 +217,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         [Fact]
         public void ParticleList_Parsing_Test()
         {
-            //arrange
             //arrange
             var particles = new List<Particle>();
             var eCKeyManager = new ECKeyManager();
@@ -369,6 +364,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             cboratom.ShouldNotBeNull();
             cborownatom.ShouldNotBeNull();
         }
+
         #endregion
     }
 
