@@ -30,7 +30,6 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
         {
             using (var ms = new MemoryStream())
             {
-                //var t = DsonOutputMapping.GetDsonOptions();
                 var options = GetDsonOptions(mode);
                 await Cbor.SerializeAsync(obj, ms, options);
                 return ms.ToArray();                
@@ -46,12 +45,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             }
         }
 
-        protected virtual CborOptions GetDsonOptions(OutputMode mode)
-        {
-            var options = _outputModeOptions[mode];
-
-            return options;
-        }
+        protected virtual CborOptions GetDsonOptions(OutputMode mode) => _outputModeOptions[mode];
 
         protected virtual void InitializeOptions()
         {
@@ -60,11 +54,11 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 var discriminator = new DsonDiscriminator();
                 discriminator.RegisterAssembly(Assembly.GetAssembly(typeof(Atom)));
                 discriminator.RegisterType(typeof(ECSignature), RadixConstants.StandardEncoding.GetBytes("crypto.ecdsa_signature"));
+                discriminator.RegisterType(typeof(ECKeyPair), RadixConstants.StandardEncoding.GetBytes("crypto.ec_key_pair"));
 
                 var options = new CborOptions();
                 options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider(mode));
                 options.DiscriminatorConvention = discriminator;
-                
 
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(UInt256), new DsonObjectConverter<UInt256>(x => x, y => y)); //implicit conversion
@@ -76,21 +70,40 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(RRI), new DsonObjectConverter<RRI>(x => RadixConstants.StandardEncoding.GetBytes(x.ToString()), y => new RRI(RadixConstants.StandardEncoding.GetString(y))));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(AID), new DsonObjectConverter<AID>(x => x.Bytes, y => new AID(y)));
 
-
-                //hide the private key
-                options.Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
+                // ECKeypair
+                // For security reasons the private Key is only serialized on PERSIST
+                // TODO property names after serialization have to be changed
+                if (mode == OutputMode.Persist)
                 {
-                    om.ClearMemberMappings();
-                    om.MapMember(m => m.PublicKey);
-                });
+                    options.Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
+                    {
+                        om.AutoMap();
+                        om.ClearMemberMappings();
+                        om.MapMember(m => m.PublicKey);
+                        om.MapMember(m => m.PrivateKey);
+                        om.SetDiscriminator("crypto.ec_key_pair").SetDiscriminatorPolicy(CborDiscriminatorPolicy.Always);
+                    });
+                }
+                else
+                {
+                    options.Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
+                    {
+                        om.AutoMap();
+                        om.ClearMemberMappings();
+                        om.MapMember(m => m.PublicKey);
+                        om.SetDiscriminator("crypto.ec_key_pair").SetDiscriminatorPolicy(CborDiscriminatorPolicy.Always);
+                    });
+                }
 
+                // ECSignature
                 options.Registry.ObjectMappingRegistry.Register<ECSignature>(om =>
                 {
-                    om.AutoMap().SetDiscriminator("crypto.ecdsa_signature").SetDiscriminatorPolicy(CborDiscriminatorPolicy.Always);
+                    om.AutoMap();
+                    om.ClearMemberMappings();
+                    om.MapMember(m => m.R);
+                    om.MapMember(m => m.S);
+                    om.SetDiscriminator("crypto.ecdsa_signature").SetDiscriminatorPolicy(CborDiscriminatorPolicy.Always);
                 });
-
-
-
 
                 _outputModeOptions.Add(mode, options);
             }
