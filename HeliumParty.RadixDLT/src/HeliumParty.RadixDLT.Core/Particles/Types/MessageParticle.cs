@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Identity;
-using HeliumParty.RadixDLT.Identity.Managers;
+using HeliumParty.RadixDLT.Serialization;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
@@ -16,7 +16,8 @@ namespace HeliumParty.RadixDLT.Particles.Types
         //aka data, message,...
         public byte[] Bytes { get; protected set; }
         public long Nonce { get; protected set; }
-
+        
+        [SerializationOutput(OutputMode.None)]
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress> { From, To };
 
         protected MessageParticle() : base()

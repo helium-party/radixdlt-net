@@ -11,9 +11,8 @@ namespace HeliumParty.RadixDLT.Particles.Types
         public long Nonce { get; protected set; }
 
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress>() { RRI.Address };
-        
-        protected RRIParticle()
-            :base()
+
+        protected RRIParticle() : base()
         {
 
         }
