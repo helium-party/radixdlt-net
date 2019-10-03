@@ -18,7 +18,8 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         }
 
-        public RRIParticle(RRI rri) : base(rri.Address.EUID)
+        //destination should originate from the address the rri represents
+        public RRIParticle(RRI rri, EUID destination) : base(destination)
         {
             RRI = rri;
             Nonce = 0;
