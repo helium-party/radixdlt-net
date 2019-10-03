@@ -24,8 +24,8 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         }
 
-        public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes)
-            : this(from, to, metaData, bytes, RandomGenerator.GetRandomLong(), ConvertToEUID(from, to)) { }
+        //public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes)
+        //    : this(from, to, metaData, bytes, RandomGenerator.GetRandomLong(), ConvertToEUID(from, to)) { }
 
         public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes, long nonce, HashSet<EUID> destinations)
             : base(destinations)
@@ -37,9 +37,9 @@ namespace HeliumParty.RadixDLT.Particles.Types
             Nonce = nonce;
         }
 
-        private static HashSet<EUID> ConvertToEUID(RadixAddress from, RadixAddress to)
-        {            
-            return new HashSet<EUID>() { from.EUID, to.EUID };
-        }
+        //private static HashSet<EUID> ConvertToEUID(RadixAddress from, RadixAddress to)
+        //{            
+        //    return new HashSet<EUID>() { from.EUID, to.EUID };
+        //}
     }
 }

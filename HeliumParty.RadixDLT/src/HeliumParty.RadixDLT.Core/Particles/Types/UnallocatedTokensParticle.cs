@@ -22,8 +22,14 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         protected UnallocatedTokensParticle() : base () { }
 
-        public UnallocatedTokensParticle(RRI tokenDefinitionReference, UInt256 granularity, long nonce, UInt256 amount, IDictionary<TokenTransition, TokenPermission> tokenPermissions)
-            : base(tokenDefinitionReference.Address.EUID)
+        public UnallocatedTokensParticle(
+            RRI tokenDefinitionReference, 
+            UInt256 granularity, 
+            long nonce, 
+            UInt256 amount, 
+            IDictionary<TokenTransition, TokenPermission> tokenPermissions,
+            EUID destination // originates from rri property
+            ): base(destination)
         {
             TokenDefinitionReference = tokenDefinitionReference;
             //Granularity = granularity;

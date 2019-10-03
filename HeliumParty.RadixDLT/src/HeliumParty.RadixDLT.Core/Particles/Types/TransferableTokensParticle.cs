@@ -23,8 +23,15 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         protected TransferableTokensParticle() : base () { }
 
-        public TransferableTokensParticle(RadixAddress address, RRI tokenDefinitionReference, UInt256 granularity, long planck, long nonce, UInt256 amount, IDictionary<TokenTransition, TokenPermission> tokenPermissions)
-            : base(address.EUID)
+        public TransferableTokensParticle(
+            RadixAddress address, 
+            RRI tokenDefinitionReference, 
+            UInt256 granularity, 
+            long planck, long nonce, UInt256 amount, 
+            IDictionary<TokenTransition, TokenPermission> tokenPermissions,
+            EUID destination //origin of address property
+            )
+            : base(destination)
         {
             Address = address;
             TokenDefinitionReference = tokenDefinitionReference;

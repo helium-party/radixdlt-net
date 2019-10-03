@@ -16,8 +16,12 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         }
 
-        public UniqueParticle(RadixAddress address, string name)
-            : base(address.EUID)
+        public UniqueParticle(
+            RadixAddress address, 
+            string name,
+            EUID destination// originates from address
+            )
+            : base(destination)
         {
             Name = name;
             Address = address;

@@ -6,7 +6,7 @@ namespace HeliumParty.RadixDLT.Identity
 {
     public interface IRadixIdentityManager
     {
-        IECKeyManager KeyManager { get; set; }
+        //IECKeyManager KeyManager { get; set; }
 
         IRadixIdentity CreateNew();
         KeyStore CreateStore(LocalExposedRadixIdentity localIdentity, string password);

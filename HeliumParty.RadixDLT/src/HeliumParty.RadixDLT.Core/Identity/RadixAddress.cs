@@ -12,16 +12,6 @@ namespace HeliumParty.RadixDLT.Identity
     {
         private readonly string _addressBase58;        
 
-        private EUID _euid;
-        public EUID EUID
-        {
-            get
-            {
-                if (_euid == null)
-                    _euid = new EUIDManager().GetEUID(this);
-                return _euid;
-            }
-        }
         public virtual ECPublicKey ECPublicKey { get; } // TODO : should this be converted to an auto property?
 
         /// <summary>
