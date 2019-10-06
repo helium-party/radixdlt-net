@@ -1,5 +1,6 @@
 ﻿using HeliumParty.RadixDLT.Actions;
 using HeliumParty.RadixDLT.Atoms;
+using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Mappers;
 using HeliumParty.RadixDLT.Particles;
@@ -13,8 +14,7 @@ using System.Text;
 namespace HeliumParty.RadixDLT
 {
     public class RadixApplicationAPI
-    {
-        private IRadixIdentity _identity;
+    {        
         private RadixUniverse _universe;//needs networklayer
         private IFeeMapper _feeMapper;
         private List<IParticleReducer> _reducers = new List<IParticleReducer>();
@@ -23,11 +23,10 @@ namespace HeliumParty.RadixDLT
         private List<IAtomToExcetedActionsMapper> _atomMappers = new List<IAtomToExcetedActionsMapper>();
         private List<IAtomErrorToExceptionReasonMapper> _atomErrorMappers = new List<IAtomErrorToExceptionReasonMapper>();
 
+        public IRadixIdentity Identity { get; }
+        public ECPublicKey PublicKey => Identity.PublicKey;
+        public RadixAddress Address => new RadixAddress(_universe.Magic, PublicKey);
 
-        public static RadixApplicationAPI Create()
-        {
-            throw new NotImplementedException("todo"); 
-        }
 
         internal RadixApplicationAPI(
             IRadixIdentity identity, 
@@ -39,7 +38,7 @@ namespace HeliumParty.RadixDLT
             List<IAtomToExcetedActionsMapper> atomMappers,
             List<IAtomErrorToExceptionReasonMapper> atomErrorMappers)
         {
-            _identity = identity;
+            Identity = identity;
             _universe = universe;
             _feeMapper = feeMapper;
             _reducers = reducers;
@@ -48,6 +47,8 @@ namespace HeliumParty.RadixDLT
             _requiredStateMappers = requiredStateMappers;
             _actionMappers = actionMappers;
         }
+
+
     }
 
 }

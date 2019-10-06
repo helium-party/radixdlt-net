@@ -28,6 +28,18 @@ namespace HeliumParty.RadixDLT
         {            
         }
 
+        public RadixApplicationAPIBuilder Bootstrap(IBootstrapConfig config)
+        {
+            _universe = RadixUniverse.Create(config);
+            return this;
+        }
+
+        public RadixApplicationAPIBuilder DefaultFeeMapper()
+        {
+            _feeMapper = new PowFeeMapper();
+            return this;
+        }
+
         public RadixApplicationAPIBuilder Identity(IRadixIdentity identity)
         {
             _identity = identity;
