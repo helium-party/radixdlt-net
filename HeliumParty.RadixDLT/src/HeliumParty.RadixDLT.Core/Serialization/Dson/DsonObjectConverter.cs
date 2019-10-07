@@ -2,9 +2,7 @@
 using Dahomey.Cbor.Serialization.Converters;
 using HeliumParty.RadixDLT.Primitives;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using HeliumParty.RadixDLT.EllipticCurve;
 
 namespace HeliumParty.RadixDLT.Serialization.Dson
 {
@@ -49,7 +47,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
         /// <param name="type"></param>
         private void PrimitivePrefixes(Type type)
         {
-            if (type == typeof(byte[]))
+            if (type == typeof(byte[]) || type == typeof(ECPrivateKey) || type == typeof(ECPublicKey))
             {
                 _prefix = 0x01;
                 _usePrefix = true;
