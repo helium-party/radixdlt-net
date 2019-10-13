@@ -4,6 +4,7 @@ using System.Text;
 using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Hashing;
+using HeliumParty.RadixDLT.Pow;
 
 namespace HeliumParty.RadixDLT.Mappers
 {
