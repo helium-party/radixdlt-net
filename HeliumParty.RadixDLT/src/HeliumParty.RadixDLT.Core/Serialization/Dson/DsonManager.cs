@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Dahomey.Cbor;
 using Dahomey.Cbor.Attributes;
 using HeliumParty.DependencyInjection;
+using Dahomey.Cbor.ObjectModel;
 using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Identity;
@@ -17,7 +19,55 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
     public class DsonManager : IDsonManager , ITransientDependency
     {
         private readonly Dictionary<OutputMode, CborOptions> _outputModeOptions;// = new Dictionary<OutputMode, CborOptions>();
-        public byte[] ToDson<T>(T obj, OutputMode mode = OutputMode.All) => ToDsonAsync(obj, mode).Result;
+        public byte[] ToDson<T>(T obj, OutputMode mode = OutputMode.All)
+        {
+            var buffer = ToDsonAsync(obj, mode).Result;
+            var o = FromDson<CborObject>(buffer);
+            var sortedO = SortCborObject(o);
+            return ToDsonAsync(sortedO, mode).Result;
+        }
+
+        public CborObject SortCborObject(CborObject obj)
+        {
+            var sortedObj = new CborObject(obj);
+
+            foreach (var o in obj)
+            {
+                if (o.Value.Type == CborValueType.Array)
+                {
+                    sortedObj.Remove(o.Key);
+                    var value = SortCborArray((CborArray)o.Value);
+                    sortedObj.Add(o.Key, value);
+                }
+                else if (o.Value.Type == CborValueType.Object)
+                {
+                    sortedObj.Remove(o.Key);
+                    var value = SortCborObject((CborObject)o.Value);
+                    sortedObj.Add(o.Key, value);
+                }
+            }
+
+            return (CborObject) sortedObj.OrderBy(p => p.Key).ToDictionary(p => p.Key, p => p.Value);
+        }
+
+        public CborArray SortCborArray(CborArray arr)
+        {
+            var sortedArr = arr.ToList();
+
+            for (var i = 0; i < sortedArr.Count; i++)
+            {
+                if (sortedArr[i].Type == CborValueType.Array)
+                {
+                    sortedArr[i] = SortCborArray((CborArray) sortedArr[i]);
+                }
+                else if (sortedArr[i].Type == CborValueType.Object)
+                {
+                    sortedArr[i] = SortCborObject((CborObject) sortedArr[i]);
+                }
+            }
+
+            return new CborArray(sortedArr);
+        }
 
         public T FromDson<T>(byte[] bytes, OutputMode mode = OutputMode.All) => FromDsonAsync<T>(bytes, mode).Result;
 
@@ -74,15 +124,14 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
                 // ECKeypair
                 // For security reasons the private Key is only serialized on PERSIST
-                // TODO property names after serialization have to be changed
                 if (mode == OutputMode.Persist)
                 {
                     options.Registry.ObjectMappingRegistry.Register<ECKeyPair>(om =>
                     {
                         om.AutoMap();
                         om.ClearMemberMappings();
-                        om.MapMember(m => m.PublicKey);
-                        om.MapMember(m => m.PrivateKey);
+                        om.MapMember(m => m.PrivateKey).SetMemberName("private");
+                        om.MapMember(m => m.PublicKey).SetMemberName("public");
                         om.SetDiscriminator("crypto.ec_key_pair").SetDiscriminatorPolicy(CborDiscriminatorPolicy.Always);
                     });
                 }
@@ -92,7 +141,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                     {
                         om.AutoMap();
                         om.ClearMemberMappings();
-                        om.MapMember(m => m.PublicKey);
+                        om.MapMember(m => m.PublicKey).SetMemberName("public");
                         om.SetDiscriminator("crypto.ec_key_pair").SetDiscriminatorPolicy(CborDiscriminatorPolicy.Always);
                     });
                 }

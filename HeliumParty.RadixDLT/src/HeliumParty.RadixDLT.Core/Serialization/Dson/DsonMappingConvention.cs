@@ -2,6 +2,7 @@
 using Dahomey.Cbor.Serialization.Conventions;
 using Dahomey.Cbor.Serialization.Converters.Mappings;
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
@@ -117,7 +118,8 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 }
 
             }
-            
+
+            objectMapping.SetMemberMappings(objectMapping.MemberMappings.OrderBy(m => m.MemberInfo.Name).ToList());
             objectMapping.SetNamingConvention(_dsonNamingConvention);
         }
     }
