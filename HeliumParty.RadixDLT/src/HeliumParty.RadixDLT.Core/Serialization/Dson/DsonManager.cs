@@ -17,11 +17,23 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 {
     public class DsonManager
     {
-        private readonly Dictionary<OutputMode, CborOptions> _outputModeOptions;// = new Dictionary<OutputMode, CborOptions>();
+        private readonly Dictionary<OutputMode, CborOptions> _outputModeOptions;
         public byte[] ToDson<T>(T obj, OutputMode mode = OutputMode.All)
         {
             var buffer = ToDsonAsync(obj, mode).Result;
-            var o = FromDson<CborObject>(buffer);
+            CborObject o;
+            
+            // this is needed because basic types can't be deserialized 
+            // to a CborObject, but they don't need sorting anyways
+            try
+            {
+                o = FromDson<CborObject>(buffer);
+            }
+            catch
+            {
+                return buffer;
+            }
+
             var sortedO = SortCborObject(o);
             return ToDsonAsync(sortedO, mode).Result;
         }
