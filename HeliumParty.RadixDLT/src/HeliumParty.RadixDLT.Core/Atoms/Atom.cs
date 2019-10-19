@@ -15,7 +15,7 @@ namespace HeliumParty.RadixDLT.Atoms
     /// that can be issued onto the ledger.
     /// </summary>
     [CborDiscriminator("radix.atom" , Policy = CborDiscriminatorPolicy.Always)]
-    public class Atom
+    public class Atom : SerializableObject
     {
         public static string MetadataTimestampKey = "timestamp";
         public static string MetadataPowNonceKey = "powNonce";
@@ -24,6 +24,13 @@ namespace HeliumParty.RadixDLT.Atoms
 
         [SerializationOutput(OutputMode.Api, OutputMode.Persist, OutputMode.Wire)]
         public Dictionary<string, ECSignature> Signatures { get; set; }
+
+        public bool ShouldSerializeSignatures()
+        {
+            if (Signatures == null) return false;
+            if (Signatures.Count == 0) return false;
+            return true;
+        }
 
         public Dictionary<string, string> MetaData { get; set; }
 
