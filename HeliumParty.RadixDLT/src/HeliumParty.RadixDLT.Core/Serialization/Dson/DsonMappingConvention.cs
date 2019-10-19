@@ -2,8 +2,10 @@
 using Dahomey.Cbor.Serialization.Conventions;
 using Dahomey.Cbor.Serialization.Converters.Mappings;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace HeliumParty.RadixDLT.Serialization.Dson
@@ -21,6 +23,8 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
         public void Apply<T>(SerializationRegistry registry, ObjectMapping<T> objectMapping) where T : class
         {
+            var memberMappings = new List<MemberMapping>();
+
             _defaultObjectMappingConvention.Apply<T>(registry, objectMapping);
 
             objectMapping.ClearMemberMappings();
@@ -114,13 +118,37 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
                 if (shouldSerialize)
                 {
-                    objectMapping.MapMember(p);
+                    var memberMapping = new MemberMapping(registry.ConverterRegistry, objectMapping, p, p.PropertyType);
+                    ProcessShouldSerializeMethod(memberMapping);
+                    memberMappings.Add(memberMapping);
                 }
-
             }
 
             objectMapping.SetMemberMappings(objectMapping.MemberMappings.OrderBy(m => m.MemberInfo.Name).ToList());
+            objectMapping.SetMemberMappings(memberMappings);
             objectMapping.SetNamingConvention(_dsonNamingConvention);
+        }
+
+        private void ProcessShouldSerializeMethod(MemberMapping memberMapping)
+        {
+            string shouldSerializeMethodName = "ShouldSerialize" + memberMapping.MemberInfo.Name;
+            Type objectType = memberMapping.MemberInfo.DeclaringType;
+
+            MethodInfo shouldSerializeMethodInfo = objectType.GetMethod(shouldSerializeMethodName, new Type[] { });
+            if (shouldSerializeMethodInfo != null &&
+                shouldSerializeMethodInfo.IsPublic &&
+                shouldSerializeMethodInfo.ReturnType == typeof(bool))
+            {
+                // obj => ((TClass) obj).ShouldSerializeXyz()
+                ParameterExpression objParameter = Expression.Parameter(typeof(object), "obj");
+                Expression<Func<object, bool>> lambdaExpression = Expression.Lambda<Func<object, bool>>(
+                    Expression.Call(
+                        Expression.Convert(objParameter, objectType),
+                        shouldSerializeMethodInfo),
+                    objParameter);
+
+                memberMapping.SetShouldSerializeMethod(lambdaExpression.Compile());
+            }
         }
     }
 
