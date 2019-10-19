@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.EllipticCurve;
+using HeliumParty.RadixDLT.Hashing;
 using HeliumParty.RadixDLT.Particles;
 using HeliumParty.RadixDLT.Serialization;
+using HeliumParty.RadixDLT.Serialization.Dson;
 
 namespace HeliumParty.RadixDLT.Atoms
 {
@@ -23,6 +26,32 @@ namespace HeliumParty.RadixDLT.Atoms
         public Dictionary<string, ECSignature> Signatures { get; set; }
 
         public Dictionary<string, string> MetaData { get; set; }
+
+        [SerializationOutput(OutputMode.None)]
+        public RadixHash Hash
+        {
+            get
+            {
+                var manager = new DsonManager();
+                return RadixHash.From(manager.ToDson(this, OutputMode.Hash));
+            }
+        }
+
+        public Atom() : this(0L) { }
+
+        public Atom(long timestamp) : this(new List<ParticleGroup>(), timestamp) { }
+
+        public Atom(ParticleGroup particleGroup, long timestamp) : 
+            this(new List<ParticleGroup>{particleGroup}, timestamp) { }
+
+        public Atom(List<ParticleGroup> particleGroups, long timestamp) : 
+            this(particleGroups, new Dictionary<string, string> {{MetadataTimestampKey, timestamp.ToString()}}) { }
+
+        public Atom(List<ParticleGroup> particleGroups, Dictionary<string, string> metaData)
+        {
+            ParticleGroups = particleGroups ?? throw new ArgumentNullException(nameof(particleGroups));
+            MetaData = metaData ?? throw new ArgumentNullException(nameof(metaData));
+        }
 
         //public AID Id { get; set; }
     }
