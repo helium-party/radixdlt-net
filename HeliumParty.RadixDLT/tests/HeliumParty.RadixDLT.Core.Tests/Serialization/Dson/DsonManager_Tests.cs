@@ -8,6 +8,7 @@ using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.Core.Tests.Resources;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
+using HeliumParty.RadixDLT.Hashing;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Particles;
 using HeliumParty.RadixDLT.Particles.Types;
@@ -100,19 +101,16 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             deserializedAddr.ShouldBe(addr);
         }
 
-        //[Fact]
-        //public void UInt256_Parsing_Test()
-        //{
-        //    var numb = new UInt256();
-        //    numb.s0 = 1000;
+        [Fact]
+        public void UInt256_Parsing_Test()
+        {
+            var numb = (UInt256) new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10};
 
-        //    var parsed = _manager.ToDson(numb);
-        //    var numb2 = _manager.FromDson<UInt256>(parsed);
-        //    UInt256 x = new BigInteger();
-        //    var refrnc = _manager.FromDson<CborObject>(parsed);
+            var serialized = _manager.ToDson(numb);
+            var deserialized = _manager.FromDson<UInt256>(serialized);
 
-        //    refrnc.ShouldNotBeNull();
-        //}
+            deserialized.ShouldBe(numb);
+        }
 
         [Fact]
         public void RRI_Parsing_Test()
@@ -365,7 +363,41 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             cborownatom.ShouldNotBeNull();
         }
 
+        [Fact]
+        public void Atom_Hash_Test()
+        {
+            var address1 = new RadixAddress(10,  _manager.FromDson<ECKeyPair>(ResourceParser.GetResource("ECKeypair.dson")).PublicKey);
+            var address2 = new RadixAddress(10, _manager.FromDson<ECKeyPair>(ResourceParser.GetResource("ECKeypair.dson")).PublicKey);
+
+            var messageParticle = new MessageParticle(address1, address2, new Dictionary<string, string> { { "key", "value" } }, Bytes.FromBase64String("test"), 0, new HashSet<EUID>
+            {
+                address1.EUID, address2.EUID
+            });
+
+            var spunParticle = new SpunParticle(messageParticle, Spin.Up);
+            var spunParticle2 = new SpunParticle(messageParticle, Spin.Up);
+            var listbuilder = ImmutableList.CreateBuilder<SpunParticle>();
+            listbuilder.Add(spunParticle);
+            //listbuilder.Add(spunParticle2);
+
+            var mdatabuilder = ImmutableDictionary.CreateBuilder<string, string>();
+            //mdatabuilder.Add(new KeyValuePair<string, string>("TestKey", "TestValue"));
+
+            var group = new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
+
+            var metaData = new Dictionary<string, string>();
+            metaData.Add("b", "123");
+            metaData.Add("a", "123");
+
+            var atom = new Atom(group, 0L);
+
+            var hash = atom.Hash;
+            var dson = _manager.ToDson(atom);
+            var dsonString = Bytes.ToHexString(dson);
+
+            hash.ShouldNotBeNull();
+        }
+
         #endregion
     }
-
 }
