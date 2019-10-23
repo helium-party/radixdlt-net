@@ -113,5 +113,24 @@ namespace HeliumParty.RadixDLT
                 _atomErrorMappers
                 );
         }
+
+        public static RadixApplicationAPIBuilder DefaultBuilder()
+        {
+            return new RadixApplicationAPIBuilder()
+            .DefaultFeeMapper();
+   //         .AddStatelessParticlesMapper(
+   //             //SendMessageAction.class,
+			//	//new SendMessageToParticleGroupsMapper(ECKeyPairGenerator.newInstance()::generateKeyPair)
+			//)
+
+        }
+
+        public static RadixApplicationAPI Create(IBootstrapConfig config, IRadixIdentity identity)
+        {
+            if (identity == null)
+                throw new ArgumentException($"{nameof(Identity)} should not be null");
+
+            throw new NotImplementedException();
+        }
     }    
 }
