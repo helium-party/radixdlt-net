@@ -12,6 +12,6 @@ namespace HeliumParty.RadixDLT.Mappers
     public interface IStatelessActionToParticleGroupsMapper<T>
         where T : IAction
     {
-        List<ParticleGroup> MapToParticleGroup(T action);
+        List<ParticleGroup> MapToParticleGroups(T action);
     }
 }
