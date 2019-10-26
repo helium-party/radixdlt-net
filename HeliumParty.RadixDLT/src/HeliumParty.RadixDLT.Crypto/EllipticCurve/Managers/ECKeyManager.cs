@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HeliumParty.DependencyInjection;
@@ -252,14 +253,24 @@ namespace HeliumParty.RadixDLT.EllipticCurve.Managers
             return domainParams.Curve.DecodePoint(pubKey);
         }
         
-        public byte[] Decrypt(ECKeyPair keyPair, EncryptedPrivateKey sharedKey, byte[] data)
+        public virtual ECPrivateKey DecryptSharedKey(ECPrivateKey privateKey, EncryptedPrivateKey sharedKey)
         {
-            if (keyPair.PrivateKey == null)
-                throw new ArgumentException($"{nameof(keyPair)} does not have a private key");
+            if (privateKey == null)
+                throw new ArgumentException($"{nameof(privateKey)} cannot be null");
 
-            byte[] privatekey = Decrypt(keyPair.PrivateKey,sharedKey.Base64Array);
+            byte[] sharedprivateKey = Decrypt(privateKey,sharedKey.Base64Array);
 
-            return Decrypt(new ECPrivateKey(privatekey), data);
+            return new ECPrivateKey(sharedprivateKey);
+        }
+
+        public virtual byte[] DecryptWithSharedKey(ECPrivateKey privateKey , EncryptedPrivateKey sharedKey, byte[] data)
+        {
+            return Decrypt(DecryptSharedKey(privateKey, sharedKey), data);
+        }
+
+        public virtual EncryptedPrivateKey CreateSharedKey(ECPublicKey foreignPubKey, ECPrivateKey keyToShare)
+        {
+            return new EncryptedPrivateKey(Encrypt(foreignPubKey, keyToShare.Base64Array));
         }
     }
 }

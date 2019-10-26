@@ -1,4 +1,5 @@
 ﻿using Org.BouncyCastle.Math.EC;
+using System.Collections.Generic;
 
 namespace HeliumParty.RadixDLT.EllipticCurve.Managers
 {
@@ -54,13 +55,29 @@ namespace HeliumParty.RadixDLT.EllipticCurve.Managers
         byte[] Encrypt(ECPublicKey publicKey, byte[] data);
 
         /// <summary>
-        ///     Decrypt data that is encrypted by a shared private key. 
-        ///     That shared private key is encrypted by to provided keyPairs privatekey
+        ///     Decryption of privatekey that has been encrypted by the public key of the given privatekey
         /// </summary>
-        /// <param name="keyPair"></param>
+        /// <param name="privateKey"></param>
+        /// <param name="sharedKey"></param>
+        /// <returns></returns>
+        ECPrivateKey DecryptSharedKey(ECPrivateKey privateKey, EncryptedPrivateKey sharedKey);
+
+        /// <summary>
+        ///     Decrypt data that has been encrypted with a shared key
+        /// </summary>
+        /// <param name="privateKey"></param>
         /// <param name="sharedKey"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        byte[] Decrypt(ECKeyPair keyPair, EncryptedPrivateKey sharedKey, byte[] data);
+        byte[] DecryptWithSharedKey(ECPrivateKey privateKey, EncryptedPrivateKey sharedKey, byte[] data);
+
+        /// <summary>
+        ///     Create a sharable private key by encrypting a privatekey with the receivers public key
+        /// </summary>
+        /// <param name="foreignPubKey"></param>
+        /// <param name="keyToShare"></param>
+        /// <returns></returns>
+        EncryptedPrivateKey CreateSharedKey(ECPublicKey foreignPubKey, ECPrivateKey keyToShare);
+
     }
 }
