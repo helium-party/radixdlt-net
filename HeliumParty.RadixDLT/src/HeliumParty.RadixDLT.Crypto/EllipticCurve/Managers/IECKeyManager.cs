@@ -52,5 +52,15 @@ namespace HeliumParty.RadixDLT.EllipticCurve.Managers
         byte[] Decrypt(ECPrivateKey privateKey, byte[] data);
 
         byte[] Encrypt(ECPublicKey publicKey, byte[] data);
+
+        /// <summary>
+        ///     Decrypt data that is encrypted by a shared private key. 
+        ///     That shared private key is encrypted by to provided keyPairs privatekey
+        /// </summary>
+        /// <param name="keyPair"></param>
+        /// <param name="sharedKey"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        byte[] Decrypt(ECKeyPair keyPair, EncryptedPrivateKey sharedKey, byte[] data);
     }
 }

@@ -251,5 +251,15 @@ namespace HeliumParty.RadixDLT.EllipticCurve.Managers
 
             return domainParams.Curve.DecodePoint(pubKey);
         }
+        
+        public byte[] Decrypt(ECKeyPair keyPair, EncryptedPrivateKey sharedKey, byte[] data)
+        {
+            if (keyPair.PrivateKey == null)
+                throw new ArgumentException($"{nameof(keyPair)} does not have a private key");
+
+            byte[] privatekey = Decrypt(keyPair.PrivateKey,sharedKey.Base64Array);
+
+            return Decrypt(new ECPrivateKey(privatekey), data);
+        }
     }
 }
