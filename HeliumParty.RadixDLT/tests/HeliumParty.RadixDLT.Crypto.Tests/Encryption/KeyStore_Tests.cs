@@ -56,7 +56,7 @@ namespace HeliumParty.RadixDLT.Crypto.Tests.Encryption
         public void KeyStore_Should_GenerateValidPrivKey()
         {
             //act
-            var privKey = PrivateKeyEncrypter.Decrypt(KEYSTORE_PASSPHRASE, _store);
+            var privKey = PrivateKeyEncryptor.Decrypt(KEYSTORE_PASSPHRASE, _store);
 
             // assert
             privKey.ShouldNotBeNull();
@@ -70,8 +70,8 @@ namespace HeliumParty.RadixDLT.Crypto.Tests.Encryption
             var privKey = new ECPrivateKey(RadixConstants.StandardEncoding.GetBytes(VALID_PRIVKEY_INBASE64));
 
             //act
-            var store = PrivateKeyEncrypter.Encrypt(KEYSTORE_PASSPHRASE, privKey);
-            var decryptedKey = PrivateKeyEncrypter.Decrypt(KEYSTORE_PASSPHRASE, store);
+            var store = PrivateKeyEncryptor.Encrypt(KEYSTORE_PASSPHRASE, privKey);
+            var decryptedKey = PrivateKeyEncryptor.Decrypt(KEYSTORE_PASSPHRASE, store);
 
             //assert
             decryptedKey.ShouldNotBeNull();

@@ -13,7 +13,7 @@ using System.Text;
 
 namespace HeliumParty.RadixDLT.Encryption
 {
-    public static class PrivateKeyEncrypter
+    public static class PrivateKeyEncryptor
     {
         public static ECPrivateKey Decrypt(string password, KeyStore keystore)
         {

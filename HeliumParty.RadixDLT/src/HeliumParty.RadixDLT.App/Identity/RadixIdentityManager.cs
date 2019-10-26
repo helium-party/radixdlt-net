@@ -113,7 +113,7 @@ namespace HeliumParty.RadixDLT.Identity
             else
             {
                 var keyPair = _keyManager.GetRandomKeyPair();
-                var store = PrivateKeyEncrypter.Encrypt(password, keyPair.PrivateKey);
+                var store = PrivateKeyEncryptor.Encrypt(password, keyPair.PrivateKey);
                 var jsonStr = JsonConvert.SerializeObject(store, Formatting.Indented);
 
                 File.WriteAllText(file.FullName, jsonStr);
@@ -136,7 +136,7 @@ namespace HeliumParty.RadixDLT.Identity
 
         public virtual IRadixIdentity LoadKeyStore(KeyStore store, string password)
         {
-            var privKey = PrivateKeyEncrypter.Decrypt(password, store);
+            var privKey = PrivateKeyEncryptor.Decrypt(password, store);
             var keypair = _keyManager.GetKeyPair(privKey);
 
             return new LocalRadixIdentity(_keyManager,_euidManager, _dsonManager, keypair);
@@ -146,7 +146,7 @@ namespace HeliumParty.RadixDLT.Identity
         {
             var pair = localIdentity.KeyPair;
 
-            return PrivateKeyEncrypter.Encrypt(password, pair.PrivateKey);
+            return PrivateKeyEncryptor.Encrypt(password, pair.PrivateKey);
         }
 
     }
