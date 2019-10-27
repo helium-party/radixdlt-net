@@ -81,7 +81,7 @@ namespace HeliumParty.RadixDLT
             where T : IAction
         {
             _requiredStateMappers.Add(typeof(T), a => new HashSet<ShardedParticleStateId>());
-            _actionMappers.Add(typeof(T), (a, p) => mapper.MapToParticleGroup((T)a));
+            _actionMappers.Add(typeof(T), (a, p) => mapper.MapToParticleGroups((T)a));
             return this;
         }
 
