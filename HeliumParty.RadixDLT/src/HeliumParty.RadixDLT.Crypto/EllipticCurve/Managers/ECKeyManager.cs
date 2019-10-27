@@ -270,7 +270,7 @@ namespace HeliumParty.RadixDLT.EllipticCurve.Managers
 
         public virtual EncryptedPrivateKey CreateSharedKey(ECPublicKey foreignPubKey, ECPrivateKey keyToShare)
         {
-            return new EncryptedPrivateKey(Encrypt(foreignPubKey, keyToShare.Base64Array));
+            return new EncryptedPrivateKey(Encrypt(foreignPubKey, keyToShare.Base64Array),foreignPubKey);
         }
     }
 }
