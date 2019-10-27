@@ -17,7 +17,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         private readonly IEUIDManager _idManager;
 
-        public MessageParticleBuilder Data(byte[] data)
+        public MessageParticleBuilder PayLoad(byte[] data)
         {
             _data = data;
             return this;
