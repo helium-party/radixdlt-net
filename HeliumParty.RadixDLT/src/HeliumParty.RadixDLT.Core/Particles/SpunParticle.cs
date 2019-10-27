@@ -18,5 +18,15 @@ namespace HeliumParty.RadixDLT.Particles
             Particle = particle;
             Spin = spin;
         }
+
+        public static SpunParticle Up (Particle p)
+        {
+            return new SpunParticle(p, Spin.Up);
+        }
+
+        public static SpunParticle Down(Particle p)
+        {
+            return new SpunParticle(p, Spin.Down);
+        }
     }
 }
