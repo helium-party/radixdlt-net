@@ -14,9 +14,19 @@ namespace HeliumParty.RadixDLT.Atoms
 
         public ParticleGroup() { }
 
-        public ParticleGroup(ImmutableList<SpunParticle> particles, ImmutableDictionary<string, string> metaData)
+        public ParticleGroup(ImmutableList<SpunParticle> particles)
         {
             Particles = particles;
+        }
+
+        public ParticleGroup(IEnumerable<SpunParticle> particles)
+        {
+            Particles = ImmutableList.Create<SpunParticle>(particles.ToArray());
+        }
+
+        public ParticleGroup(ImmutableList<SpunParticle> particles, ImmutableDictionary<string, string> metaData)
+            : this (particles)
+        {
             MetaData = metaData;
         }
 
