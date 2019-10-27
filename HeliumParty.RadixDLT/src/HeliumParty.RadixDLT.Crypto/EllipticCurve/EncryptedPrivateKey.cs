@@ -8,14 +8,16 @@ namespace HeliumParty.RadixDLT.EllipticCurve
     public class EncryptedPrivateKey : IBase64Encoded
     {
         private readonly byte[] _encryptedKey;
+        public ECPublicKey EncryptedBy { get; }
 
-        public EncryptedPrivateKey(byte[] encryptedKey)
+        public EncryptedPrivateKey(byte[] encryptedKey, ECPublicKey encryptedBy)
         {
             _encryptedKey = encryptedKey;
+            EncryptedBy = encryptedBy;
         }
 
-        public EncryptedPrivateKey(string base64Encryptedkey)
-            : this (Convert.FromBase64String(base64Encryptedkey))
+        public EncryptedPrivateKey(string base64Encryptedkey, ECPublicKey encryptedBy)
+            : this (Convert.FromBase64String(base64Encryptedkey), encryptedBy)
         {
         }
 
