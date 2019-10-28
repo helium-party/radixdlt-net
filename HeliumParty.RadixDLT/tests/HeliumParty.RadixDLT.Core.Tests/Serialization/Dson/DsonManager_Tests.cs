@@ -105,8 +105,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         {
             var numb = (UInt256) new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10};
 
-            var serialized = _manager.ToDson(numb);
-            var deserialized = _manager.FromDson<UInt256>(serialized);
+            var serialized = _dsonmanager.ToDson(numb);
+            var deserialized = _dsonmanager.FromDson<UInt256>(serialized);
 
             deserialized.ShouldBe(numb);
         }
@@ -365,12 +365,13 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         [Fact]
         public void Atom_Hash_Test()
         {
-            var address1 = new RadixAddress(10,  _manager.FromDson<ECKeyPair>(ResourceParser.GetResource("ECKeypair.dson")).PublicKey);
-            var address2 = new RadixAddress(10, _manager.FromDson<ECKeyPair>(ResourceParser.GetResource("ECKeypair.dson")).PublicKey);
+            var address1 = new RadixAddress(10, _dsonmanager.FromDson<ECKeyPair>(ResourceParser.GetResource("ECKeypair.dson")).PublicKey);
+            var address2 = new RadixAddress(10, _dsonmanager.FromDson<ECKeyPair>(ResourceParser.GetResource("ECKeypair.dson")).PublicKey);
 
             var messageParticle = new MessageParticle(address1, address2, new Dictionary<string, string> { { "key", "value" } }, Bytes.FromBase64String("test"), 0, new HashSet<EUID>
             {
-                address1.EUID, address2.EUID
+                _euidmanager.GetEUID(address1),
+                _euidmanager.GetEUID(address2)
             });
 
             var spunParticle = new SpunParticle(messageParticle, Spin.Up);
@@ -391,7 +392,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var atom = new Atom(group, 0L);
 
             var hash = atom.Hash;
-            var dson = _manager.ToDson(atom);
+            var dson = _dsonmanager.ToDson(atom);
             var dsonString = Bytes.ToHexString(dson);
 
             hash.ShouldNotBeNull();
