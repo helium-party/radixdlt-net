@@ -3,7 +3,6 @@ using Dahomey.Cbor.Serialization.Conventions;
 using Dahomey.Cbor.Serialization.Converters.Mappings;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -23,12 +22,13 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
         public void Apply<T>(SerializationRegistry registry, ObjectMapping<T> objectMapping) where T : class
         {
+            // TODO add fields?
             var memberMappings = new List<MemberMapping>();
 
             _defaultObjectMappingConvention.Apply<T>(registry, objectMapping);
 
             objectMapping.ClearMemberMappings();
-            var props = typeof(T).GetProperties();
+            var props = typeof(T).GetProperties().Concat(typeof(T).GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)).ToArray();
             foreach (var p in props)
             {
                 var shouldSerialize = true;
@@ -124,7 +124,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 }
             }
 
-            objectMapping.SetMemberMappings(objectMapping.MemberMappings.OrderBy(m => m.MemberInfo.Name).ToList());
+            //objectMapping.SetMemberMappings(objectMapping.MemberMappings.OrderBy(m => m.MemberInfo.Name).ToList());
             objectMapping.SetMemberMappings(memberMappings);
             objectMapping.SetNamingConvention(_dsonNamingConvention);
         }
