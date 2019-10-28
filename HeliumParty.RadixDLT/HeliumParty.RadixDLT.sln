@@ -9,17 +9,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{731E21F1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Utils", "src\HeliumParty.RadixDLT.Utils\HeliumParty.RadixDLT.Utils.csproj", "{3C885EA3-CC24-4B8F-AD08-EDD67FF7F23A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Json", "src\HeliumParty.RadixDLT.Json\HeliumParty.RadixDLT.Json.csproj", "{88EA620F-72A8-4041-833D-BDB5F09C8BA8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Dson", "src\HeliumParty.RadixDLT.Dson\HeliumParty.RadixDLT.Dson.csproj", "{B8EE655B-B503-48D0-BCC4-BD0C3EB39A1E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Crypto", "src\HeliumParty.RadixDLT.Crypto\HeliumParty.RadixDLT.Crypto.csproj", "{F8AEE9A3-E1DC-468A-AD8F-2CE087A5B630}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Core", "src\HeliumParty.RadixDLT.Core\HeliumParty.RadixDLT.Core.csproj", "{6679C65B-FCD4-4133-A584-40E72D3A707A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Tests", "tests\HeliumParty.RadixDLT.Tests\HeliumParty.RadixDLT.Tests.csproj", "{C3DAE492-BC43-4362-930A-608BD8E9000B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeliumParty.RadixDLT.Network", "src\HeliumParty.RadixDLT.Network\HeliumParty.RadixDLT.Network.csproj", "{44B9E2CA-2081-4376-AB5D-62D8F58F9F9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Network", "src\HeliumParty.RadixDLT.Network\HeliumParty.RadixDLT.Network.csproj", "{44B9E2CA-2081-4376-AB5D-62D8F58F9F9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,14 +27,6 @@ Global
 		{3C885EA3-CC24-4B8F-AD08-EDD67FF7F23A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C885EA3-CC24-4B8F-AD08-EDD67FF7F23A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C885EA3-CC24-4B8F-AD08-EDD67FF7F23A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88EA620F-72A8-4041-833D-BDB5F09C8BA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88EA620F-72A8-4041-833D-BDB5F09C8BA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88EA620F-72A8-4041-833D-BDB5F09C8BA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88EA620F-72A8-4041-833D-BDB5F09C8BA8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8EE655B-B503-48D0-BCC4-BD0C3EB39A1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8EE655B-B503-48D0-BCC4-BD0C3EB39A1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8EE655B-B503-48D0-BCC4-BD0C3EB39A1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8EE655B-B503-48D0-BCC4-BD0C3EB39A1E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F8AEE9A3-E1DC-468A-AD8F-2CE087A5B630}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F8AEE9A3-E1DC-468A-AD8F-2CE087A5B630}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8AEE9A3-E1DC-468A-AD8F-2CE087A5B630}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -61,8 +49,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3C885EA3-CC24-4B8F-AD08-EDD67FF7F23A} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
-		{88EA620F-72A8-4041-833D-BDB5F09C8BA8} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
-		{B8EE655B-B503-48D0-BCC4-BD0C3EB39A1E} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
 		{F8AEE9A3-E1DC-468A-AD8F-2CE087A5B630} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
 		{6679C65B-FCD4-4133-A584-40E72D3A707A} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
 		{C3DAE492-BC43-4362-930A-608BD8E9000B} = {731E21F1-EEEE-49A4-BF31-3797E30A4EB3}

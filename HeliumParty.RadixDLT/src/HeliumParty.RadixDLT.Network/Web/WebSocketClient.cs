@@ -1,9 +1,10 @@
 ﻿using HeliumParty.RadixDLT.Log;
 using System;
 using System.Linq;
-using System.Reactive;
+using System.Net.Security;
+using System.Net.Sockets;
 using System.Reactive.Linq;
-using reactive_subjects = System.Reactive.Subjects;
+using System.Reactive.Subjects;
 using websockets = System.Net.WebSockets;
 
 namespace HeliumParty.RadixDLT.Web
@@ -26,18 +27,26 @@ namespace HeliumParty.RadixDLT.Web
 
         private readonly object _Lock = new object();
 
-        public reactive_subjects::BehaviorSubject<WebSocketStatus> State { get; private set; } =
-            new reactive_subjects::BehaviorSubject<WebSocketStatus>(WebSocketStatus.Disconnected);
+        /// <summary>
+        /// The current connection state of the websocket client
+        /// </summary>
+        public BehaviorSubject<WebSocketStatus> State { get; private set; } =
+            new BehaviorSubject<WebSocketStatus>(WebSocketStatus.Disconnected);
 
-        private readonly Func<websockets::WebSocket> _WebSocketFactory;
+        /// <summary>
+        /// The actual web socket the client uses
+        /// </summary>
         private websockets::WebSocket _WebSocket;
 
+        private RadixNode _Node;
+        private TcpClient _TcpClient;
+        private SslStream _SslStream;
 
-        public WebSocketClient(Func<websockets::WebSocket> webSocketFactory)
+        public WebSocketClient(RadixNode node)
         {
-            _WebSocketFactory = webSocketFactory;
-
-            // TODO: Java lib wants this disposed, lets see for their implementation
+            _Node = node ?? throw new System.ArgumentNullException(nameof(node));
+            
+            // TODO: State is disposable, however it isn't implemented yet in Java.
             State
                 .Select(state => state.Equals(WebSocketStatus.Failed))
                 .Throttle(TimeSpan.FromMinutes(1))

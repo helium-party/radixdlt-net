@@ -13,9 +13,22 @@ namespace HeliumParty.RadixDLT
 
         private readonly object _Lock = new object();
         
+        /// <summary>
+        /// Returns a unique websocket for a given node. Will never return null
+        /// </summary>
+        /// <param name="node">A radix node to get the websocket client for</param>
+        /// <returns>A websocket client for the specified node</returns>
         public WebSocketClient GetOrCreate(RadixNode node)
         {
-            throw new System.NotImplementedException();
+            lock (_Lock)
+            {
+                if (_WebSockets.ContainsKey(node))
+                    return _WebSockets[node];
+
+                var wsc = new Web.WebSocketClient(node);
+                _WebSockets.Add(node, wsc);
+                return wsc;
+            }
         }
 
         public System.IObservable<RadixNode> GetNewNodes() => _NewNodes;

@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HeliumParty.RadixDLT.Json\HeliumParty.RadixDLT.Json.csproj" />
+    <ProjectReference Include="..\HeliumParty.RadixDLT.Utils\HeliumParty.RadixDLT.Utils.csproj" />
   </ItemGroup>
 
 </Project>

@@ -71,7 +71,7 @@ namespace HeliumParty.RadixDLT.Epics
                             })
                             .Where(addNode => addNode != null);
                         }))
-                .SelectMany(i => i);   // transform the list of actions back into our usual 'IObservable<IRadixNodeAction>' - observable
+                .SelectMany(i => i);   // transform the IEnumerable of actions back into our usual 'IObservable<IRadixNodeAction>' - observable
 
             return Observable.Merge(
                 addSeeds,
