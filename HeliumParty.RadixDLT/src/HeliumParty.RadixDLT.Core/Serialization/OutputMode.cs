@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HeliumParty.RadixDLT.Serialization
+﻿namespace HeliumParty.RadixDLT.Serialization
 {
     /// <summary>
     /// Specifies the OutputMode, All is the default

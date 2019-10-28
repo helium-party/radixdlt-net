@@ -7,7 +7,6 @@ using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.Core.Tests.Resources;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
-using HeliumParty.RadixDLT.Hashing;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Particles;
 using HeliumParty.RadixDLT.Particles.Types;

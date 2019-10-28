@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace HeliumParty.RadixDLT.Serialization
 {
@@ -11,6 +10,8 @@ namespace HeliumParty.RadixDLT.Serialization
 
         public SerializationOutputAttribute(params OutputMode[] validOn)
         {
+            if (validOn.Contains(OutputMode.None) && validOn.Length != 1)
+                throw new InvalidOperationException("If OutputMode.None is used, there can not be another OutputMode");
             ValidOn = validOn;
         }
     }
