@@ -32,7 +32,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             _euidmanager = IocContainer.GetService<IEUIDManager>();
         }
 
-
         #region mapping convention
 
         class TestClass
@@ -41,7 +40,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             public int IntValue { get; set; }
             [SerializationOutput(OutputMode.Hash)]
             public int IntSecondValue { get; set; }
-            [SerializationOutput(OutputMode.Never)]
+            [SerializationOutput(OutputMode.None)]
             public string HiddenValue { get; set; }
             public string DummyValue { get; set; }
             public byte[] DummyBin { get; set; }
@@ -54,7 +53,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var o = new TestClass() {
                 IntValue = 300 , IntSecondValue = 20, HiddenValue="secret", DummyValue="known",
                 DummyBin = Bytes.FromHexString("0123456789abcdef")
-        };
+            };
 
             //act
             var dson = _dsonmanager.ToDson(o);            
@@ -67,7 +66,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             o2.DummyValue.ShouldBe(o.DummyValue);
             o2.DummyBin.ShouldBe(Bytes.FromHexString("0123456789abcdef"));
         }
-
 
         #endregion
 
@@ -102,22 +100,19 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             deserializedAddr.ShouldBe(addr);
         }
 
-        //[Fact]
-        //public void UInt256_Parsing_Test()
-        //{
-        //    var numb = new UInt256();
-        //    numb.s0 = 1000;
+        [Fact]
+        public void UInt256_Parsing_Test()
+        {
+            var numb = (UInt256) new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10};
 
-        //    var parsed = _manager.ToDson(numb);
-        //    var numb2 = _manager.FromDson<UInt256>(parsed);
-        //    UInt256 x = new BigInteger();
-        //    var refrnc = _manager.FromDson<CborObject>(parsed);
+            var serialized = _dsonmanager.ToDson(numb);
+            var deserialized = _dsonmanager.FromDson<UInt256>(serialized);
 
-        //    refrnc.ShouldNotBeNull();
-        //}
+            deserialized.ShouldBe(numb);
+        }
 
         [Fact]
-        public void AID_Parsing_Test()
+        public void RRI_Parsing_Test()
         {
             var rri = new RRI(new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc"), "uniqueString");
             var serializedRri = _dsonmanager.ToDson(rri);
@@ -159,8 +154,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         #endregion
 
         #region Core Layer
-
-
 
         [Fact]
         public void MessageParticle_Parsing_Test()
@@ -221,7 +214,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         [Fact]
         public void ParticleList_Parsing_Test()
         {
-            //arrange
             //arrange
             var particles = new List<Particle>();
             var eCKeyManager = new ECKeyManager();
@@ -369,7 +361,43 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             cboratom.ShouldNotBeNull();
             cborownatom.ShouldNotBeNull();
         }
+
+        [Fact]
+        public void Atom_Hash_Test()
+        {
+            var address1 = new RadixAddress(10, _dsonmanager.FromDson<ECKeyPair>(ResourceParser.GetResource("ECKeypair.dson")).PublicKey);
+            var address2 = new RadixAddress(10, _dsonmanager.FromDson<ECKeyPair>(ResourceParser.GetResource("ECKeypair.dson")).PublicKey);
+
+            var messageParticle = new MessageParticle(address1, address2, new Dictionary<string, string> { { "key", "value" } }, Bytes.FromBase64String("test"), 0, new HashSet<EUID>
+            {
+                _euidmanager.GetEUID(address1),
+                _euidmanager.GetEUID(address2)
+            });
+
+            var spunParticle = new SpunParticle(messageParticle, Spin.Up);
+            var spunParticle2 = new SpunParticle(messageParticle, Spin.Up);
+            var listbuilder = ImmutableList.CreateBuilder<SpunParticle>();
+            listbuilder.Add(spunParticle);
+            //listbuilder.Add(spunParticle2);
+
+            var mdatabuilder = ImmutableDictionary.CreateBuilder<string, string>();
+            //mdatabuilder.Add(new KeyValuePair<string, string>("TestKey", "TestValue"));
+
+            var group = new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
+
+            var metaData = new Dictionary<string, string>();
+            metaData.Add("b", "123");
+            metaData.Add("a", "123");
+
+            var atom = new Atom(group, 0L);
+
+            var hash = atom.Hash;
+            var dson = _dsonmanager.ToDson(atom);
+            var dsonString = Bytes.ToHexString(dson);
+
+            hash.ShouldNotBeNull();
+        }
+
         #endregion
     }
-
 }

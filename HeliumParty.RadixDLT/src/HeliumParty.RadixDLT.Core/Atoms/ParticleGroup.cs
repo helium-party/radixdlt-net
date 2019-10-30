@@ -12,6 +12,13 @@ namespace HeliumParty.RadixDLT.Atoms
         public ImmutableList<SpunParticle> Particles { get; protected set; }
         public ImmutableDictionary<string, string> MetaData { get; protected set; }
 
+        public bool ShouldSerializeMetaData()
+        {
+            if (MetaData == null) return false;
+            if (MetaData.IsEmpty) return false;
+            return true;
+        }
+
         public ParticleGroup() { }
 
         public ParticleGroup(ImmutableList<SpunParticle> particles)
