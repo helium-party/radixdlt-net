@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading.Tasks;
 using Dahomey.Cbor.ObjectModel;
 using HeliumParty.BaseTest;
 using HeliumParty.RadixDLT.Atoms;
@@ -72,19 +71,19 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         #region Base Types
 
         [Fact]
-        public async Task Byte_Parsing_Test()
+        public void Byte_Parsing_Test()
         {
             var bytes = Bytes.FromHexString("0123456789abcdef");
-            var serializedBytes = await _dsonmanager.ToDsonAsync(bytes, OutputMode.All);
+            var serializedBytes = _dsonmanager.ToDson(bytes, OutputMode.All);
             var deserializedBytes = _dsonmanager.FromDson<byte[]>(serializedBytes, OutputMode.All);
             deserializedBytes.ShouldBe(bytes);
         }
 
         [Fact]
-        public async Task EUID_Parsing_Test()
+        public void EUID_Parsing_Test()
         {
             var euid = new EUID("1e340377ac58b9008ad12e1f2bae015d");
-            var serializedEuid = await _dsonmanager.ToDsonAsync(euid, OutputMode.All);
+            var serializedEuid = _dsonmanager.ToDson(euid, OutputMode.All);
             var deserializedEuid = _dsonmanager.FromDson<EUID>(serializedEuid, OutputMode.All);
             deserializedEuid.ShouldBe(euid);
         }
@@ -259,14 +258,14 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         }
 
         [Fact]
-        public async Task MessageParticle_Deserializing_Test()
+        public void MessageParticle_Deserializing_Test()
         {
             //arrange
             var data = ResourceParser.GetResource("messageParticle3.dson");
 
             //act
-            var cbor = await _dsonmanager.FromDsonAsync<CborObject>(data);
-            var mp = (MessageParticle)await _dsonmanager.FromDsonAsync<Particle>(data);            
+            var cbor = _dsonmanager.FromDson<CborObject>(data);
+            var mp = (MessageParticle) _dsonmanager.FromDson<Particle>(data);            
 
             //assert
             mp.ShouldNotBeNull();
@@ -277,7 +276,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         }
 
         [Fact]
-        public async Task ParticleGroup_Parsing_Test()
+        public void ParticleGroup_Parsing_Test()
         {
             //arrange
             var eCKeyManager = new ECKeyManager();
@@ -300,8 +299,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
                 new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
 
             //act
-            var dson = await _dsonmanager.ToDsonAsync(group, OutputMode.All);
-            var deserialized = await _dsonmanager.FromDsonAsync<ParticleGroup>(dson, OutputMode.All);
+            var dson = _dsonmanager.ToDson(group, OutputMode.All);
+            var deserialized = _dsonmanager.FromDson<ParticleGroup>(dson, OutputMode.All);
 
             //assert
             deserialized.ShouldNotBeNull();
@@ -310,7 +309,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         }
 
         [Fact]
-        public async Task Atom_Deserializing_Test()
+        public void Atom_Deserializing_Test()
         {
             //arrange
             //create own atom
@@ -332,11 +331,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var mdatabuilder = ImmutableDictionary.CreateBuilder<string, string>();
             mdatabuilder.Add(new KeyValuePair<string, string>("Test", "Test"));
 
-            var group =
-                new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
-
-
-
+            var group = new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
 
             var metaData = new Dictionary<string, string>();
             metaData.Add("work", "please");
@@ -352,8 +347,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             //act
             var cdsonatom = _dsonmanager.ToDson(cAtom);
 
-            var cboratom = await _dsonmanager.FromDsonAsync<Atom>(data);
-            var cborownatom = await _dsonmanager.FromDsonAsync<Atom>(cdsonatom);
+            var cboratom = _dsonmanager.FromDson<Atom>(data);
+            var cborownatom = _dsonmanager.FromDson<Atom>(cdsonatom);
             //var cbor = CBORObject.DecodeFromBytes(data, CBOREncodeOptions.Default);
 
 
