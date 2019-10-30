@@ -10,6 +10,8 @@ using HeliumParty.RadixDLT.Actions;
 using HeliumParty.RadixDLT.Particles;
 using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.Universe;
+using HeliumParty.RadixDLT.EllipticCurve.Managers;
+using HeliumParty.RadixDLT.Identity.Managers;
 
 namespace HeliumParty.RadixDLT
 {
@@ -24,8 +26,13 @@ namespace HeliumParty.RadixDLT
         private ImmutableDictionary<Type, Func<IAction, HashSet<ShardedParticleStateId>>>.Builder _requiredStateMappers;
         private ImmutableDictionary<Type, Func<IAction, IEnumerable<Particle>, List<ParticleGroup>>>.Builder _actionMappers;
 
-        public RadixApplicationAPIBuilder()
-        {            
+        private readonly IECKeyManager _keyManager;
+        private readonly IEUIDManager _euidManager;
+
+        public RadixApplicationAPIBuilder(IECKeyManager keyManager, IEUIDManager euidManager)
+        {
+            _keyManager = keyManager;
+            _euidManager = euidManager;
         }
 
         public RadixApplicationAPIBuilder Bootstrap(IBootstrapConfig config)
@@ -114,14 +121,11 @@ namespace HeliumParty.RadixDLT
                 );
         }
 
-        public static RadixApplicationAPIBuilder DefaultBuilder()
+        public RadixApplicationAPIBuilder DefaultBuilder()
         {
-            return new RadixApplicationAPIBuilder()
-            .DefaultFeeMapper();
-   //         .AddStatelessParticlesMapper(
-   //             //SendMessageAction.class,
-			//	//new SendMessageToParticleGroupsMapper(ECKeyPairGenerator.newInstance()::generateKeyPair)
-			//)
+            
+            return DefaultFeeMapper()
+            .AddStatelessParticlesMapper(new SendMessageToParticleGroupsMapper(_keyManager, _euidManager));
 
         }
 
