@@ -378,10 +378,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var spunParticle2 = new SpunParticle(messageParticle, Spin.Up);
             var listbuilder = ImmutableList.CreateBuilder<SpunParticle>();
             listbuilder.Add(spunParticle);
-            //listbuilder.Add(spunParticle2);
 
             var mdatabuilder = ImmutableDictionary.CreateBuilder<string, string>();
-            //mdatabuilder.Add(new KeyValuePair<string, string>("TestKey", "TestValue"));
 
             var group = new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
 
@@ -391,11 +389,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             var atom = new Atom(group, 0L);
 
-            var hash = atom.Hash;
-            var dson = _dsonmanager.ToDson(atom);
-            var dsonString = Bytes.ToHexString(dson);
-
-            hash.ShouldNotBeNull();
+            // this hash has been produced with the java implementation
+            atom.Hash.ToHexString().ShouldBe("33c09efcd8ea0d04823ebe5087f68b9ad586bb661be71a7a793f94c15fd699d3");
         }
 
         #endregion
