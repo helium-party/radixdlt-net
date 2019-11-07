@@ -17,12 +17,13 @@ namespace HeliumParty.RadixDLT.Actions
     {
         public string Name { get; protected set; }
         public RRI RRI { get; protected set; }
+        public string Description { get; protected set; }
         public string IconUrl { get; set; }
         public BigDecimal InitialSupply { get; protected set; }
         public BigDecimal Granularity { get; protected set; }
         public TokenSupplyType TokenSupplyType { get; protected set; }
 
-        public CreateTokenAction(string name, RRI rRI, string iconUrl, BigDecimal initialSupply, BigDecimal granularity, TokenSupplyType tokenSupplyType)
+        public CreateTokenAction(string name, RRI rRI, string description,string iconUrl, BigDecimal initialSupply, BigDecimal granularity, TokenSupplyType tokenSupplyType)
         {
             if (initialSupply < 0)
                 throw new ArgumentException(nameof(initialSupply) + " cannot be less then 0");
@@ -34,6 +35,7 @@ namespace HeliumParty.RadixDLT.Actions
             RRI = rRI;
             IconUrl = iconUrl;
             InitialSupply = initialSupply;
+            Description = description;
             Granularity = granularity;
             TokenSupplyType = tokenSupplyType;
         }
