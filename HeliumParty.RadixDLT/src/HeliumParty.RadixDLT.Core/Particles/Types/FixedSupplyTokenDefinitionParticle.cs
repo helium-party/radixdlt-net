@@ -20,7 +20,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         }
 
-        public FixedSupplyTokenDefinitionParticle(RRI rRI, string name, string description, UInt256 granularity, string iconUrl, UInt256 supply)            
+        public FixedSupplyTokenDefinitionParticle(RRI rRI, string name, string description,  UInt256 supply, UInt256 granularity, string iconUrl)            
         {
             RRI = rRI;
             Name = name;
@@ -28,6 +28,11 @@ namespace HeliumParty.RadixDLT.Particles.Types
             Granularity = granularity;
             IconUrl = iconUrl;
             Supply = supply;
+        }
+
+        public FixedSupplyTokenDefinitionParticle(RadixAddress address, string symbol, string name, string description, UInt256 supply, UInt256 granularity, string iconUrl)
+            : this (new RRI(address,symbol),name,description, supply, granularity,iconUrl)
+        {            
         }
     }
 }
