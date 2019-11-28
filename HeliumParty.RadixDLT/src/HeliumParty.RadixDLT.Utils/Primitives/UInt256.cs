@@ -60,11 +60,7 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public static implicit operator UInt256(BigInteger bigint)
         {
-            var arrint = bigint.ToByteArray();
-            var result = new byte[32];
-
-            Array.Copy(arrint, 0, result, (result.Length - arrint.Length), arrint.Length);
-            return result;
+            return bigint.ToByteArray();
         }
 
         public static implicit operator UInt256(BigDecimal bigdec)
