@@ -164,6 +164,12 @@ namespace HeliumParty.RadixDLT.Primitives
             return (uint)(value.Mantissa * BigInteger.Pow(10, value.Exponent));
         }
 
+        public static explicit operator BigInteger(BigDecimal value)
+        {
+            BigDecimal floored = value.Floor();
+            return floored.Mantissa * BigInteger.Pow(10, floored.Exponent);
+        }
+
         #endregion
 
         #region Operators

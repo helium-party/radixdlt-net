@@ -34,7 +34,14 @@ namespace HeliumParty.RadixDLT.Primitives
 
             var b = new UInt256();
 
-            b.s0 = BitConverter.ToUInt64(bigint,0);
+            if (bigint.Length < 2)
+                b.s0 = bigint[0];
+            else if (bigint.Length < 4)
+                b.s0 = BitConverter.ToUInt16(bigint, 0);
+            else if (bigint.Length < 8)
+                b.s0 = BitConverter.ToUInt32(bigint, 0);
+            else
+                b.s0 = BitConverter.ToUInt64(bigint, 0);
 
             if (bigint.Length >= 16)
                 b.s1 = BitConverter.ToUInt64(bigint, 8);
@@ -51,6 +58,19 @@ namespace HeliumParty.RadixDLT.Primitives
             return b;
         }
 
+        public static implicit operator UInt256(BigInteger bigint)
+        {
+            var arrint = bigint.ToByteArray();
+            var result = new byte[32];
+
+            Array.Copy(arrint, 0, result, (result.Length - arrint.Length), arrint.Length);
+            return result;
+        }
+
+        public static implicit operator UInt256(BigDecimal bigdec)
+        {
+            return (BigInteger)bigdec;
+        }
 
         public static implicit operator byte[](UInt256 b)
         {
