@@ -31,6 +31,22 @@ namespace HeliumParty.RadixDLT
             }
         }
 
+        /// <summary>
+        /// Returns a unique websocket for a given node. Returns null in case client does not exist
+        /// </summary>
+        /// <param name="node">A radix node to get the websocket client for</param>
+        /// <returns>A websocket client for the specified node, null if it doesn't exist</returns>
+        public WebSocketClient TryGet(RadixNode node)
+        {
+            lock (_Lock)
+            {
+                if (_WebSockets.ContainsKey(node))
+                    return _WebSockets[node];
+
+                return null;
+            }
+        }
+
         public System.IObservable<RadixNode> GetNewNodes() => _NewNodes;
     }
 }

@@ -33,7 +33,7 @@
 
             IsSSL = useSSL;
         }
-
+        
         public System.Net.DnsEndPoint GetHttpEndpoint(string path) => new System.Net.DnsEndPoint(CombineUrl(_HttpUrl, path), _Port);
 
         private static string CombineUrl(string url1, string url2)

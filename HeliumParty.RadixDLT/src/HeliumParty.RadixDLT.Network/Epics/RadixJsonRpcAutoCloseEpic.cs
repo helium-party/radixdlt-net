@@ -23,7 +23,7 @@ namespace HeliumParty.RadixDLT.Epics
                 actions
                     .Where(a => Generics.InheritsOrIsInstance(a.GetType(), typeof(Actions.IJsonRpcResultAction<>)))
                     .Delay(DelayClose)
-                    .Do(a => _WebSockets.GetOrCreate(a.Node).Close())
+                    .Do(a => _WebSockets.TryGet(a.Node)?.Close())
                     .IgnoreElements();
         }
     }
