@@ -16,4 +16,8 @@
     <ProjectReference Include="..\HeliumParty.RadixDLT.Utils\HeliumParty.RadixDLT.Utils.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Ledger\" />
+  </ItemGroup>
+
 </Project>

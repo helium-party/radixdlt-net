@@ -1,4 +1,5 @@
 ﻿using HeliumParty.RadixDLT.Atoms;
+using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Log;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -205,16 +206,100 @@ namespace HeliumParty.RadixDLT.Jsonrpc
                 { "subscriberId", subscriberId }
             };
 
-            return JsonRpcCall("Atoms.getAtomStatusNotifications", call_params)
-                .Select(r =>
-                {
-                    if (!r.WasSuccessful)
-                        throw new JsonRpcCallException();
-                    return r;
-                }
-                ).IgnoreElements();
+            return JsonRpcCall("Atoms.getAtomStatusNotifications", call_params).CheckCallSuccess();
         }
 
+        /// <summary>
+        /// Closes a streaming status subscription
+        /// </summary>
+        /// <param name="subscriberId">The subscriber id the stream should be closed for</param>
+        /// <returns>An <see cref="IObservable{T}"/> that only leaves the termination message when message call was accepted</returns>
+        /// <exception cref="JsonRpcCallException">In case the call was not successful</exception>
+        public IObservable<object> CloseAtomStatusNotifications(string subscriberId)
+        {
+            var call_params = new JObject
+            {
+                { "subscriberId", subscriberId }
+            };
 
+            return JsonRpcCall("Atoms.closeAtomStatusNotifications", call_params).CheckCallSuccess();
+        }
+
+        // CHECK WHEN REBASE
+        public IObservable<object> ObserveAtomStatusNotifications(string subscriberId)
+        {
+            throw new NotImplementedException();    // TODO: Missing AtomStatusNotification, check when rebased
+        }
+
+        /// <summary>
+        /// Get the current status of an atom for this node
+        /// </summary>
+        /// <param name="aid">The <see cref="AID"/> of the atom</param>
+        /// <returns>The status of the atom</returns>
+        public IObservable<AtomStatus> GetAtomStatus(AID aid)
+        {
+            var call_params = new JObject
+            {
+                { "aid", aid.ToString() },
+            };
+
+            return JsonRpcCall("Atoms.getAtomStatus", call_params)
+                .Select(r => r.GetResult())
+                .Select(r => r?.Value<int>("status"))
+                .Select(status_code =>(AtomStatus)(status_code ?? 0));  // In case response was null, we assume that the atom doesn't exist
+        }
+
+        /// <summary>
+        /// Queries for an <see cref="Atom"/> by HID/>
+        /// If the node does not carry the <see cref="Atom"/> (e.g. if it does not reside on the same shard),
+        /// then this method will return null
+        /// </summary>
+        /// <param name="hid">The hash id of the atom being queried</param>
+        /// <returns>The <see cref="Atom"/> if found, else null</returns>
+        public IObservable<Atom> GetAtom(EUID hid)
+        {
+            var call_params = new JObject
+            {
+                { "hid", hid.ToString() },
+            };
+
+            return JsonRpcCall("Ledger.getAtoms", call_params)
+                .Select(r => r.GetResult())
+                .Select(r => r?.ToObject<List<Atom>>())    // TODO: Serialization needs to be checked for this
+                .Select(atom_list => atom_list == null || atom_list.Count == 0 ? null : atom_list[0]);
+        }
+
+        // CHECK WHEN REBASE
+        public IObservable<JsonRpcNotification<object>> ObserveNotifications(string subscriberId)
+        {
+            throw new NotImplementedException();    // TODO: Missing AtomStatusNotification, check when rebased
+        }
+
+        // CHECK WHEN REBASE
+        public IObservable<JsonRpcNotification<object>> ObserveAtoms(string subscriberId)
+        {
+            throw new NotImplementedException();    // TODO: Missing AtomStatusNotification, check when rebased
+        }
+
+        public IObservable<object> CancelAtomsSubscribe(string subscriberId)
+        {
+            var call_params = new JObject
+            {
+                { "subscriberId", subscriberId }
+            };
+
+            return JsonRpcCall("Atoms.cancel", call_params).CheckCallSuccess();
+        }
+        
+        public IObservable<object> SendAtomsSubscribe(string subscriberId, RadixAddress address)
+        {
+            var call_params = new JObject
+            {
+                { "query", new JObject { "address", address.ToString() } },
+                { "subscriberId", subscriberId }
+            };
+
+            return JsonRpcCall("Atoms.subscribe", call_params).CheckCallSuccess();
+        }
     }
 }
