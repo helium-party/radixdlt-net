@@ -10,7 +10,6 @@ namespace HeliumParty.RadixDLT
     {
         private readonly Dictionary<RadixNode, WebSocketClient> _WebSockets = new Dictionary<RadixNode, WebSocketClient>();
         private readonly System.Reactive.Subjects.ReplaySubject<RadixNode> _NewNodes = new System.Reactive.Subjects.ReplaySubject<RadixNode>();
-
         private readonly object _Lock = new object();
         
         /// <summary>
@@ -20,15 +19,18 @@ namespace HeliumParty.RadixDLT
         /// <returns>A websocket client for the specified node</returns>
         public WebSocketClient GetOrCreate(RadixNode node)
         {
+            Web.WebSocketClient wsc;
             lock (_Lock)
             {
                 if (_WebSockets.ContainsKey(node))
                     return _WebSockets[node];
 
-                var wsc = new Web.WebSocketClient(node);
+                wsc = new Web.WebSocketClient(node);
                 _WebSockets.Add(node, wsc);
-                return wsc;
             }
+            
+            _NewNodes.OnNext(node);
+            return wsc;
         }
 
         /// <summary>

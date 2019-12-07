@@ -4,5 +4,6 @@
     {
         bool SendMessage(string mesage);
         void AddListener(System.Action<string> listener);
+        void RemoveListener();
     }
 }

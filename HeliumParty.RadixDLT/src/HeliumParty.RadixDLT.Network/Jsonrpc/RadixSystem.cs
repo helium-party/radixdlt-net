@@ -4,9 +4,8 @@ using System.Text;
 
 namespace HeliumParty.RadixDLT.Jsonrpc
 {
-    public class RadixSystem : Radix.Serialization.Client.SerializableObject
+    public class RadixSystem
     {
-        private ShardSpace _Shards;
-        public ShardSpace GetShards() => _Shards;
+        public ShardSpace Shards { get; }
     }
 }

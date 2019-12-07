@@ -82,22 +82,11 @@ namespace HeliumParty.RadixDLT.Web
         {
             lock (_Lock)
             {
-                switch (State.Value)
-                {
-                    case WebSocketStatus.Connecting:
-                        break;
-                    case WebSocketStatus.Connected:
-                        break;
-                    case WebSocketStatus.Closing:
-                        break;
-                    case WebSocketStatus.Disconnected:
-                    case WebSocketStatus.Failed:
-                        State.OnNext(WebSocketStatus.Connecting);
-                        SetUpConnection();
-                        break;
-                    default:
-                        break;
-                }
+                if (State.Value == WebSocketStatus.Disconnected || 
+                    State.Value == WebSocketStatus.Failed)
+
+                    State.OnNext(WebSocketStatus.Connecting);
+                    SetUpConnection();
             }
         }
         
@@ -109,6 +98,10 @@ namespace HeliumParty.RadixDLT.Web
         {
             lock (_Lock)
             {
+                // No need to close an already closing socket
+                if (State.Value == WebSocketStatus.Closing)
+                    return true;
+
                 State.OnNext(WebSocketStatus.Closing);
                 // Notify node that we are closing the connection regularly
                 _ConnectionSocket.Close(5001);
@@ -137,9 +130,12 @@ namespace HeliumParty.RadixDLT.Web
         /// <returns>Whether sending was successful</returns>
         public bool SendMessage(string message)
         {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+
             if (_Logger.IsDebugEnabled)
                 _Logger.LogMessage($"Websocket {this.GetHashCode()} send: {message}");
-
+            
             lock (_Lock)
             {
                 if (State.Value.Equals(WebSocketStatus.Connected))
@@ -148,10 +144,11 @@ namespace HeliumParty.RadixDLT.Web
                     return false;
                 }
 
-                var send_task = _Connection.Send(message);
-                send_task.Wait();
+                try { _ConnectionSocket.Send(message); }
+                catch (InvalidOperationException) { return false; }
+                catch (ArgumentException) { return false; }
 
-                return !send_task.IsFaulted && !send_task.IsCanceled; // TODO: Check whether this actually tells us about successful sending
+                return true;
             }
         }
 

@@ -7,17 +7,26 @@ namespace HeliumParty.RadixDLT.Jsonrpc
     /// </summary>
     public class JsonRpcResponse
     {
-        public bool WasSuccessful { get; private set; }
-        public JObject Response { get; private set; }
+        public bool WasSuccessful => IsResult && !IsError;
+        public JObject Response { get; }
+        public bool IsResult => Response.ContainsKey("result");
+        public bool IsError => Response.ContainsKey("error");
 
-        public JsonRpcResponse(bool wasSuccessful, JObject response)
+        public JsonRpcResponse(JObject response)
         {
-            WasSuccessful = wasSuccessful;
             Response = response ?? throw new System.ArgumentNullException(nameof(response));
         }
 
-        // TODO: Not sure if this is what we want 
-        public JToken GetResult() => Response.GetValue("response");
+        /// <summary>
+        /// Returns the 'result' property of the response
+        /// </summary>
+        /// <returns>The 'result' property, null if it doesn't exist</returns>
+        public JToken GetResult() => Response.GetValue("result");
+
+        /// <summary>
+        /// Returns the 'error' property of the response
+        /// </summary>
+        /// <returns>The 'error' property, null if it doesn't exist</returns>
         public JToken GetError() => Response.GetValue("error");
     }
 }

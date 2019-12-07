@@ -10,7 +10,7 @@ namespace HeliumParty.RadixDLT.Jsonrpc
 
         private RadixSystem _System;
 
-        protected NodeRunnerData(RadixSystem system)
+        public NodeRunnerData(RadixSystem system)
         {
             _IP = null;
             _System = system;

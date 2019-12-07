@@ -1,5 +1,10 @@
-﻿using HeliumParty.RadixDLT.Log;
+﻿using HeliumParty.RadixDLT.Atoms;
+using HeliumParty.RadixDLT.Log;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
@@ -26,21 +31,61 @@ namespace HeliumParty.RadixDLT.Jsonrpc
         /// <summary>
         /// API version of client, must match with the node
         /// </summary>
-        public const int ApiVersion = 1;
-
-        private const int _DefaultTimeoutSec = 30;
+        public const int ClientApiVersion = 1;
 
         #endregion
+
+        #region Private members
+
+        private static readonly TimeSpan _DefaultTimeout = TimeSpan.FromSeconds(30);
 
         /// <summary>
         /// Cached API version of node
         /// </summary>
-        private ReplaySubject<int> _NodeApiVersion = new ReplaySubject<int>(1);
-        
+        private BehaviorSubject<int> _NodeApiVersion = new BehaviorSubject<int>(0);
+
         /// <summary>
         /// Cached universe configuration of node
         /// </summary>
-        private ReplaySubject<Universe.RadixUniverseConfig> _NodeUniverseConfig = new ReplaySubject<Universe.RadixUniverseConfig>(1); 
+        private BehaviorSubject<Universe.RadixUniverseConfig> _NodeUniverseConfig = new BehaviorSubject<Universe.RadixUniverseConfig>(null);
+
+        private IPersistentChannel _Channel;
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Constructor that fetches the servers api version as well as the universe configuration
+        /// </summary>
+        /// <param name="channel"></param>
+        public RadixJsonRpcClient(IPersistentChannel channel)
+        {
+            _Channel = channel;
+
+            JsonRpcCall("Api.getVersion")
+                .Select(r => r.GetResult())
+                .Select(r => r?.Value<int>("version") ?? ClientApiVersion)  //TODO: Check for changes in java lib at a later date
+                .Do(v => _NodeApiVersion.OnNext(v));
+
+            JsonRpcCall("Universe.getUniverse")
+                .Select(r => r.GetResult())
+                .Select(r => r?.ToObject<Universe.RadixUniverseConfig>())
+                .Do(config => _NodeUniverseConfig.OnNext(config));
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Performs a Json-Rpc call without any additional parameters with the node, 
+        /// deserializes the recevied response
+        /// </summary>
+        /// <param name="method">The name of the method to call</param>
+        /// <returns>The response of the node</returns>
+        public IObservable<JsonRpcResponse> JsonRpcCall(string method)
+        {
+            return JsonRpcCall(method, new JObject());
+        }
 
         /// <summary>
         /// Performs the actual Json-Rpc call with the node, deserializes the recevied response
@@ -48,21 +93,128 @@ namespace HeliumParty.RadixDLT.Jsonrpc
         /// <param name="method">The name of the method to call</param>
         /// <param name="call_params">Additional parameters for the method</param>
         /// <returns>The response of the node</returns>
-        public Observable<JsonRpcResponse> JsonRpcCall(string method, JObject call_params)
+        public IObservable<JsonRpcResponse> JsonRpcCall(string method, JObject call_params)
         {
+            if (String.IsNullOrEmpty(method))
+                throw new ArgumentNullException(nameof(method));
+            if (call_params == null)
+                throw new ArgumentNullException(nameof(call_params));
+
             return Observable.Create<JsonRpcResponse>(emitter =>
             {
-                var callGuid = System.Guid.NewGuid();
-                var requestObject = new JObject();
+                var callGuid = System.Guid.NewGuid().ToString();
 
-                requestObject.Add("id", callGuid);
-                requestObject.Add("method", method);
-                requestObject.Add("params", call_params);
+                // Prepare data to send
+                var requestObject = new JObject
+                {
+                    { "id", callGuid },
+                    { "method", method },
+                    { "params", call_params }
+                };
 
+                // Listen for response
+                _Channel.AddListener(msg =>
+                {
+                    var json = JsonConvert.DeserializeObject<JObject>(msg);
+                    if (!json.ContainsKey("id"))
+                        return;
 
+                    var responseId = json.Value<string>("id");
 
-            });
+                    if (String.IsNullOrEmpty(responseId) || !responseId.Equals(callGuid))
+                        return;
+
+                    emitter.OnNext(new JsonRpcResponse(json));
+                });
+
+                var sendSuccessful = _Channel.SendMessage(requestObject.ToString());
+                if (sendSuccessful)
+                    emitter.OnError(new System.SystemException($"Could not send message: {method} {call_params}"));
+
+                return Disposable.Empty;    // TODO: Might need to create a real disposable
+            }).Timeout(_DefaultTimeout);
         }
+
+        /// <summary>
+        /// Retrieves the api version the node supports, the result is cached for future calls
+        /// </summary>
+        /// <returns>The nodes api version</returns>
+        public IObservable<int> GetNodeApiVersion() => _NodeApiVersion.AsObservable();
+
+        /// <summary>
+        /// Retrieves the universe the node is supporting, the result is cached for future calls
+        /// </summary>
+        /// <returns>The universe config the node is supporting</returns>
+        public IObservable<Universe.RadixUniverseConfig> GetUniverseConfig() => _NodeUniverseConfig.AsObservable();
+
+        /// <summary>
+        /// Retrieves the data of the node we are connected to
+        /// </summary>
+        /// <returns>The data of the node we are connected to</returns>
+        public IObservable<NodeRunnerData> GetNodeData()
+        {
+            return JsonRpcCall("Network.getInfo")
+                .Select(r => r.GetResult())
+                .Select(r => r?.ToObject<RadixSystem>())    // TODO: Serialization needs to be checked for this 
+                .Select(sys => new NodeRunnerData(sys));
+        }
+        
+        /// <summary>
+        /// Retrieves a list of nodes the node we are connected to knows about
+        /// </summary>
+        /// <returns>A list of nodes in the same network</returns>
+        public IObservable<List<NodeRunnerData>> GetLivePeers()
+        {
+            return JsonRpcCall("Network.getLivePeers")
+                .Select(r => r.GetResult())
+                .Select(r => r?.ToObject<List<NodeRunnerData>>())    // TODO: Serialization needs to be checked for this 
+        }
+
+        /// <summary>
+        /// Submits an atom to the node
+        /// </summary>
+        /// <param name="atom">The atom to submit</param>
+        /// <returns>An <see cref="IObservable{T}"/> that only leaves the termination message when atom is queued</returns>
+        /// <exception cref="SubmitAtomException">Thrown in case submitting the atom went wrong</exception>
+        public IObservable<object> PushAtom(Atom atom)
+        {
+            // TODO: Correct serialization of atom
+            var jsonAtom = (JObject)JToken.FromObject(atom);
+            return JsonRpcCall("Atoms.submitAtom", jsonAtom)
+                .Select(r =>
+                {
+                    if (!r.WasSuccessful)
+                        throw new SubmitAtomException(atom, (JObject)r.GetError());
+                    return r;
+                }
+                ).IgnoreElements();
+        }
+
+        /// <summary>
+        /// Sends a request to receive streaming updates on an atom's status.
+        /// </summary>
+        /// <param name="subscriberId">The subscriber id for the streaming updates</param>
+        /// <param name="aid">the <see cref="AID"/> of the atom</param>
+        /// <returns>An <see cref="IObservable{T}"/> that only leaves the termination message when message call was accepted</returns>
+        /// <exception cref="JsonRpcCallException">In case the call was not successful</exception>
+        public IObservable<object> RequestAtomStatusNotifications(string subscriberId, AID aid)
+        {    
+            var call_params = new JObject
+            {
+                { "aid", aid.ToString() },
+                { "subscriberId", subscriberId }
+            };
+
+            return JsonRpcCall("Atoms.getAtomStatusNotifications", call_params)
+                .Select(r =>
+                {
+                    if (!r.WasSuccessful)
+                        throw new JsonRpcCallException();
+                    return r;
+                }
+                ).IgnoreElements();
+        }
+
 
     }
 }
