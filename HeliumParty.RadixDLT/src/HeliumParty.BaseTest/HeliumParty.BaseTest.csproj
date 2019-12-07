@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>HeliumParty.RadixDLT</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HeliumParty.DependencyInjection\HeliumParty.DependencyInjection.csproj" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Reactive" Version="4.3.1" />
     <PackageReference Include="WebSocketSharp.Standard" Version="1.0.3" />

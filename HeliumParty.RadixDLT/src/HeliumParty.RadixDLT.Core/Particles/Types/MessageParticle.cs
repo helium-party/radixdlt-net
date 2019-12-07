@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Identity;
-using HeliumParty.RadixDLT.Identity.Managers;
+using HeliumParty.RadixDLT.Serialization;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
@@ -16,7 +16,8 @@ namespace HeliumParty.RadixDLT.Particles.Types
         //aka data, message,...
         public byte[] Bytes { get; protected set; }
         public long Nonce { get; protected set; }
-
+        
+        [SerializationOutput(OutputMode.None)]
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress> { From, To };
 
         protected MessageParticle() : base()
@@ -24,8 +25,8 @@ namespace HeliumParty.RadixDLT.Particles.Types
 
         }
 
-        public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes)
-            : this(from, to, metaData, bytes, RandomGenerator.GetRandomLong(), ConvertToEUID(from, to)) { }
+        //public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes)
+        //    : this(from, to, metaData, bytes, RandomGenerator.GetRandomLong(), ConvertToEUID(from, to)) { }
 
         public MessageParticle(RadixAddress from, RadixAddress to, IDictionary<string, string> metaData, byte[] bytes, long nonce, HashSet<EUID> destinations)
             : base(destinations)
@@ -37,9 +38,9 @@ namespace HeliumParty.RadixDLT.Particles.Types
             Nonce = nonce;
         }
 
-        private static HashSet<EUID> ConvertToEUID(RadixAddress from, RadixAddress to)
-        {            
-            return new HashSet<EUID>() { from.EUID, to.EUID };
-        }
+        //private static HashSet<EUID> ConvertToEUID(RadixAddress from, RadixAddress to)
+        //{            
+        //    return new HashSet<EUID>() { from.EUID, to.EUID };
+        //}
     }
 }

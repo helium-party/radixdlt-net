@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using HeliumParty.RadixDLT.Primitives;
 using Org.BouncyCastle.Math;
 
 namespace HeliumParty.RadixDLT.Hashing
@@ -74,13 +75,7 @@ namespace HeliumParty.RadixDLT.Hashing
             return Convert.ToBase64String(_hash);
         }
 
-        public virtual string ToHexString()
-        {
-            StringBuilder hex = new StringBuilder(_hash.Length * 2);
-            foreach (byte b in _hash)
-                hex.AppendFormat("{0:x2}", b);
-            return hex.ToString();
-        }
+        public virtual string ToHexString() => Bytes.ToHexString(_hash);
 
         public virtual byte[] ToByteArray()
         {

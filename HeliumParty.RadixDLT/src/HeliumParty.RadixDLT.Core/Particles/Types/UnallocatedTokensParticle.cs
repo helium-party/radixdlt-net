@@ -15,20 +15,26 @@ namespace HeliumParty.RadixDLT.Particles.Types
         public RadixAddress Address => TokenDefinitionReference.Address;
 
         public RRI TokenDefinitionReference { get; protected set; }
-        //public UInt256 Granularity { get; protected set; }
+        public UInt256 Granularity { get; protected set; }
         public long Nonce { get; protected set; }
-        //public UInt256 Amount { get; protected set; }
+        public UInt256 Amount { get; protected set; }
         public IDictionary<TokenTransition, TokenPermission> TokenPermissions { get; protected set; }
 
         protected UnallocatedTokensParticle() : base () { }
 
-        public UnallocatedTokensParticle(RRI tokenDefinitionReference, UInt256 granularity, long nonce, UInt256 amount, IDictionary<TokenTransition, TokenPermission> tokenPermissions)
-            : base(tokenDefinitionReference.Address.EUID)
+        public UnallocatedTokensParticle(
+            RRI tokenDefinitionReference, 
+            UInt256 granularity, 
+            long nonce, 
+            UInt256 amount, 
+            IDictionary<TokenTransition, TokenPermission> tokenPermissions,
+            EUID destination // originates from rri property
+            ): base(destination)
         {
             TokenDefinitionReference = tokenDefinitionReference;
-            //Granularity = granularity;
+            Granularity = granularity;
             Nonce = nonce;
-            //Amount = amount;
+            Amount = amount;
             TokenPermissions = tokenPermissions;
         }
     }

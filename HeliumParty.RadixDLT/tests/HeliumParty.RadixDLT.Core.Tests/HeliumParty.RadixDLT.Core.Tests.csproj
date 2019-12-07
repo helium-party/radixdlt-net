@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="Resources\atom.dson" />
+    <None Remove="Resources\ECKeypair.dson" />
     <None Remove="Resources\messageatom.dson" />
     <None Remove="Resources\messageParticle.dson" />
     <None Remove="Resources\messageParticle2.dson" />
@@ -17,6 +18,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\atom.dson" />
+    <EmbeddedResource Include="Resources\ECKeypair.dson" />
     <EmbeddedResource Include="Resources\messageatom.dson" />
     <EmbeddedResource Include="Resources\messageParticle.dson" />
     <EmbeddedResource Include="Resources\messageParticle2.dson" />
@@ -36,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HeliumParty.RadixDLT.Core\HeliumParty.RadixDLT.Core.csproj" />
+    <ProjectReference Include="..\..\src\HeliumParty.BaseTest\HeliumParty.BaseTest.csproj" />
+    <ProjectReference Include="..\..\src\HeliumParty.RadixDLT.Core\HeliumParty.RadixDLT.Core.csproj" />
   </ItemGroup>
-
 </Project>

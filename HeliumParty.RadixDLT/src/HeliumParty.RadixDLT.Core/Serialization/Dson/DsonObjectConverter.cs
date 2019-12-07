@@ -2,9 +2,7 @@
 using Dahomey.Cbor.Serialization.Converters;
 using HeliumParty.RadixDLT.Primitives;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using HeliumParty.RadixDLT.EllipticCurve;
 
 namespace HeliumParty.RadixDLT.Serialization.Dson
 {
@@ -13,8 +11,8 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
         private readonly Func<T, byte[]> _convertTToBytes;
         private readonly Func<byte[], T> _convertBytesToT;
 
-        bool usePrefix = false;
-        byte prefix = 0x00;
+        private bool _usePrefix = false;
+        private byte _prefix = 0x00;
 
         public DsonObjectConverter(Func<T, byte[]> convertTToBytes, Func<byte[], T> convertBytesToT)
         {
@@ -37,9 +35,9 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             else
             {
                 var attr = (SerializationPrefixAttribute)attrs[0];
-                usePrefix = attr.HasDsonPrefix;
+                _usePrefix = attr.HasDsonPrefix;
 
-                prefix = attr.Dson;
+                _prefix = attr.Dson;
             }
         }
 
@@ -49,16 +47,16 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
         /// <param name="type"></param>
         private void PrimitivePrefixes(Type type)
         {
-            if (type == typeof(byte[]))
+            if (type == typeof(byte[]) || type == typeof(ECPrivateKey) || type == typeof(ECPublicKey))
             {
-                prefix = 0x01;
-                usePrefix = true;
+                _prefix = 0x01;
+                _usePrefix = true;
             }
 
             if (type == typeof(UInt256))
             {
-                prefix = 0x05;
-                usePrefix = true;
+                _prefix = 0x05;
+                _usePrefix = true;
             }
         }
 
@@ -68,10 +66,10 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             if (bytes == null || bytes.Length == 0)
                 throw new FormatException("Invalid input");
 
-            if (usePrefix)
+            if (_usePrefix)
             {
-                if (bytes[0] != prefix)
-                    throw new FormatException($"Expected prefix 0x{Bytes.ToHexString(prefix)} but is 0x{Bytes.ToHexString(bytes[0])}");
+                if (bytes[0] != _prefix)
+                    throw new FormatException($"Expected prefix 0x{Bytes.ToHexString(_prefix)} but is 0x{Bytes.ToHexString(bytes[0])}");
 
                 return _convertBytesToT(Arrays.CopyOfRange(bytes, 1, bytes.Length));
             }
@@ -83,16 +81,15 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             var valueBytes = _convertTToBytes(value);
             byte[] bytes = null;
 
-            if (usePrefix)
+            if (_usePrefix)
             {
                 bytes = new byte[1 + valueBytes.Length];
-                bytes[0] = prefix;
+                bytes[0] = _prefix;
                 Array.Copy(valueBytes, 0, bytes, 1, valueBytes.Length);
 
             }
             else bytes = valueBytes;
 
-            
             writer.WriteByteString(bytes);
         }
     }

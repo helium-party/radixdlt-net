@@ -8,34 +8,43 @@ namespace HeliumParty.RadixDLT.Core.Identity
 {
     public abstract class BaseRadixIdentity
     {
-        protected IECKeyManager _keyManager;
-        protected IEUIDManager _euidManager;
-        public IECKeyManager KeyManager
+        protected readonly IECKeyManager _keyManager;
+        protected readonly IEUIDManager _euidManager;
+
+        protected BaseRadixIdentity(IECKeyManager keyManager, IEUIDManager euidManager)
         {
-            get
-            {
-                if (_keyManager == null)
-                    _keyManager = new ECKeyManager();
-                return _keyManager;
-            }
-            set
-            {
-                _keyManager = value;
-            }
+            _keyManager = keyManager;
+            _euidManager = euidManager;
         }
 
-        public IEUIDManager EuidManager
-        {
-            get
-            {
-                if (_euidManager == null)
-                    _euidManager = new EUIDManager();
-                return _euidManager;
-            }
-            set
-            {
-                _euidManager = value;
-            }
-        }
+
+
+        //public IECKeyManager KeyManager
+        //{
+        //    get
+        //    {
+        //        if (_keyManager == null)
+        //            _keyManager = new ECKeyManager();
+        //        return _keyManager;
+        //    }
+        //    set
+        //    {
+        //        _keyManager = value;
+        //    }
+        //}
+
+        //public IEUIDManager EuidManager
+        //{
+        //    get
+        //    {
+        //        if (_euidManager == null)
+        //            _euidManager = new EUIDManager();
+        //        return _euidManager;
+        //    }
+        //    set
+        //    {
+        //        _euidManager = value;
+        //    }
+        //}
     }
 }
