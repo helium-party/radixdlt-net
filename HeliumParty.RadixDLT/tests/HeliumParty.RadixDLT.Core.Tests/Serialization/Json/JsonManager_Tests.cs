@@ -70,15 +70,22 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Json
         }
 
         [Fact]
-        public void TestRadixRRIJson()
+        public void TestRRIJson()
         {
             var rri = new RRI(new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc"), "uniqueString");
-            var serializedRri = _jsonmanager.ToJson(rri, OutputMode.All);
-            var deserializedRri = _jsonmanager.FromJson<RRI>(serializedRri, OutputMode.All);
-            deserializedRri.ShouldBe(rri);
+            var serialized = _jsonmanager.ToJson(rri, OutputMode.All);
+            var deserialized = _jsonmanager.FromJson<RRI>(serialized, OutputMode.All);
+            deserialized.ShouldBe(rri);
         }
 
-        // TODO add AID
+        [Fact]
+        public void TestAIDJson()
+        {
+            var aid = new AID(Bytes.FromHexString("b5778220e5fa6063208498148555fbc19ac44ef1742806cb56abab3870585f04"));
+            var serialized = _jsonmanager.ToJson(aid, OutputMode.All);
+            var deserialized = _jsonmanager.FromJson<AID>(serialized, OutputMode.All);
+            deserialized.ShouldBe(aid);
+        }
 
         #endregion
 
