@@ -114,12 +114,19 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         public void RRI_Parsing_Test()
         {
             var rri = new RRI(new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc"), "uniqueString");
-            var serializedRri = _dsonmanager.ToDson(rri);
-            var deserializedRri = _dsonmanager.FromDson<RRI>(serializedRri, OutputMode.All);
-            deserializedRri.ShouldBe(rri);
+            var serialized = _dsonmanager.ToDson(rri);
+            var deserialized = _dsonmanager.FromDson<RRI>(serialized, OutputMode.All);
+            deserialized.ShouldBe(rri);
         }
 
-        // TODO add AID
+        [Fact]
+        public void AID_Parsing_Test()
+        {
+            var aid = new AID(Bytes.FromHexString("b5778220e5fa6063208498148555fbc19ac44ef1742806cb56abab3870585f04"));
+            var serialized = _dsonmanager.ToDson(aid);
+            var deserialized = _dsonmanager.FromDson<AID>(serialized, OutputMode.All);
+            deserialized.ShouldBe(aid);
+        }
 
         #endregion
 
