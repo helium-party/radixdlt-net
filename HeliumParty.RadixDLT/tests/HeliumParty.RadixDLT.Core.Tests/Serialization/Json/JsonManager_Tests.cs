@@ -97,9 +97,9 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Json
             var eCKeyManager = new ECKeyManager();
             var address = eCKeyManager.GetRandomKeyPair();
             var signature = eCKeyManager.GetECSignature(address.PrivateKey, Bytes.FromBase64String("testtest"));
-            var serialized = _jsonmanager.ToJson(signature);
+            var serialized = _jsonmanager.ToJson(signature, OutputMode.All);
 
-            var deserialized = _jsonmanager.FromJson<ECSignature>(serialized);
+            var deserialized = _jsonmanager.FromJson<ECSignature>(serialized, OutputMode.All);
             deserialized.R.ShouldBe(signature.R);
             deserialized.S.ShouldBe(signature.S);
         }
@@ -109,9 +109,9 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Json
         {
             var eCKeyManager = new ECKeyManager();
             var address = eCKeyManager.GetRandomKeyPair();
-            var serialized = _jsonmanager.ToJson(address, OutputMode.Hash);
+            var serialized = _jsonmanager.ToJson(address, OutputMode.All);
 
-            var deserialized = _jsonmanager.FromJson<ECKeyPair>(serialized);
+            var deserialized = _jsonmanager.FromJson<ECKeyPair>(serialized, OutputMode.All);
             deserialized.PublicKey.Base64.ShouldBe(address.PublicKey.Base64);
             deserialized.PrivateKey.ShouldBeNull();
         }
@@ -238,7 +238,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Json
             mp.Nonce.ShouldBe(10);
             mp.From.ToString().ShouldBe("JEWDNQAYJxwe27JrHSStupxatvaxrcrrR6hwzrAbLmDH7BgEFeZ");
             mp.To.ToString().ShouldBe("JG2uTCDwMUw51Ph8FMHxzz65AuPC1saTKpKMzqwJmQGEdYkGEXw");
-
         }
 
         [Fact]
@@ -315,7 +314,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Json
             var deserialized = _jsonmanager.FromJson<Atom>(serialized);
 
             //assert
-            bool x = deserialized.Hash == atom.Hash;
             deserialized.Hash.ShouldBe(atom.Hash);
         }
 
