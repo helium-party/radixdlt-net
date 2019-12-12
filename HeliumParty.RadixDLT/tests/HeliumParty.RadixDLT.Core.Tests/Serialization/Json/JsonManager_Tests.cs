@@ -1,130 +1,89 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Dahomey.Cbor.ObjectModel;
 using HeliumParty.BaseTest;
 using HeliumParty.RadixDLT.Atoms;
-using HeliumParty.RadixDLT.Core.Tests.Resources;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
 using HeliumParty.RadixDLT.Identity;
+using HeliumParty.RadixDLT.Identity.Managers;
 using HeliumParty.RadixDLT.Particles;
 using HeliumParty.RadixDLT.Particles.Types;
 using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization;
-using HeliumParty.RadixDLT.Serialization.Dson;
+using HeliumParty.RadixDLT.Serialization.Json;
 using Shouldly;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
-using HeliumParty.RadixDLT.Identity.Managers;
 
-namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
+namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Json
 {
-    public class DsonManager_Tests : HbIntegratedBaseTest
+    public class JsonManager_Tests : HbIntegratedBaseTest
     {
-        private readonly IDsonManager _dsonmanager;
+        private readonly IJsonManager _jsonmanager;
         private readonly IEUIDManager _euidmanager;
 
-        public DsonManager_Tests()
+        public JsonManager_Tests()
         {
-            _dsonmanager = IocContainer.GetService<IDsonManager>();
+            _jsonmanager = IocContainer.GetService<IJsonManager>();
             _euidmanager = IocContainer.GetService<IEUIDManager>();
         }
-
-        #region mapping convention
-
-        class TestClass
-        {
-            [SerializationOutput(OutputMode.All)]
-            public int IntValue { get; set; }
-            [SerializationOutput(OutputMode.Hash)]
-            public int IntSecondValue { get; set; }
-            [SerializationOutput(OutputMode.None)]
-            public string HiddenValue { get; set; }
-            public string DummyValue { get; set; }
-            public byte[] DummyBin { get; set; }
-        }
-
-        [Fact]
-        public void Dson_MappingConventions_Test()
-        {
-            //arrange
-            var o = new TestClass() {
-                IntValue = 300 , IntSecondValue = 20, HiddenValue="secret", DummyValue="known",
-                DummyBin = Bytes.FromHexString("0123456789abcdef")
-            };
-
-            //act
-            var dson = _dsonmanager.ToDson(o);            
-            var o2 = _dsonmanager.FromDson<TestClass>(dson, OutputMode.All);
-
-            //assert
-            o2.IntValue.ShouldBe(o.IntValue);
-            o2.IntSecondValue.ShouldBe(o.IntSecondValue);
-            o2.HiddenValue.ShouldBeNull();
-            o2.DummyValue.ShouldBe(o.DummyValue);
-            o2.DummyBin.ShouldBe(Bytes.FromHexString("0123456789abcdef"));
-        }
-
-        #endregion
 
         #region Base Types
 
         [Fact]
-        public void Byte_Parsing_Test()
+        public void ToByteJson()
         {
             var bytes = Bytes.FromHexString("0123456789abcdef");
-            var serializedBytes = _dsonmanager.ToDson(bytes, OutputMode.All);
-            var deserializedBytes = _dsonmanager.FromDson<byte[]>(serializedBytes, OutputMode.All);
+            var serializedBytes = _jsonmanager.ToJson(bytes, OutputMode.All);
+            var deserializedBytes = _jsonmanager.FromJson<byte[]>(serializedBytes, OutputMode.All);
             deserializedBytes.ShouldBe(bytes);
         }
 
         [Fact]
-        public void EUID_Parsing_Test()
+        public void TestEUIDJson()
         {
             var euid = new EUID("1e340377ac58b9008ad12e1f2bae015d");
-            var serializedEuid = _dsonmanager.ToDson(euid, OutputMode.All);
-            var deserializedEuid = _dsonmanager.FromDson<EUID>(serializedEuid, OutputMode.All);
+            var serializedEuid = _jsonmanager.ToJson(euid, OutputMode.All);
+            var deserializedEuid = _jsonmanager.FromJson<EUID>(serializedEuid, OutputMode.All);
             deserializedEuid.ShouldBe(euid);
         }
 
         // TODO add TestHash once implemented
 
         [Fact]
-        public void RadixAddress_Parsing_Test()
+        public void TestRadixAddressJson()
         {
             var addr = new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc");
-            var serializedAddr = _dsonmanager.ToDson(addr);
-            var deserializedAddr = _dsonmanager.FromDson<RadixAddress>(serializedAddr);
+            var serializedAddr = _jsonmanager.ToJson(addr, OutputMode.All);
+            var deserializedAddr = _jsonmanager.FromJson<RadixAddress>(serializedAddr, OutputMode.All);
             deserializedAddr.ShouldBe(addr);
         }
 
         [Fact]
-        public void UInt256_Parsing_Test()
+        public void TestUInt256Json()
         {
-            var numb = (UInt256) new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10};
-
-            var serialized = _dsonmanager.ToDson(numb);
-            var deserialized = _dsonmanager.FromDson<UInt256>(serialized);
-
+            var numb = (UInt256)new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10 };
+            var serialized = _jsonmanager.ToJson(numb);
+            var deserialized = _jsonmanager.FromJson<UInt256>(serialized);
             deserialized.ShouldBe(numb);
         }
 
         [Fact]
-        public void RRI_Parsing_Test()
+        public void TestRRIJson()
         {
             var rri = new RRI(new RadixAddress("17E8ZCLeczaBe4C6fJ3x649XWTPcmYukz6Bw18zFNgdxwhdukHc"), "uniqueString");
-            var serialized = _dsonmanager.ToDson(rri);
-            var deserialized = _dsonmanager.FromDson<RRI>(serialized, OutputMode.All);
+            var serialized = _jsonmanager.ToJson(rri, OutputMode.All);
+            var deserialized = _jsonmanager.FromJson<RRI>(serialized, OutputMode.All);
             deserialized.ShouldBe(rri);
         }
 
         [Fact]
-        public void AID_Parsing_Test()
+        public void TestAIDJson()
         {
             var aid = new AID(Bytes.FromHexString("b5778220e5fa6063208498148555fbc19ac44ef1742806cb56abab3870585f04"));
-            var serialized = _dsonmanager.ToDson(aid);
-            var deserialized = _dsonmanager.FromDson<AID>(serialized, OutputMode.All);
+            var serialized = _jsonmanager.ToJson(aid, OutputMode.All);
+            var deserialized = _jsonmanager.FromJson<AID>(serialized, OutputMode.All);
             deserialized.ShouldBe(aid);
         }
 
@@ -133,26 +92,26 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         #region Crypto Layer
 
         [Fact]
-        public void ECSignature_Parsing_Test()
+        public void TestECSignatureJson()
         {
             var eCKeyManager = new ECKeyManager();
-            var pair = eCKeyManager.GetRandomKeyPair();
-            var signature = eCKeyManager.GetECSignature(pair.PrivateKey, Bytes.FromBase64String("testtest"));
-            var serialized = _dsonmanager.ToDson(signature);
+            var address = eCKeyManager.GetRandomKeyPair();
+            var signature = eCKeyManager.GetECSignature(address.PrivateKey, Bytes.FromBase64String("testtest"));
+            var serialized = _jsonmanager.ToJson(signature, OutputMode.All);
 
-            var deserialized = _dsonmanager.FromDson<ECSignature>(serialized);
+            var deserialized = _jsonmanager.FromJson<ECSignature>(serialized, OutputMode.All);
             deserialized.R.ShouldBe(signature.R);
             deserialized.S.ShouldBe(signature.S);
         }
 
         [Fact]
-        public void ECKeyPair_Parsing_Test()
+        public void TestECKeyPairJson()
         {
             var eCKeyManager = new ECKeyManager();
             var address = eCKeyManager.GetRandomKeyPair();
-            var serialized = _dsonmanager.ToDson(address, OutputMode.Hash);
+            var serialized = _jsonmanager.ToJson(address, OutputMode.All);
 
-            var deserialized = _dsonmanager.FromDson<ECKeyPair>(serialized);
+            var deserialized = _jsonmanager.FromJson<ECKeyPair>(serialized, OutputMode.All);
             deserialized.PublicKey.Base64.ShouldBe(address.PublicKey.Base64);
             deserialized.PrivateKey.ShouldBeNull();
         }
@@ -169,9 +128,9 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var address1 = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
             var address2 = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
             var messageParticle = new MessageParticle(
-                address1, 
-                address2, 
-                new Dictionary<string, string> { { "key", "value" } }, 
+                address1,
+                address2,
+                new Dictionary<string, string> { { "key", "value" } },
                 Bytes.FromBase64String("testtest"), 30L, new HashSet<EUID>
                 {
                     _euidmanager.GetEUID(address1),
@@ -179,8 +138,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
                 });
 
             //act
-            var serialized = _dsonmanager.ToDson<Particle>(messageParticle);
-            var deserialized = (MessageParticle)_dsonmanager.FromDson<Particle>(serialized);
+            var serialized = _jsonmanager.ToJson<Particle>(messageParticle);
+            var deserialized = (MessageParticle)_jsonmanager.FromJson<Particle>(serialized);
 
             //assert
             deserialized.From.ShouldBe(address1);
@@ -195,8 +154,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var eCKeyManager = new ECKeyManager();
             var address = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
             var rriParticle = new RRIParticle(new RRI(address, "test"), _euidmanager.GetEUID(address));
-            var serialized = _dsonmanager.ToDson<Particle>(rriParticle);
-            var deserialized = _dsonmanager.FromDson<Particle>(serialized);
+            var serialized = _jsonmanager.ToJson<Particle>(rriParticle);
+            var deserialized = _jsonmanager.FromJson<Particle>(serialized);
 
             ((RRIParticle)deserialized).RRI.Address.ECPublicKey.Base64.ShouldBe(address.ECPublicKey.Base64);
         }
@@ -210,8 +169,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var uniqeParticle = new UniqueParticle(address, "test", _euidmanager.GetEUID(address));
 
             //act
-            var serialized = _dsonmanager.ToDson(uniqeParticle);
-            var deserialized = _dsonmanager.FromDson<UniqueParticle>(serialized);
+            var serialized = _jsonmanager.ToJson(uniqeParticle);
+            var deserialized = _jsonmanager.FromJson<UniqueParticle>(serialized);
 
             //assert
             deserialized.Address.ShouldBe(uniqeParticle.Address);
@@ -237,8 +196,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             particles.Add(uniqeParticle);
 
             //act
-            var serialized = _dsonmanager.ToDson(particles);
-            var deserialized = _dsonmanager.FromDson<List<Particle>>(serialized);
+            var serialized = _jsonmanager.ToJson(particles);
+            var deserialized = _jsonmanager.FromJson<List<Particle>>(serialized);
 
             //assert
             deserialized.ShouldNotBeNull();
@@ -255,10 +214,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var spunParticle = new SpunParticle(rriParticle, Spin.Up);
 
             //act
-            var serialized = _dsonmanager.ToDson(spunParticle);
-            var x = Bytes.ToHexString(serialized);
-            var deserialized = _dsonmanager.FromDson<SpunParticle>(serialized);
-            var cborobj = _dsonmanager.FromDson<CborObject>(serialized);
+            var serialized = _jsonmanager.ToJson(spunParticle);
+            var deserialized = _jsonmanager.FromJson<SpunParticle>(serialized);
 
             //assert
             ((RRIParticle)deserialized.Particle).RRI.Name.ShouldBe(rriParticle.RRI.Name);
@@ -268,18 +225,19 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         public void MessageParticle_Deserializing_Test()
         {
             //arrange
-            var data = ResourceParser.GetResource("messageParticle3.dson");
+            var data = "{\"serializer\":\"radix.particles.message\",\"bytes\":\":byt:RXhhbXBsZSBtZXNzYWdl\"," +
+                       "\"destinations\":[\":uid:5f3b51bb456c7f5202c3489a798bec53\",\":uid:fa2eee711e1854d045622cd3c012e13d\"]," +
+                       "\"from\":\":adr:JEWDNQAYJxwe27JrHSStupxatvaxrcrrR6hwzrAbLmDH7BgEFeZ\",\"metaData\":{\"application\":" +
+                       "\":str:test-app-id\"},\"nonce\":10,\"to\":\":adr:JG2uTCDwMUw51Ph8FMHxzz65AuPC1saTKpKMzqwJmQGEdYkGEXw\",\"version\":100}";
 
             //act
-            var cbor = _dsonmanager.FromDson<CborObject>(data);
-            var mp = (MessageParticle) _dsonmanager.FromDson<Particle>(data);            
+            var mp = (MessageParticle)_jsonmanager.FromJson<Particle>(data);
 
             //assert
             mp.ShouldNotBeNull();
-            mp.Nonce.ShouldBe(2181035975144481159);
-            mp.From.ToString().ShouldBe("JEbhKQzBn4qJzWJFBbaPioA2GTeaQhuUjYWkanTE6N8VvvPpvM8");
-            mp.To.ToString().ShouldBe("JEbhKQzBn4qJzWJFBbaPioA2GTeaQhuUjYWkanTE6N8VvvPpvM8");
-
+            mp.Nonce.ShouldBe(10);
+            mp.From.ToString().ShouldBe("JEWDNQAYJxwe27JrHSStupxatvaxrcrrR6hwzrAbLmDH7BgEFeZ");
+            mp.To.ToString().ShouldBe("JG2uTCDwMUw51Ph8FMHxzz65AuPC1saTKpKMzqwJmQGEdYkGEXw");
         }
 
         [Fact]
@@ -302,12 +260,11 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var mdatabuilder = ImmutableDictionary.CreateBuilder<string, string>();
             mdatabuilder.Add(new KeyValuePair<string, string>("Test", "Test"));
 
-            var group =
-                new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
+            var group = new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
 
             //act
-            var dson = _dsonmanager.ToDson(group, OutputMode.All);
-            var deserialized = _dsonmanager.FromDson<ParticleGroup>(dson, OutputMode.All);
+            var json = _jsonmanager.ToJson(group, OutputMode.All);
+            var deserialized = _jsonmanager.FromJson<ParticleGroup>(json, OutputMode.All);
 
             //assert
             deserialized.ShouldNotBeNull();
@@ -339,60 +296,25 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             mdatabuilder.Add(new KeyValuePair<string, string>("Test", "Test"));
 
             var group = new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
+            var groups = new List<ParticleGroup> {group};
 
             var metaData = new Dictionary<string, string>();
             metaData.Add("work", "please");
+            metaData.Add(Atom.MetadataTimestampKey, 0L.ToString());
 
-            var cAtom = new Atom()
-            {
-                ParticleGroups = new List<ParticleGroup>() { group },
-                MetaData = metaData
-            };
+            var atom = new Atom(groups, metaData);
 
-            var data = ResourceParser.GetResource("messageatom.dson");
+            var data = "{\"serializer\":\"radix.particles.message\",\"bytes\":\":byt:RXhhbXBsZSBtZXNzYWdl\"," +
+                       "\"destinations\":[\":uid:5f3b51bb456c7f5202c3489a798bec53\",\":uid:fa2eee711e1854d045622cd3c012e13d\"]," +
+                       "\"from\":\":adr:JEWDNQAYJxwe27JrHSStupxatvaxrcrrR6hwzrAbLmDH7BgEFeZ\",\"metaData\":{\"application\":" +
+                       "\":str:test-app-id\"},\"nonce\":1566833127947,\"to\":\":adr:JG2uTCDwMUw51Ph8FMHxzz65AuPC1saTKpKMzqwJmQGEdYkGEXw\",\"version\":100}";
 
             //act
-            var cdsonatom = _dsonmanager.ToDson(cAtom);
-
-            var cboratom = _dsonmanager.FromDson<Atom>(data);
-            var cborownatom = _dsonmanager.FromDson<Atom>(cdsonatom);
-            //var cbor = CBORObject.DecodeFromBytes(data, CBOREncodeOptions.Default);
-
+            var serialized = _jsonmanager.ToJson(atom);
+            var deserialized = _jsonmanager.FromJson<Atom>(serialized);
 
             //assert
-            cboratom.ShouldNotBeNull();
-            cborownatom.ShouldNotBeNull();
-        }
-
-        [Fact]
-        public void Atom_Hash_Test()
-        {
-            var address1 = new RadixAddress(10, _dsonmanager.FromDson<ECKeyPair>(ResourceParser.GetResource("ECKeypair.dson")).PublicKey);
-            var address2 = new RadixAddress(10, _dsonmanager.FromDson<ECKeyPair>(ResourceParser.GetResource("ECKeypair.dson")).PublicKey);
-
-            var messageParticle = new MessageParticle(address1, address2, new Dictionary<string, string> { { "key", "value" } }, Bytes.FromBase64String("test"), 0, new HashSet<EUID>
-            {
-                _euidmanager.GetEUID(address1),
-                _euidmanager.GetEUID(address2)
-            });
-
-            var spunParticle = new SpunParticle(messageParticle, Spin.Up);
-            var spunParticle2 = new SpunParticle(messageParticle, Spin.Up);
-            var listbuilder = ImmutableList.CreateBuilder<SpunParticle>();
-            listbuilder.Add(spunParticle);
-
-            var mdatabuilder = ImmutableDictionary.CreateBuilder<string, string>();
-
-            var group = new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
-
-            var metaData = new Dictionary<string, string>();
-            metaData.Add("b", "123");
-            metaData.Add("a", "123");
-
-            var atom = new Atom(group, 0L);
-
-            // this hash has been produced with the java implementation
-            atom.Hash.ToHexString().ShouldBe("33c09efcd8ea0d04823ebe5087f68b9ad586bb661be71a7a793f94c15fd699d3");
+            deserialized.Hash.ShouldBe(atom.Hash);
         }
 
         #endregion

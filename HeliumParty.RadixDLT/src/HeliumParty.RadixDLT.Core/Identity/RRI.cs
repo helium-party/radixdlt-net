@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace HeliumParty.RadixDLT.Identity
 {
-    [SerializationPrefix(Dson=0x06)]
+    [SerializationPrefix(Dson = 0x06, Json = ":rri:")]
     public class RRI
     {
         public RadixAddress Address { get; }
