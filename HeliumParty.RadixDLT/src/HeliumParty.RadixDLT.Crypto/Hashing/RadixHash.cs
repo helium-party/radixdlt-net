@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using HeliumParty.RadixDLT.Primitives;
@@ -62,7 +63,7 @@ namespace HeliumParty.RadixDLT.Hashing
             if (!(o.GetType() == typeof(RadixHash)))
                 return false;
 
-            return Equals(_hash, ((RadixHash)o)._hash);
+            return _hash.SequenceEqual(((RadixHash)o)._hash);
         }
 
         public override int GetHashCode()
