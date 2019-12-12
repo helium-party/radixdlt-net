@@ -5,7 +5,7 @@ using HeliumParty.RadixDLT.Serialization;
 
 namespace HeliumParty.RadixDLT.Identity
 {
-    [SerializationPrefix(Json = "", Dson = 0x02)]
+    [SerializationPrefix(Json = ":uid:", Dson = 0x02)]
     public class EUID : IComparable<EUID>
     {
         // TODO add methods like RingClosest,... from former HeliumParty lib? (this comment is here as a remainder that these methods have already been written

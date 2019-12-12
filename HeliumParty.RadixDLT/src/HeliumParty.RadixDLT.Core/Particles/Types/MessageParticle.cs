@@ -2,10 +2,12 @@
 using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Serialization;
+using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
     [CborDiscriminator("radix.particles.message", Policy = CborDiscriminatorPolicy.Always)]
+    [JsonObject(ItemTypeNameHandling = TypeNameHandling.None)]
     public class MessageParticle : Particle, IAccountable
     {
         public RadixAddress From { get; protected set; }

@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Hashing;
-using HeliumParty.RadixDLT.Identity.Managers;
 using HeliumParty.RadixDLT.Serialization;
 
 namespace HeliumParty.RadixDLT.Identity
 {
-    [SerializationPrefix(Dson = 0x04, Json = "adr")]
+    [SerializationPrefix(Dson = 0x04, Json = ":adr:")]
     public class RadixAddress
     {
         private readonly string _addressBase58;        
