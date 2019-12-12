@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Numerics;
 
 namespace HeliumParty.RadixDLT.Primitives
@@ -21,6 +22,11 @@ namespace HeliumParty.RadixDLT.Primitives
 
         public UInt128 t0 { get { UInt128 result; UInt128.Create(out result, s0, s1); return result; } }
         public UInt128 t1 { get { UInt128 result; UInt128.Create(out result, s2, s3); return result; } }
+
+        public static implicit operator UInt256(BigInteger bigInt)
+        {
+            return (UInt256) bigInt.ToByteArray();
+        }
 
         public static implicit operator BigInteger(UInt256 a)
         {
@@ -51,7 +57,6 @@ namespace HeliumParty.RadixDLT.Primitives
             return b;
         }
 
-
         public static implicit operator byte[](UInt256 b)
         {
             var b1 = BitConverter.GetBytes(b.s0);
@@ -60,6 +65,11 @@ namespace HeliumParty.RadixDLT.Primitives
             var b4 = BitConverter.GetBytes(b.s3);
 
             return Arrays.ConcatArrays(b1, b2, b3, b4);            
+        }
+
+        public static implicit operator UInt256(string str)
+        {
+            return (UInt256)BigInteger.Parse(str);
         }
 
         public override string ToString()
