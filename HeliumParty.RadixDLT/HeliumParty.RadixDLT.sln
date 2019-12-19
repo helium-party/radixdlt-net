@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.452
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.779
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7C0DA136-CAA2-494F-8D56-C26D9C08106E}"
 EndProject
@@ -30,6 +30,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Core.Tests", "tests\HeliumParty.RadixDLT.Core.Tests\HeliumParty.RadixDLT.Core.Tests.csproj", "{9B369846-2D5B-4BE1-9CC3-5129FD2DC38C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeliumParty.BaseTest", "src\HeliumParty.BaseTest\HeliumParty.BaseTest.csproj", "{893AA38E-76FE-4B99-B65E-63D7D3A1782B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HeliumParty.RadixDLT.Network", "src\HeliumParty.RadixDLT.Network\HeliumParty.RadixDLT.Network.csproj", "{2EE3E89A-14D6-48D7-95E6-F4B214F1416C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +87,10 @@ Global
 		{893AA38E-76FE-4B99-B65E-63D7D3A1782B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{893AA38E-76FE-4B99-B65E-63D7D3A1782B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{893AA38E-76FE-4B99-B65E-63D7D3A1782B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EE3E89A-14D6-48D7-95E6-F4B214F1416C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EE3E89A-14D6-48D7-95E6-F4B214F1416C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EE3E89A-14D6-48D7-95E6-F4B214F1416C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EE3E89A-14D6-48D7-95E6-F4B214F1416C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,6 +108,7 @@ Global
 		{F1C05423-BA48-43F5-919E-34BF6AE7C71E} = {731E21F1-EEEE-49A4-BF31-3797E30A4EB3}
 		{9B369846-2D5B-4BE1-9CC3-5129FD2DC38C} = {731E21F1-EEEE-49A4-BF31-3797E30A4EB3}
 		{893AA38E-76FE-4B99-B65E-63D7D3A1782B} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
+		{2EE3E89A-14D6-48D7-95E6-F4B214F1416C} = {7C0DA136-CAA2-494F-8D56-C26D9C08106E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C71E73C3-7FCD-49AD-A089-CA96355E339D}

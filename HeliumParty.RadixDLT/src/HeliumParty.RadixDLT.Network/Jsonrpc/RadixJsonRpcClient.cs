@@ -168,7 +168,7 @@ namespace HeliumParty.RadixDLT.Jsonrpc
         {
             return JsonRpcCall("Network.getLivePeers")
                 .Select(r => r.GetResult())
-                .Select(r => r?.ToObject<List<NodeRunnerData>>())    // TODO: Serialization needs to be checked for this 
+                .Select(r => r?.ToObject<List<NodeRunnerData>>());    // TODO: Serialization needs to be checked for this 
         }
 
         /// <summary>

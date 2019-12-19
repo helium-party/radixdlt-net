@@ -44,11 +44,12 @@ namespace HeliumParty.RadixDLT.Epics
         
         public IObservable<IRadixNodeAction> Epic(IObservable<IRadixNodeAction> actions, IObservable<RadixNetworkState> networkState)
         {
-            return actions
-                .OfType<T>()
-                .SelectMany(a => WaitForConnection(a.Node)
-                    .Select(wsc => new Jsonrpc.RadixJsonRpcClient(wsc))
-                   // FINISH THIS
+            throw new NotImplementedException();
+            //return actions
+            //    .OfType<T>()
+            //    .SelectMany(a => WaitForConnection(a.Node)
+            //        .Select(wsc => new Jsonrpc.RadixJsonRpcClient(wsc))
+            //       // FINISH THIS
         }
     }
 }
