@@ -114,7 +114,7 @@ namespace HeliumParty.RadixDLT.Jsonrpc
                 };
 
                 // Listen for response
-                _Channel.AddListener(msg =>
+                var disposableListener = _Channel.AddListener(msg =>
                 {
                     var json = JsonConvert.DeserializeObject<JObject>(msg);
                     if (!json.ContainsKey("id"))
@@ -132,7 +132,7 @@ namespace HeliumParty.RadixDLT.Jsonrpc
                 if (sendSuccessful)
                     emitter.OnError(new System.SystemException($"Could not send message: {method} {call_params}"));
 
-                return Disposable.Empty;    // TODO: Might need to create a real disposable
+                return disposableListener;
             }).Timeout(_DefaultTimeout);
         }
 
