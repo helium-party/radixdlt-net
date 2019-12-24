@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Hashing;
+using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Particles;
 using HeliumParty.RadixDLT.Serialization;
 using HeliumParty.RadixDLT.Serialization.Dson;
@@ -61,5 +63,16 @@ namespace HeliumParty.RadixDLT.Atoms
         }
 
         //public AID Id { get; set; }
+
+        // TODO: Add unit test.
+        public IEnumerable<SpunParticle> GetAllParticles() => ParticleGroups.SelectMany(grp => grp.Particles);
+        public IEnumerable<Particle> GetAllParticles(Spin spin) => ParticleGroups.SelectMany(grp => grp.GetParticlesWithSpin(spin));
+        public IEnumerable<RadixAddress> GetAllAddresses()
+        {
+            return GetAllParticles()
+                .Select(p => p.Particle)
+                .SelectMany(p => p.GetShareables())
+                .Distinct();
+        }
     }
 }

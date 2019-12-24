@@ -25,5 +25,17 @@ namespace HeliumParty.RadixDLT.Particles
         {
             Destinations = destinations ?? throw new ArgumentNullException(nameof(destinations));
         }
+
+        public HashSet<RadixAddress> GetShareables()
+        {
+            var addresses = new HashSet<RadixAddress>();
+            if (this is IAccountable)
+                addresses.UnionWith(((IAccountable)this).Addresses);
+
+            if (this is IIdentifiable)
+                addresses.Add(((IIdentifiable)this).RRI.Address);
+
+            return addresses;
+        }
     }
 }

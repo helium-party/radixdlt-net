@@ -33,7 +33,7 @@ namespace HeliumParty.RadixDLT.Ledger
         {
             ObservedAtom = atom;
             UpdateState = new AtomObservationState(type, isSoft);
-            TimeStamp = System.DateTime.Now.Ticks;
+            TimeStamp = System.DateTime.UtcNow.Ticks;
         }
 
         #region Static methods

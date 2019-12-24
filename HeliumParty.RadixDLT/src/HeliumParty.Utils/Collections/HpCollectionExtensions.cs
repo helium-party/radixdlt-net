@@ -98,5 +98,24 @@ namespace HeliumParty.Collections
 
             return items;
         }
+
+        /// <summary>
+        /// If the specified <paramref name="key"/> is already contained in the dictionary, 
+        /// its value will be updated by the specified <paramref name="value"/>.
+        /// Otherwise, a new Key-Value pair will be added to the dictionary.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the dictionary key</typeparam>
+        /// <typeparam name="TValue">The type of the dictionary value</typeparam>
+        /// <param name="source">Dictionary that should be modified</param>
+        /// <param name="key">The key for the entry</param>
+        /// <param name="value">The value for the entry</param>
+        /// <exception cref="ArgumentNullException">In case the <paramref name="source"/> dictionary is null</exception>
+        public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, TValue value)
+        {
+            if (source.ContainsKey(key))
+                source[key] = value;
+            else
+                source.Add(key, value);
+        }
     }
 }
