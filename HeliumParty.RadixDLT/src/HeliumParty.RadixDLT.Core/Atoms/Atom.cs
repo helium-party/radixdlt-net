@@ -46,6 +46,9 @@ namespace HeliumParty.RadixDLT.Atoms
             }
         }
 
+        [SerializationOutput(OutputMode.None)]
+        public AID Id => new AID(Hash, GetAllShards());
+
         public Atom() : this(0L) { }
 
         public Atom(long timestamp) : this(new List<ParticleGroup>(), timestamp) { }
@@ -62,8 +65,6 @@ namespace HeliumParty.RadixDLT.Atoms
             MetaData = metaData ?? throw new ArgumentNullException(nameof(metaData));
         }
 
-        //public AID Id { get; set; }
-
         // TODO: Add unit test.
         public IEnumerable<SpunParticle> GetAllParticles() => ParticleGroups.SelectMany(grp => grp.Particles);
         public IEnumerable<Particle> GetAllParticles(Spin spin) => ParticleGroups.SelectMany(grp => grp.GetParticlesWithSpin(spin));
@@ -73,6 +74,15 @@ namespace HeliumParty.RadixDLT.Atoms
                 .Select(p => p.Particle)
                 .SelectMany(p => p.GetShareables())
                 .Distinct();
+        }
+
+        public HashSet<long> GetAllShards()
+        {
+            return new HashSet<long>(GetAllParticles()
+                .Select(sp => sp.Particle)
+                .SelectMany(p => p.Destinations)
+                .Select(d => d.Shard)
+                .Distinct());
         }
     }
 }

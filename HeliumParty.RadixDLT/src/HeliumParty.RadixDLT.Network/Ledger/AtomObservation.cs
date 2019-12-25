@@ -50,7 +50,7 @@ namespace HeliumParty.RadixDLT.Ledger
         public static AtomObservation SoftDeleted(Atom atom) => new AtomObservation(atom, AtomStorageType.Delete, true);
         public static AtomObservation Stored(Atom atom) => new AtomObservation(atom, AtomStorageType.Store, false);
         public static AtomObservation Deleted(Atom atom) => new AtomObservation(atom, AtomStorageType.Delete, false);
-        public static AtomObservation Head(Atom atom) => new AtomObservation(atom, AtomStorageType.Head, false);
+        public static AtomObservation Head() => new AtomObservation(null, AtomStorageType.Head, false);
 
         public static AtomObservation OfEvent(AtomEvent atomEvent) => new AtomObservation(atomEvent.EventAtom, atomEvent.GetStorageType(), false);
 

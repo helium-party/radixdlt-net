@@ -117,5 +117,26 @@ namespace HeliumParty.Collections
             else
                 source.Add(key, value);
         }
+
+        /// <summary>
+        /// Merges the value for a specified <paramref name="key"/> with the specified <paramref name="value"/> by using the <paramref name="updateValueFactory"/>
+        /// If the <paramref name="key"/> doesn't exist in the dictionary, it will be added together with the <paramref name="value"/>
+        /// </summary>
+        /// <typeparam name="TKey">The type of the dictionary key</typeparam>
+        /// <typeparam name="TValue">The type of the dictionary value</typeparam>
+        /// <param name="source">Dictionary that should be modified</param>
+        /// <param name="key">The key for which the values should be merged</param>
+        /// <param name="value">The value to merge the existing one with.</param>
+        /// <param name="updateValueFactory">A factory that returns the new, merged value.</param>
+        public static void MergeValues<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, TValue value, Func<TValue, TValue, TValue> mergeValueFactory)
+        {
+            if (!source.ContainsKey(key))
+                source.Add(key, value);
+
+            else
+            {
+                source[key] = mergeValueFactory(source[key], value);
+            }
+        }
     }
 }

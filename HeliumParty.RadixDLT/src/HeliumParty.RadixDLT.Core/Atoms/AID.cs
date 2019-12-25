@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using HeliumParty.RadixDLT.Hashing;
 using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization;
 
@@ -34,6 +37,24 @@ namespace HeliumParty.RadixDLT.Atoms
         }
 
         public AID(string hexBytes) : this(Primitives.Bytes.FromHexString(hexBytes)) { }
+
+        public AID(RadixHash hash, HashSet<long> shards)
+        {
+            if (hash == null)
+                throw new ArgumentNullException(nameof(hash));
+            if (shards == null)
+                throw new ArgumentNullException(nameof(shards));
+            if (shards.Count == 0)
+                throw new ArgumentException($"{nameof(shards)} must not be empty");
+
+            var hashBytes = hash.ToByteArray();
+            var selectedShardIndex = (hashBytes.First() & 0xff) % shards.Count;
+            var selectedShard = shards.OrderBy(s => s).Skip(selectedShardIndex).First();
+
+            var bytes = new byte[HashBytesSize + ShardBytesSize];
+            hash.CopyTo(bytes, 0);
+            Longs.CopyTo(selectedShard, bytes, HashBytesSize);
+        }
 
         public long Shard => Longs.FromByteArray(Bytes, HashBytesSize);
 

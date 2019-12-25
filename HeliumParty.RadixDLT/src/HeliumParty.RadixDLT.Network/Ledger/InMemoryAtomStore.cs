@@ -203,8 +203,92 @@ namespace HeliumParty.RadixDLT.Ledger
                 var atom = observation.ObservedAtom;
                 if (atom != null)
                 {
+                    _Atoms.TryGetValue(atom, out var currentObservation);
+                    var nextUpdate = observation.UpdateState;
+                    var lastUpdate = currentObservation?.UpdateState;
 
+                    // If a new hard observed atom conflicts with a previously stored atom, 
+                    // stored atom must be deleted.
+                    if (nextUpdate.StorageType == AtomStorageType.Store && !nextUpdate.IsSoft)
+                    {
+                        foreach (var sp in atom.GetAllParticles())
+                        {
+                            if (!_ParticleIndex.TryGetValue(sp.Particle, out var atomsBySpin))
+                                continue;
+
+                            if (!atomsBySpin.TryGetValue(sp.Spin, out var atoms))
+                                continue;
+
+                            foreach (var a in atoms)
+                            {
+                                if (a.Equals(atom))
+                                    continue;
+
+                                _Atoms.TryGetValue(a, out var oldObservation);
+                                if (oldObservation != null && oldObservation.IsStore)
+                                {
+                                    SoftDeleteDependentsOf(a);
+                                    _Atoms.AddOrUpdate(a, AtomObservation.SoftDeleted(a));
+                                }
+                            }
+                        }
+                    }
+
+                    bool include;
+                    if (lastUpdate == null)
+                    {
+                        include = nextUpdate.StorageType == AtomStorageType.Store;
+                        foreach (var sp in atom.GetAllParticles())
+                        {
+                            _ParticleIndex.TryGetValue(sp.Particle, out var atomsBySpin);
+                            if (atomsBySpin == null)
+                            {
+                                atomsBySpin = new Dictionary<Spin, HashSet<Atom>>();
+                                _ParticleIndex.AddOrUpdate(sp.Particle, atomsBySpin, (_1, _2) => atomsBySpin);
+                            }
+
+                            atomsBySpin.MergeValues(
+                                sp.Spin,
+                                new HashSet<Atom>() { atom },
+                                (oldVal, newVal) => new HashSet<Atom>(oldVal.Concat(newVal)));
+                        }
+                    }
+                    else
+                    {
+                        // Soft observation should not be able to update a hard state
+                        // Only update if type changes
+                        include = (!nextUpdate.IsSoft || lastUpdate.IsSoft) 
+                            && nextUpdate.StorageType != lastUpdate.StorageType;
+                    }
+
+                    if (nextUpdate.StorageType == AtomStorageType.Delete && include)
+                        SoftDeleteDependentsOf(atom);
+
+                    var isSoftToHard = lastUpdate != null && lastUpdate.IsSoft && !nextUpdate.IsSoft;
+                    if (include || isSoftToHard)
+                        _Atoms.AddOrUpdate(atom, observation, (_1, _2) => observation);
+
+                    // Notify all observers about new observation
+                    if (include)
+                        foreach (var addr in atom.GetAllAddresses())
+                            if (_AllObservers.TryGetValue(addr, out var observers))
+                                foreach (var obs in observers)
+                                    obs.OnNext(observation);
                 }
+
+                else
+                {
+                    // Notify all observers about new observation
+                    if (_AllObservers.TryGetValue(address, out var observers))
+                        foreach (var obs in observers)
+                            obs.OnNext(observation);
+                }
+
+                // Notify every syncer of current system time
+                if (synced)
+                    if (_AllSyncers.TryGetValue(address, out var syncers))
+                        foreach (var sync in syncers)
+                            sync.OnNext(System.DateTime.UtcNow.Ticks);
             }
         }
 
@@ -225,13 +309,13 @@ namespace HeliumParty.RadixDLT.Ledger
         {
             foreach (var p in atom.GetAllParticles(Spin.Up))
             {
-                if (_ParticleIndex.TryGetValue(p, out var particleSpinIndex))
+                if (!_ParticleIndex.TryGetValue(p, out var atomsBySpin))
                 {
-                    if (particleSpinIndex.TryGetValue(Spin.Down, out var atoms))
+                    if (atomsBySpin.TryGetValue(Spin.Down, out var atoms))
                     {
                         foreach (var a in atoms)
                         {
-                            if (_Atoms.TryGetValue(a, out AtomObservation observation))
+                            if (!_Atoms.TryGetValue(a, out AtomObservation observation))
                                 break;
 
                             var observedAtom = observation.ObservedAtom;
@@ -248,7 +332,6 @@ namespace HeliumParty.RadixDLT.Ledger
                         }
                     }
                 }
-
             }
         }
 
