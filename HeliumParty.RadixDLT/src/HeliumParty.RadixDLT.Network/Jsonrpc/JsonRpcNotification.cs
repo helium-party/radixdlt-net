@@ -3,12 +3,15 @@
     public class JsonRpcNotification<T>
     {
         public T NotificationEvent { get; }
-        public JsonRpcNotificationType NotificationType { get; }    // TODO: Don't think we really need the type..
+        public JsonRpcNotificationType NotificationType { get; }
 
         public JsonRpcNotification(JsonRpcNotificationType type, T notificationEvent)
         {
             NotificationType = type;
             NotificationEvent = notificationEvent;
         }
+
+        public static JsonRpcNotification<T> OfEvent<T>(T notificationEvent) 
+            => new JsonRpcNotification<T>(JsonRpcNotificationType.Event, notificationEvent);
     }
 }

@@ -1,10 +1,13 @@
 ﻿using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.Identity;
+using HeliumParty.RadixDLT.Ledger;
 using HeliumParty.RadixDLT.Log;
+using HeliumParty.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -225,10 +228,25 @@ namespace HeliumParty.RadixDLT.Jsonrpc
             return JsonRpcCall("Atoms.closeAtomStatusNotifications", call_params).CheckCallSuccess();
         }
 
-        // CHECK WHEN REBASE
-        public IObservable<object> ObserveAtomStatusNotifications(string subscriberId)
+        /// <summary>
+        /// Listens to atom status notifications
+        /// </summary>
+        /// <param name="subscriberId">The subscription to listen for</param>
+        /// <returns>Observable of status notifications</returns>
+        public IObservable<JsonRpcNotification<AtomStatusEvent>> ObserveAtomStatusNotifications(string subscriberId)
         {
-            throw new NotImplementedException();    // TODO: Missing AtomStatusNotification, check when rebased
+            return ObserveNotifications(
+                "Atoms.nextStatusEvent",
+                subscriberId,
+                json =>
+                {
+                    Enum.TryParse<AtomStatus>(
+                        json.GetValue("status").ToObject<string>().FromUpperToUpperCamelCase(),
+                        out var atomStatus);
+
+                    var data = (JObject)json.GetValue("data");
+                    return new AtomStatusEvent[] { new AtomStatusEvent(atomStatus, data) };
+                });
         }
 
         /// <summary>
@@ -268,17 +286,53 @@ namespace HeliumParty.RadixDLT.Jsonrpc
                 .Select(r => r?.ToObject<List<Atom>>())    // TODO: Serialization needs to be checked for this
                 .Select(atom_list => atom_list == null || atom_list.Count == 0 ? null : atom_list[0]);
         }
-
-        // CHECK WHEN REBASE
-        public IObservable<JsonRpcNotification<object>> ObserveNotifications(string subscriberId)
+        
+        private IObservable<JsonRpcNotification<T>> ObserveNotifications<T>(string notificationMethod, string subscriberId, Func<JObject, IEnumerable<T>> mapper)
         {
-            throw new NotImplementedException();    // TODO: Missing AtomStatusNotification, check when rebased
+            return Observable.Create<JsonRpcNotification<T>>(emitter =>
+            {
+                emitter.OnNext(new JsonRpcNotification<T>(JsonRpcNotificationType.Start, default(T)));
+
+                return _Channel.AddListener(msg =>
+                {
+                    var json = JsonConvert.DeserializeObject<JObject>(msg);
+                    if (!json.ContainsKey("method"))
+                        return;
+
+                    var method = json.Value<string>("method");
+                    if (String.IsNullOrEmpty(method) || !method.Equals(notificationMethod))
+                        return;
+
+                    var parameters = (JObject)json.GetValue("params");
+                    if (!parameters.GetValue("subscriberId").Equals(subscriberId))
+                        return;
+
+                    foreach (var item in mapper(parameters))
+                        emitter.OnNext(JsonRpcNotification<T>.OfEvent<T>(item));
+                });
+            });
         }
 
-        // CHECK WHEN REBASE
-        public IObservable<JsonRpcNotification<object>> ObserveAtoms(string subscriberId)
+        public IObservable<JsonRpcNotification<AtomObservation>> ObserveAtoms(string subscriberId)
         {
-            throw new NotImplementedException();    // TODO: Missing AtomStatusNotification, check when rebased
+            return ObserveNotifications(
+                "Atoms.subscribeUpdate",
+                subscriberId,
+                json =>
+                {
+                    _Logger.LogMessage($"Received Atoms.subscribeUpdate for {subscriberId} {json}");
+                    var atomEvents = (JArray)json.GetValue("atomEvents");
+                    var isHead = json.ContainsKey("isHead") && json.GetValue("isHead").ToObject<bool>();
+                    var observations = 
+                        atomEvents
+                            .Values<AtomEvent>()
+                            .Select(ae => AtomObservation.OfEvent(ae));
+
+                    if (isHead)
+                        return observations.Concat(new AtomObservation[] { AtomObservation.Head() });
+
+                    return observations;
+                });
         }
 
         public IObservable<object> CancelAtomsSubscribe(string subscriberId)
