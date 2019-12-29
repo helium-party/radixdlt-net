@@ -7,16 +7,16 @@ namespace HeliumParty.RadixDLT.Actions
     /// </summary>
     public class FetchAtomsCancelAction : IFetchAtomsAction
     {
-        public string UUID { get; }
+        public string Id { get; }
         public RadixAddress Address { get; }
         public RadixNode Node => throw new System.InvalidOperationException("This action doesn't contain a node!");
 
-        public FetchAtomsCancelAction(string uuid, RadixAddress address)
+        public FetchAtomsCancelAction(string id, RadixAddress address)
         {
-            UUID = uuid ?? throw new System.ArgumentNullException(nameof(uuid));
+            Id = id ?? throw new System.ArgumentNullException(nameof(id));
             Address = address ?? throw new System.ArgumentNullException(nameof(address));
         }
 
-        public override string ToString() => $"FETCH_ATOMS_CANCEL {UUID} {Address}";
+        public override string ToString() => $"FETCH_ATOMS_CANCEL {Id} {Address}";
     }
 }

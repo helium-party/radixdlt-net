@@ -1,8 +1,7 @@
 ﻿using HeliumParty.RadixDLT.Jsonrpc;
+using HeliumParty.RadixDLT.Universe;
 using HeliumParty.RadixDLT.Web;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace HeliumParty.RadixDLT
 {
@@ -11,42 +10,62 @@ namespace HeliumParty.RadixDLT
     /// </summary>
     public class RadixNodeState
     {
-        private readonly RadixNode _Node;
-        private readonly NodeRunnerData _Data;
+        public RadixNode Node { get; }
 
-        public Universe.RadixUniverseConfig UniverseConfig { get; }
+        /// <summary>
+        /// Status of <see cref="RadixNode"/>'s client
+        /// </summary>
         public WebSocketStatus Status { get; }
-        public int? Version { get; }
 
-        public RadixNodeState(RadixNode node, WebSocketStatus status, NodeRunnerData data,
-            int? version, Universe.RadixUniverseConfig universeConfig)
+        /// <summary>
+        /// Node runner data of <see cref="RadixNode"/>
+        /// </summary>
+        public NodeRunnerData Data { get; }
+
+        /// <summary>
+        /// API version of <see cref="RadixNode"/>'s client
+        /// </summary>
+        public int Version { get; }
+
+        /// <summary>
+        /// Universe configuration of <see cref="RadixNode"/>'s client
+        /// </summary>
+        public RadixUniverseConfig UniverseConfig { get; }
+
+        public ShardSpace Shards => Data.Shards;
+
+        public RadixNodeState(
+            RadixNode node,
+            WebSocketStatus status) : this(node, status, null, null, -1) { }
+
+        public RadixNodeState(
+            RadixNode node,
+            WebSocketStatus status,
+            NodeRunnerData data) : this(node, status, data, null, -1) { }
+
+        public RadixNodeState(
+            RadixNode node,
+            WebSocketStatus status,
+            NodeRunnerData data,
+            RadixUniverseConfig universeConfig) : this(node, status, data, universeConfig, -1) { }
+
+        public RadixNodeState(
+            RadixNode node, 
+            WebSocketStatus status, 
+            NodeRunnerData data,
+            RadixUniverseConfig universeConfig,
+            int version)
         {
-            _Node = node ?? throw new ArgumentNullException(nameof(node));
+            Node = node ?? throw new ArgumentNullException(nameof(node));
             Status = status;
-            _Data = data;
-            Version = version;
+            Data = data;
             UniverseConfig = universeConfig;
+            Version = version;
         }
 
-        public static RadixNodeState From(RadixNode node, WebSocketStatus status)
-        {
-            return new RadixNodeState(node, status, null, null, null);
-        }
-
-        public static RadixNodeState From(RadixNode node, WebSocketStatus status, NodeRunnerData data)
-        {
-            return new RadixNodeState(node, status, data, null, null);
-        }
-
-        public static RadixNodeState From(RadixNode node, WebSocketStatus status, NodeRunnerData data, Universe.RadixUniverseConfig universeConfig)
-        {
-            return new RadixNodeState(node, status, data, null, universeConfig);
-        }
-
-        public RadixNode GetNode() => _Node;
-
-        public NodeRunnerData GetData() => _Data ?? default(NodeRunnerData);
-
-        public ShardSpace GetShards() => _Data.GetShards();
+        public override string ToString() 
+            => "RadixNodeState{" 
+            + $"node='{Node}', status={Status}, data={Data}, universeConfig={UniverseConfig}" 
+            + "}";
     }
 }

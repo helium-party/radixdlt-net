@@ -1,4 +1,5 @@
 ﻿using HeliumParty.RadixDLT.Identity;
+using HeliumParty.RadixDLT.Ledger;
 
 namespace HeliumParty.RadixDLT.Actions
 {
@@ -8,7 +9,7 @@ namespace HeliumParty.RadixDLT.Actions
     /// </summary>
     public class FetchAtomsObservationAction : IFetchAtomsAction
     {
-        public string UUID { get; }
+        public string Id { get; }
         public RadixAddress Address { get; }
         public RadixNode Node { get; }
 
@@ -18,17 +19,17 @@ namespace HeliumParty.RadixDLT.Actions
         public AtomObservation Observation { get; }
 
         public FetchAtomsObservationAction(
-            string uuid, 
+            string id, 
             RadixAddress address, 
             RadixNode node, 
             AtomObservation observation)
         {
-            UUID = uuid ?? throw new System.ArgumentNullException(nameof(uuid));
+            Id = id ?? throw new System.ArgumentNullException(nameof(id));
             Address = address ?? throw new System.ArgumentNullException(nameof(address));
             Node = node ?? throw new System.ArgumentNullException(nameof(node));
             Observation = observation ?? throw new System.ArgumentNullException(nameof(observation));
         }
 
-        public override string ToString() => $"FETCH_ATOMS_OBSERVATION {Node} {UUID} {Observation}";
+        public override string ToString() => $"FETCH_ATOMS_OBSERVATION {Node} {Id} {Observation}";
     }
 }

@@ -42,30 +42,30 @@ namespace HeliumParty.RadixDLT.Ledger
 
         /// <summary>
         /// Retrieve the current set of validated up particles at a given shardable
-        /// If <paramref name="uuid"/> is provided, staged particles under that 
-        /// <paramref name="uuid"/> are also retrieved.
+        /// If <paramref name="id"/> is provided, staged particles under that 
+        /// <paramref name="id"/> are also retrieved.
         /// </summary>
         /// <param name="address">The address to get the particles under</param>
-        /// <param name="uuid"><paramref name="uuid"/> of staged particles to include</param>
+        /// <param name="id"><paramref name="id"/> of staged particles to include</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of all up particles of the current local view</returns>
-        IEnumerable<Particle> GetUpParticles(RadixAddress address, string uuid = null);
+        IEnumerable<Particle> GetUpParticles(RadixAddress address, string id = null);
 
         /// <summary>
-        /// Adds the particle group to the staging area for the given <paramref name="uuid"/>
+        /// Adds the particle group to the staging area for the given <paramref name="id"/>
         /// </summary>
-        /// <param name="uuid">The <paramref name="uuid"/> to add the particle group to</param>
+        /// <param name="id">The <paramref name="id"/> to add the particle group to</param>
         /// <param name="particleGroup">The <see cref="ParticleGroup"/> to add to the staging area</param>
-        void StageParticleGroup(string uuid, ParticleGroup particleGroup);
+        void StageParticleGroup(string id, ParticleGroup particleGroup);
 
         /// <summary>
         /// Retrieves all staged particle groups and clears the staging area 
-        /// for the given <paramref name="uuid"/>
+        /// for the given <paramref name="id"/>
         /// 
         /// // TODO: Might get refactored in java later.
         /// 
         /// </summary>
-        /// <param name="uuid"><paramref name="uuid"/> to retrieve the staged particle groups for</param>
+        /// <param name="id"><paramref name="id"/> to retrieve the staged particle groups for</param>
         /// <returns>All staged <see cref="ParticleGroup"/>s in the order they were staged</returns>
-        List<ParticleGroup> GetStagedAndClear(string uuid);
+        List<ParticleGroup> GetStagedAndClear(string id);
     }
 }

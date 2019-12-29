@@ -12,7 +12,7 @@ namespace HeliumParty.RadixDLT.Actions
         public RadixNode Node { get; }
         private readonly List<NodeRunnerData> _Data;
 
-        private GetLivePeersResultAction(RadixNode node, List<NodeRunnerData> data)
+        public GetLivePeersResultAction(RadixNode node, List<NodeRunnerData> data)
         {
             if (data == null)
                 throw new System.ArgumentNullException(nameof(data));
@@ -21,8 +21,6 @@ namespace HeliumParty.RadixDLT.Actions
 
             _Data = new List<NodeRunnerData>(data); // This doesn't create a shallow / deep copy of the class instances themself
         }
-
-        public static GetLivePeersResultAction From(RadixNode node, List<NodeRunnerData> data) => new GetLivePeersResultAction(node, data);
 
         public List<NodeRunnerData> GetResult() => _Data.ToList();
 

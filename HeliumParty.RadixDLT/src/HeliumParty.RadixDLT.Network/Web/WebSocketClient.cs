@@ -1,13 +1,15 @@
-﻿using HeliumParty.RadixDLT.Log;
+﻿using HeliumParty.RadixDLT.Jsonrpc;
+using HeliumParty.RadixDLT.Log;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace HeliumParty.RadixDLT.Web
 {
-    public class WebSocketClient
+    public class WebSocketClient : IPersistentChannel
     {
         #region Properties
 
@@ -115,13 +117,11 @@ namespace HeliumParty.RadixDLT.Web
         /// </summary>
         /// <param name="listener">The listener method that will be called, 
         /// the message will be its parameter</param>
-        public void AddListener(Action<string> listener) => _Listeners.Add(listener);
-
-        /// <summary>
-        /// Removes the listener from the notification list
-        /// </summary>
-        /// <param name="listener">The listener to remove</param>
-        public void RemoveListener(Action<string> listener) => _Listeners.Remove(listener);
+        public IDisposable AddListener(Action<string> listener)
+        {
+            _Listeners.Add(listener);
+            return Disposable.Create(() => _Listeners.Remove(listener));
+        }
         
         /// <summary>
         /// Sends a message to the node

@@ -53,7 +53,7 @@ namespace HeliumParty.RadixDLT
 
             Dictionary<RadixNode, RadixNodeState> initStates = new Dictionary<RadixNode, RadixNodeState>();
             foreach (var node in _InitialNodes)
-                initStates.Add(node, RadixNodeState.From(node, Web.WebSocketStatus.Disconnected));
+                initStates.Add(node, new RadixNodeState(node, Web.WebSocketStatus.Disconnected));
 
             return new RadixNetworkController(
                 _Network,

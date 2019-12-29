@@ -2,10 +2,9 @@
 
 namespace HeliumParty.RadixDLT.Jsonrpc
 {
-    public interface IPersistentChannel : ICancellable
+    public interface IPersistentChannel
     {
         bool SendMessage(string mesage);
         IDisposable AddListener(System.Action<string> listener);
-        void RemoveListener();
     }
 }

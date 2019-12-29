@@ -5,7 +5,6 @@
         private readonly string _Location;
         private readonly string _WebSocketUrl;
         private readonly string _HttpUrl;
-        private readonly int _Port;
         private System.Net.DnsEndPoint _SocketEndpoint;
 
         #region Public members
@@ -15,13 +14,14 @@
             get
             {
                 if (_SocketEndpoint == null)
-                    _SocketEndpoint = new System.Net.DnsEndPoint(_WebSocketUrl, _Port);
+                    _SocketEndpoint = new System.Net.DnsEndPoint(_WebSocketUrl, Port);
 
                 return _SocketEndpoint;
             }
         }
         public bool IsSSL { get; }
-        
+        public int Port { get; }
+
         #endregion
 
         public RadixNode(string location, int port, bool useSSL = true)
@@ -29,12 +29,12 @@
             _Location = location;
             _WebSocketUrl = (useSSL ? "wss://" : "ws://") + $"{location}:{port}/rpc";
             _HttpUrl = (useSSL ? "https://" : "http://") + $"{location}:{port}";
-            _Port = port;
+            Port = port;
 
             IsSSL = useSSL;
         }
         
-        public System.Net.DnsEndPoint GetHttpEndpoint(string path) => new System.Net.DnsEndPoint(CombineUrl(_HttpUrl, path), _Port);
+        public System.Net.DnsEndPoint GetHttpEndpoint(string path) => new System.Net.DnsEndPoint(CombineUrl(_HttpUrl, path), Port);
 
         private static string CombineUrl(string url1, string url2)
         {
@@ -72,14 +72,14 @@
             return finalUrl;
         }
 
-        public override string ToString() => $"{_Location}:{_Port}";
-        public override int GetHashCode() => (_WebSocketUrl + _Port.ToString()).GetHashCode();
+        public override string ToString() => $"{_Location}:{Port}";
+        public override int GetHashCode() => (_WebSocketUrl + Port.ToString()).GetHashCode();
         public override bool Equals(object obj)
         {
             if (obj is RadixNode node)
             {
                 if (this._Location.Equals(node._Location)
-                    && this._Port.Equals(node._Port))
+                    && this.Port.Equals(node.Port))
                     return true;
             }
 

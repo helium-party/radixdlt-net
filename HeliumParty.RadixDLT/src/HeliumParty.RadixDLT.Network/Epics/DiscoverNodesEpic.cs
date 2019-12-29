@@ -25,7 +25,7 @@ namespace HeliumParty.RadixDLT.Epics
                 .OfType<Actions.DiscoverMoreNodesAction>()
                 .FirstAsync()   // we aren't actually async, however the other methods are marked as deprecated
                 .SelectMany(i => _Seeds)
-                .Select(node => Actions.GetUniverseRequestAction.From(node))
+                .Select(node => new Actions.GetUniverseRequestAction(node))
                 .Catch<IRadixNodeAction, System.Exception>(exc =>                   //  TODO: Is this whole logic really necessary for new 'DiscoverMoreNodesErrorAction'? 
                                                                                     //        should this be moved into the action class itself?
                 {
@@ -41,7 +41,7 @@ namespace HeliumParty.RadixDLT.Epics
                 actions
                 .OfType<Actions.GetUniverseResponseAction>()
                 .Where(action => !action.GetResult().Equals(_Config))
-                .Select(action => new Actions.NodeUniverseMismatchAction(action.Node, _Config, action.GetResult());
+                .Select(action => new Actions.NodeUniverseMismatchAction(action.Node, _Config, action.GetResult()));
 
             IObservable<RadixNode> connectedSeeds =
                 actions
@@ -49,11 +49,11 @@ namespace HeliumParty.RadixDLT.Epics
                 .Where(action => action.GetResult().Equals(_Config))
                 .Select(action => action.Node)
                 .Publish()
-                .AutoConnect(3);    // TODO: Make a constant for this?
+                .AutoConnect(3);
 
-            IObservable<IRadixNodeAction> addSeeds = connectedSeeds.Select(Actions.AddNodeAction.From);
-            IObservable<IRadixNodeAction> addSeedData = connectedSeeds.Select(Actions.GetNodeDataRequestAction.From);
-            IObservable<IRadixNodeAction> addSeedSiblings = connectedSeeds.Select(Actions.GetLivePeersRequestAction.From);
+            IObservable<IRadixNodeAction> addSeeds = connectedSeeds.Select(node => new Actions.AddNodeAction(node));
+            IObservable<IRadixNodeAction> addSeedData = connectedSeeds.Select(node => new Actions.GetNodeDataRequestAction(node));
+            IObservable<IRadixNodeAction> addSeedSiblings = connectedSeeds.Select(node => new Actions.GetLivePeersRequestAction(node));
 
             IObservable<IRadixNodeAction> addNodes =
                 actions
@@ -66,8 +66,8 @@ namespace HeliumParty.RadixDLT.Epics
                         {
                             return data.Select(d =>
                             {
-                                RadixNode node = new RadixNode(d.GetIP(), action.Node.Port, action.Node.IsSSL);
-                                return state.NodeStateCollection.ContainsKey(node) ? null : Actions.AddNodeAction.From(node);
+                                RadixNode node = new RadixNode(d.IP, action.Node.Port, action.Node.IsSSL);
+                                return state.NodeStateCollection.ContainsKey(node) ? null : new Actions.AddNodeAction(node);
                             })
                             .Where(addNode => addNode != null);
                         }))

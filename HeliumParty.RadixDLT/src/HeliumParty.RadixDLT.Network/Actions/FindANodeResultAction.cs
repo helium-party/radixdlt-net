@@ -15,14 +15,12 @@
         /// </summary>
         public IFindANodeRequestAction Request { get; }
 
-        private FindANodeResultAction(RadixNode node, IFindANodeRequestAction request)
+        public FindANodeResultAction(RadixNode node, IFindANodeRequestAction request)
         {
             Node = node ?? throw new System.ArgumentNullException(nameof(node));
             Request = request ?? throw new System.ArgumentNullException(nameof(request));
         }
-
-        public static FindANodeResultAction From(RadixNode node, IFindANodeRequestAction request) => new FindANodeResultAction(node, request);
-
+        
         public override string ToString() => $"FIND_A_NODE_RESULT {Node} {Request}";
     }
 }

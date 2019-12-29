@@ -44,5 +44,12 @@ namespace HeliumParty.Utils.Tests
             Text.ChangeCase("helloWorld", Text.NamingCase.lowerCamelCase, Text.NamingCase.snake_case).ShouldBe(expectedResult);
             Text.ChangeCase("HELLO_WORLD", Text.NamingCase.UPPER_CASE, Text.NamingCase.snake_case).ShouldBe(expectedResult);
         }
+
+        [Fact]
+        public void CaseWrapperTest()
+        {
+            Text.FromUpperCamelToUpperCase("HelloWorld").ShouldBe("HELLO_WORLD");
+            Text.FromUpperToUpperCamelCase("HELLO_WORLD").ShouldBe("HelloWorld");
+        }
     }
 }

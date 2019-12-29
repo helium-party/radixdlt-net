@@ -1,33 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Dahomey.Cbor.Attributes;
+using HeliumParty.RadixDLT.Atoms;
+using HeliumParty.RadixDLT.Serialization;
 
 namespace HeliumParty.RadixDLT.Jsonrpc
 {
-    public class NodeRunnerData // TODO Serialization missing
+    [CborDiscriminator("network.peer", Policy = CborDiscriminatorPolicy.Always)]
+    public class NodeRunnerData : SerializableObject
     {
-        private string _IP;
-
+        [SerializationPrefix(Json = "system")]
+        [SerializationOutput(OutputMode.All)]
         private RadixSystem _System;
+
+        [SerializationPrefix(Json = "host")]
+        [SerializationOutput(OutputMode.All)]
+        public string IP { get; private set; }
+        public ShardSpace Shards => _System.Shards;
 
         public NodeRunnerData(RadixSystem system)
         {
-            _IP = null;
+            IP = null;
             _System = system;
         }
 
-        public ShardSpace GetShards() => _System.GetShards();
+        public override string ToString() => $"{(IP != null ? IP + ":" : "")}shards={Shards}";
 
-        public string GetIP() => _IP;
-
-        public override string ToString() => $"{((_IP != null) ? $"{_IP}: " : "")}shards={GetShards().ToString()}";
-
-        public override int GetHashCode() => (_IP + _System.GetShards().ToString()).GetHashCode();  // TODO: Java lib might change here
+        public override int GetHashCode() => (IP + Shards.ToString()).GetHashCode();  // TODO: Java lib might change here
 
         public override bool Equals(object obj)
         {
             if (obj != null && obj is NodeRunnerData nrd)
-                return nrd._IP.Equals(_IP) && nrd.GetShards().Equals(GetShards());
+                return nrd.IP.Equals(this.IP) && nrd.Shards.Equals(this.Shards);
 
             return false;
         }

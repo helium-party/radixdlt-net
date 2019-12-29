@@ -8,17 +8,17 @@ namespace HeliumParty.RadixDLT.Actions
     /// </summary>
     public class FetchAtomsSubscribeAction : IFetchAtomsAction
     {
-        public string UUID { get; }
+        public string Id { get; }
         public RadixAddress Address { get; }
         public RadixNode Node { get; }
                 
-        public FetchAtomsSubscribeAction(string uuid, RadixAddress address, RadixNode node)
+        public FetchAtomsSubscribeAction(string id, RadixAddress address, RadixNode node)
         {
-            UUID = uuid ?? throw new System.ArgumentNullException(nameof(uuid));
+            Id = id ?? throw new System.ArgumentNullException(nameof(id));
             Address = address ?? throw new System.ArgumentNullException(nameof(address));
             Node = node ?? throw new System.ArgumentNullException(nameof(node));
         }
 
-        public override string ToString() => $"FETCH_ATOMS_SUBSCRIBE {UUID} {Address} {Node}";
+        public override string ToString() => $"FETCH_ATOMS_SUBSCRIBE {Id} {Address} {Node}";
     }
 }

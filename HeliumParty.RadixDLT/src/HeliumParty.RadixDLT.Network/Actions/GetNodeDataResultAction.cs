@@ -10,15 +10,10 @@ namespace HeliumParty.RadixDLT.Actions
         public RadixNode Node { get; }
         private readonly NodeRunnerData _Data;
 
-        private GetNodeDataResultAction(RadixNode node, NodeRunnerData data)
+        public GetNodeDataResultAction(RadixNode node, NodeRunnerData data)
         {
             Node = node ?? throw new System.ArgumentNullException(nameof(node));
             _Data = data ?? throw new System.ArgumentNullException(nameof(data));
-        }
-
-        public GetNodeDataResultAction From(RadixNode node, NodeRunnerData data)
-        {
-            return new GetNodeDataResultAction(node, data);
         }
 
         public NodeRunnerData GetResult() => _Data;

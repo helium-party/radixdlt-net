@@ -12,7 +12,7 @@ namespace HeliumParty.RadixDLT.Actions
         /// The unique id representing a fetch atoms flow. That is, each type of 
         /// action in a single flow instance must have the same unique id.
         /// </summary>
-        string Uuid { get; }
+        string Id { get; }
 
         /// <summary>
         /// The atom to submit

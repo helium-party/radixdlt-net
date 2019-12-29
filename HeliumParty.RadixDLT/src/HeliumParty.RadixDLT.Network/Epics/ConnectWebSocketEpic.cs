@@ -22,15 +22,13 @@ namespace HeliumParty.RadixDLT.Epics
                 actions
                 .Where(action => action is Actions.ConnectionWebSocketAction)
                 .Do(connectAction => _WebSockets.GetOrCreate(connectAction.Node).Connect())
-                .IgnoreElements()
-                .AsObservable();    // TODO : AsObservable OK?
+                .IgnoreElements();
 
             IObservable<IRadixNodeAction> onClose =
                 actions
                 .Where(action => action is Actions.CloseWebSocketAction)
                 .Do(closeAction => _WebSockets.GetOrCreate(closeAction.Node).Close())
-                .IgnoreElements()
-                .AsObservable();
+                .IgnoreElements();
 
             return Observable.Merge(onConnect, onClose);
         }

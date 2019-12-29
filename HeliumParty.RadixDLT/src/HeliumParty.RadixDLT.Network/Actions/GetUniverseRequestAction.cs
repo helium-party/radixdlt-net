@@ -1,6 +1,6 @@
 ﻿namespace HeliumParty.RadixDLT.Actions
 {
-    public class GetUniverseRequestAction : IRadixNodeAction
+    public class GetUniverseRequestAction : IJsonRpcMethodAction
     {
         public RadixNode Node { get; }
 

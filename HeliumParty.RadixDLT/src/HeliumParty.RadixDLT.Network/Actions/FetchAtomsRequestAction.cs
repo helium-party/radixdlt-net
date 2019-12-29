@@ -8,20 +8,20 @@ namespace HeliumParty.RadixDLT.Actions
     /// </summary>
     public class FetchAtomsRequestAction : IFetchAtomsAction, IFindANodeRequestAction
     {
-        public string UUID { get; }
+        public string Id { get; }
         public RadixAddress Address { get; }
         public RadixNode Node => throw new System.InvalidOperationException("This action doesn't contain a node!");
-        public HashSet<long> Shards => new HashSet<long>( new long[] { Address.EUID.Shard });
+        public HashSet<long> Shards => new HashSet<long>( new long[] { Address.GetId().Shard });
         
-        private FetchAtomsRequestAction(string uuid, RadixAddress address)
+        private FetchAtomsRequestAction(string id, RadixAddress address)
         {
-            UUID = uuid ?? throw new System.ArgumentNullException(nameof(uuid));
+            Id = id ?? throw new System.ArgumentNullException(nameof(id));
             Address = address ?? throw new System.ArgumentNullException(nameof(address));
         }
 
         public FetchAtomsRequestAction(RadixAddress address) : this(System.Guid.NewGuid().ToString(), address)
         { }
 
-        public override string ToString() => $"FETCH_ATOMS_REQUEST {UUID} {Address}";
+        public override string ToString() => $"FETCH_ATOMS_REQUEST {Id} {Address}";
     }
 }

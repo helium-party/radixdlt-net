@@ -177,10 +177,11 @@ namespace HeliumParty.RadixDLT.Jsonrpc
         /// <summary>
         /// Submits an atom to the node
         /// </summary>
+        /// <typeparam name="T">Type of returned observable as the termination message alone is returned</typeparam>
         /// <param name="atom">The atom to submit</param>
         /// <returns>An <see cref="IObservable{T}"/> that only leaves the termination message when atom is queued</returns>
         /// <exception cref="SubmitAtomException">Thrown in case submitting the atom went wrong</exception>
-        public IObservable<object> PushAtom(Atom atom)
+        public IObservable<T> PushAtom<T>(Atom atom)
         {
             // TODO: Correct serialization of atom
             var jsonAtom = (JObject)JToken.FromObject(atom);
@@ -191,17 +192,20 @@ namespace HeliumParty.RadixDLT.Jsonrpc
                         throw new SubmitAtomException(atom, (JObject)r.GetError());
                     return r;
                 }
-                ).IgnoreElements();
+                )
+                .Select( _ => default(T))
+                .IgnoreElements();
         }
 
         /// <summary>
         /// Sends a request to receive streaming updates on an atom's status.
         /// </summary>
+        /// <typeparam name="T">Type of returned observable as the termination message alone is returned</typeparam>
         /// <param name="subscriberId">The subscriber id for the streaming updates</param>
         /// <param name="aid">the <see cref="AID"/> of the atom</param>
         /// <returns>An <see cref="IObservable{T}"/> that only leaves the termination message when message call was accepted</returns>
         /// <exception cref="JsonRpcCallException">In case the call was not successful</exception>
-        public IObservable<object> RequestAtomStatusNotifications(string subscriberId, AID aid)
+        public IObservable<T> RequestAtomStatusNotifications<T>(string subscriberId, AID aid)
         {    
             var call_params = new JObject
             {
@@ -209,23 +213,24 @@ namespace HeliumParty.RadixDLT.Jsonrpc
                 { "subscriberId", subscriberId }
             };
 
-            return JsonRpcCall("Atoms.getAtomStatusNotifications", call_params).CheckCallSuccess();
+            return JsonRpcCall("Atoms.getAtomStatusNotifications", call_params).CheckCallSuccess<T>();
         }
 
         /// <summary>
         /// Closes a streaming status subscription
         /// </summary>
+        /// <typeparam name="T">Type of returned observable as the termination message alone is returned</typeparam>
         /// <param name="subscriberId">The subscriber id the stream should be closed for</param>
         /// <returns>An <see cref="IObservable{T}"/> that only leaves the termination message when message call was accepted</returns>
         /// <exception cref="JsonRpcCallException">In case the call was not successful</exception>
-        public IObservable<object> CloseAtomStatusNotifications(string subscriberId)
+        public IObservable<T> CloseAtomStatusNotifications<T>(string subscriberId)
         {
             var call_params = new JObject
             {
                 { "subscriberId", subscriberId }
             };
 
-            return JsonRpcCall("Atoms.closeAtomStatusNotifications", call_params).CheckCallSuccess();
+            return JsonRpcCall("Atoms.closeAtomStatusNotifications", call_params).CheckCallSuccess<T>();
         }
 
         /// <summary>
@@ -308,7 +313,7 @@ namespace HeliumParty.RadixDLT.Jsonrpc
                         return;
 
                     foreach (var item in mapper(parameters))
-                        emitter.OnNext(JsonRpcNotification<T>.OfEvent<T>(item));
+                        emitter.OnNext(JsonRpcNotification<T>.OfEvent(item));
                 });
             });
         }
@@ -335,17 +340,17 @@ namespace HeliumParty.RadixDLT.Jsonrpc
                 });
         }
 
-        public IObservable<object> CancelAtomsSubscribe(string subscriberId)
+        public IObservable<T> CancelAtomsSubscribe<T>(string subscriberId)
         {
             var call_params = new JObject
             {
                 { "subscriberId", subscriberId }
             };
 
-            return JsonRpcCall("Atoms.cancel", call_params).CheckCallSuccess();
+            return JsonRpcCall("Atoms.cancel", call_params).CheckCallSuccess<T>();
         }
         
-        public IObservable<object> SendAtomsSubscribe(string subscriberId, RadixAddress address)
+        public IObservable<T> SendAtomsSubscribe<T>(string subscriberId, RadixAddress address)
         {
             var call_params = new JObject
             {
@@ -353,7 +358,7 @@ namespace HeliumParty.RadixDLT.Jsonrpc
                 { "subscriberId", subscriberId }
             };
 
-            return JsonRpcCall("Atoms.subscribe", call_params).CheckCallSuccess();
+            return JsonRpcCall("Atoms.subscribe", call_params).CheckCallSuccess<T>();
         }
     }
 }

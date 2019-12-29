@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Dahomey.Cbor.Attributes;
+using HeliumParty.RadixDLT.Atoms;
+using HeliumParty.RadixDLT.Serialization;
 
 namespace HeliumParty.RadixDLT.Jsonrpc
 {
-    public class RadixSystem
+    [CborDiscriminator("api.system", Policy = CborDiscriminatorPolicy.Always)]
+    public class RadixSystem : SerializableObject
     {
+        [SerializationPrefix(Json ="shards")]
+        [SerializationOutput(OutputMode.All)]
         public ShardSpace Shards { get; }
     }
 }

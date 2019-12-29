@@ -11,7 +11,7 @@
             NotificationEvent = notificationEvent;
         }
 
-        public static JsonRpcNotification<T> OfEvent<T>(T notificationEvent) 
+        public static JsonRpcNotification<T> OfEvent(T notificationEvent) 
             => new JsonRpcNotification<T>(JsonRpcNotificationType.Event, notificationEvent);
     }
 }

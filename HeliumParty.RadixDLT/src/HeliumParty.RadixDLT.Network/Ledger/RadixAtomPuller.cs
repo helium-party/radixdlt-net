@@ -48,7 +48,7 @@ namespace HeliumParty.RadixDLT.Ledger
                         _Controller.Dispatch(fetchAction);
 
                         return Disposable.Create(() => 
-                            _Controller.Dispatch(new Actions.FetchAtomsCancelAction(fetchAction.UUID, addr)));
+                            _Controller.Dispatch(new Actions.FetchAtomsCancelAction(fetchAction.Id, addr)));
                     })
                     .Publish()
                     .RefCount();

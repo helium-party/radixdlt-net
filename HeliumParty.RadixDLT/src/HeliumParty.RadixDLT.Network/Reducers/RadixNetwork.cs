@@ -18,7 +18,7 @@ namespace HeliumParty.RadixDLT.Reducers
             {
                 tmpDic = new Dictionary<RadixNode, RadixNodeState>(state.NodeStateCollection);
 
-                var value = RadixNodeState.From(
+                var value = new RadixNodeState(
                     ndr.Node,
                     Web.WebSocketStatus.Connected,
                     ndr.GetResult());
@@ -31,10 +31,10 @@ namespace HeliumParty.RadixDLT.Reducers
 
                     else
                         // Only override the data property
-                        tmpDic[ndr.Node] = RadixNodeState.From(
-                            oldValue.GetNode(), 
+                        tmpDic[ndr.Node] = new RadixNodeState(
+                            oldValue.Node, 
                             oldValue.Status, 
-                            value.GetData(), 
+                            value.Data, 
                             oldValue.UniverseConfig);
                 }
             }
@@ -43,7 +43,7 @@ namespace HeliumParty.RadixDLT.Reducers
             {
                 tmpDic = new Dictionary<RadixNode, RadixNodeState>(state.NodeStateCollection);
 
-                var value = RadixNodeState.From(
+                var value = new RadixNodeState(
                     ur.Node,
                     Web.WebSocketStatus.Connected,
                     null,
@@ -56,10 +56,10 @@ namespace HeliumParty.RadixDLT.Reducers
                         tmpDic[ur.Node] = value;
 
                     else
-                        tmpDic[ur.Node] = RadixNodeState.From(
-                            oldValue.GetNode(),
+                        tmpDic[ur.Node] = new RadixNodeState(
+                            oldValue.Node,
                             oldValue.Status,
-                            oldValue.GetData(),
+                            oldValue.Data,
                             value.UniverseConfig
                             );
                 }
@@ -69,7 +69,7 @@ namespace HeliumParty.RadixDLT.Reducers
             {
                 tmpDic = new Dictionary<RadixNode, RadixNodeState>(state.NodeStateCollection);
 
-                var value = RadixNodeState.From(
+                var value = new RadixNodeState(
                     an.Node,
                     Web.WebSocketStatus.Disconnected,
                     an.Data
@@ -82,10 +82,10 @@ namespace HeliumParty.RadixDLT.Reducers
                         tmpDic[an.Node] = value;
 
                     else
-                        tmpDic[an.Node] = RadixNodeState.From(
-                            oldValue.GetNode(),
+                        tmpDic[an.Node] = new RadixNodeState(
+                            oldValue.Node,
                             value.Status,
-                            value.GetData() ?? oldValue.GetData(),
+                            value.Data ?? oldValue.Data,
                             oldValue.UniverseConfig
                             );
                 }
@@ -98,7 +98,7 @@ namespace HeliumParty.RadixDLT.Reducers
                 // Convert WebSocketEventType enum to WebSocketStatus enum
                 System.Enum.TryParse<Web.WebSocketStatus>(ws.Type.ToString(), out var convStatus);      // TODO: Works, but we should create a unit test for it
 
-                var value = RadixNodeState.From(
+                var value = new RadixNodeState(
                     ws.Node,
                     convStatus
                     );
@@ -110,10 +110,10 @@ namespace HeliumParty.RadixDLT.Reducers
                         tmpDic[ws.Node] = value;
 
                     else
-                        tmpDic[ws.Node] = RadixNodeState.From(
-                            oldValue.GetNode(),
+                        tmpDic[ws.Node] = new RadixNodeState(
+                            oldValue.Node,
                             value.Status,
-                            value.GetData() ?? oldValue.GetData(),
+                            value.Data ?? oldValue.Data,
                             oldValue.UniverseConfig
                             );
                 }

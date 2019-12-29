@@ -45,7 +45,7 @@ namespace HeliumParty.RadixDLT.Epics
                 {
                     List<RadixNode> correctShardNodes = new List<RadixNode>(
                         disconnectedPeers
-                        .Where(node => state.NodeStateCollection[node].GetShards().Intersects(shards))
+                        .Where(node => state.NodeStateCollection[node].Shards.Intersects(shards))
                         );
 
                     if (correctShardNodes.Count == 0)
@@ -53,7 +53,7 @@ namespace HeliumParty.RadixDLT.Epics
                         List<RadixNode> unknownShardNodes = new List<RadixNode>(
                             disconnectedPeers
                             .Where(node =>
-                                state.NodeStateCollection[node].GetShards() == null
+                                state.NodeStateCollection[node].Shards == null
                                 ));
 
                         if (unknownShardNodes.Count == 0)
@@ -63,14 +63,14 @@ namespace HeliumParty.RadixDLT.Epics
                         {
                             return unknownShardNodes
                                 .SelectMany(node => new IRadixNodeAction[] {
-                                    Actions.GetNodeDataRequestAction.From(node),
-                                    Actions.GetUniverseRequestAction.From(node)})
+                                    new Actions.GetNodeDataRequestAction(node),
+                                    new Actions.GetUniverseRequestAction(node)})
                                 .ToList();
                         }
                     }
                     else
                         return new List<IRadixNodeAction>() {
-                            Actions.ConnectionWebSocketAction.From(_Selector.Apply(correctShardNodes))};
+                            new Actions.ConnectionWebSocketAction(_Selector.Apply(correctShardNodes))};
                 }
             }
 
@@ -87,7 +87,7 @@ namespace HeliumParty.RadixDLT.Epics
         {
             return state.NodeStateCollection
                 .Where(entry => entry.Value.Status == Web.WebSocketStatus.Connected)
-                .Where(entry => entry.Value.GetShards().Intersects(shards))
+                .Where(entry => entry.Value.Shards.Intersects(shards))
                 .Select(entry => entry.Key)
                 .ToList();
         }
@@ -109,16 +109,15 @@ namespace HeliumParty.RadixDLT.Epics
                             .Where(nodes => nodes.Count > 0)
                             .FirstAsync()
                             .Select(_Selector.Apply)
-                            .Select(node => Actions.FindANodeResultAction.From(node, action))
+                            .Select(node => new Actions.FindANodeResultAction(node, action))
                             .Replay();
 
                     // Stream of new actions to find a new node
                     IObservable<IRadixNodeAction> findConnectionActions =
                         connectedNodes
-                            .Where(nodes => nodes.Count == 0)           // TODO REVIEW: This whole structure seems to be just waiting until the connectedNodes-Observable terminates 
-                                                                        //      to then continue with another observable of a different type (IRadixNodeAction). Is there a simpler implementation for that?
+                            .Where(nodes => nodes.Count == 0)
+                            .Select(_ => default(IRadixNodeAction))     // Cast back to our usual IRadixNodeAction 
                             .FirstAsync()
-                            .Select(_ => default(IRadixNodeAction))     // The previous 'FirstAsync()' ensures that we'll have an item so that we can cast the Observable to 'IRadixNodeAction' 
                             .IgnoreElements()
                             .Concat(
                                 Observable
@@ -140,10 +139,12 @@ namespace HeliumParty.RadixDLT.Epics
                                 return selectedNode
                                     .Select(sn => sn.Node)
                                     .Where(sn => !node.Equals(sn))
-                                    .Select(sn => Actions.CloseWebSocketAction.From(sn));
+                                    .Select(sn => new Actions.CloseWebSocketAction(sn));
                             });
 
-                    return findConnectionActions.Concat(selectedNode).Merge(cleanupConnections);
+                    return findConnectionActions
+                    .Concat(selectedNode)
+                    .Merge(cleanupConnections);
                 });
         }
     }

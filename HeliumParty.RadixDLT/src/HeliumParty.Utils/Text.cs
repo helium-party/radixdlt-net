@@ -14,15 +14,40 @@ namespace HeliumParty.Utils
         /// </summary>
         public enum NamingCase
         {
+            /// <summary>
+            /// Only capital letters, words separated by underscores
+            /// </summary>
             UPPER_CASE,
+
+            /// <summary>
+            /// Capital letters at the start of every word, words are not separated
+            /// </summary>
             UpperCamelCase,
+
+            /// <summary>
+            /// Capital letters, except for the first, at the start of every word, words are not separated. 
+            /// </summary>
             lowerCamelCase,
+
+            /// <summary>
+            /// ONly small letters, words are separated by underscores
+            /// </summary>
             snake_case,
         }
 
+        /// <summary>
+        /// Wrapper to convert text from <see cref="NamingCase.UPPER_CASE"/> to <see cref="NamingCase.UpperCamelCase"/>
+        /// </summary>
+        /// <param name="input">The text to convert</param>
+        /// <returns>The converted text</returns>
         public static string FromUpperToUpperCamelCase(this string input) =>
             ChangeCase(input, NamingCase.UPPER_CASE, NamingCase.UpperCamelCase);
 
+        /// <summary>
+        /// Wrapper to convert text from <see cref="NamingCase.UpperCamelCase"/> to <see cref="NamingCase.UPPER_CASE"/>
+        /// </summary>
+        /// <param name="input">The text to convert</param>
+        /// <returns>The converted text</returns>
         public static string FromUpperCamelToUpperCase(this string input) =>
             ChangeCase(input, NamingCase.UpperCamelCase, NamingCase.UPPER_CASE);
 

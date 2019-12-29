@@ -17,8 +17,8 @@ namespace HeliumParty.RadixDLT
         /// </para>
         /// <para>
         /// In other words:
-        /// This basicly allows us to check whether a certain instance of the specified 'toCheck' type
-        /// may be cast to the 'toCompare' type without any exceptions.
+        /// This basicly allows us to check whether a certain instance of the specified '<paramref name="toCheck"/>' type
+        /// may be cast to the '<paramref name="toCompareTo"/>' type without any exceptions.
         /// </para>
         /// </summary>
         /// <param name="toCheck">The type we want to check</param>

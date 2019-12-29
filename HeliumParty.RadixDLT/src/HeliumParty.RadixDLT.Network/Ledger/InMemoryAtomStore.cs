@@ -31,7 +31,7 @@ namespace HeliumParty.RadixDLT.Ledger
             new ConcurrentDictionary<RadixAddress, List<IObserver<long>>>();
 
         private readonly object _Lock = new object();
-        private readonly Dictionary<RadixAddress, bool> _SyncedMap;
+        private readonly Dictionary<RadixAddress, bool> _SyncedMap = new Dictionary<RadixAddress, bool>();
 
         private readonly ConcurrentDictionary<string, Atom> _StagedAtoms = new ConcurrentDictionary<string, Atom>();
 
@@ -68,15 +68,15 @@ namespace HeliumParty.RadixDLT.Ledger
             });
         }
 
-        public List<ParticleGroup> GetStagedAndClear(string uuid)
+        public List<ParticleGroup> GetStagedAndClear(string id)
         {
-            if (uuid == null)
-                throw new ArgumentNullException(nameof(uuid));
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
 
             lock (_Lock)
             {
-                _StagedAtoms.TryRemove(uuid, out var atom);
-                _StagedParticleIndex.TryGetValue(uuid, out var dic);
+                _StagedAtoms.TryRemove(id, out var atom);
+                _StagedParticleIndex.TryGetValue(id, out var dic);
                 dic?.Clear();
                 return atom?.ParticleGroups;
             }
@@ -93,7 +93,7 @@ namespace HeliumParty.RadixDLT.Ledger
             }
         }
 
-        public IEnumerable<Particle> GetUpParticles(RadixAddress address, string uuid = null)
+        public IEnumerable<Particle> GetUpParticles(RadixAddress address, string id = null)
         {
             lock (_Lock)
             {
@@ -107,8 +107,8 @@ namespace HeliumParty.RadixDLT.Ledger
                         if (DetermineAnyIsStore(spinAtoms))
                             return true;
 
-                    if (uuid != null)
-                        if (_StagedParticleIndex.TryGetValue(uuid, out var dic))
+                    if (id != null)
+                        if (_StagedParticleIndex.TryGetValue(id, out var dic))
                             if (dic.TryGetValue(e.Key, out var spin))
                                 if (spin == Spin.Down)
                                     return false;
@@ -121,8 +121,8 @@ namespace HeliumParty.RadixDLT.Ledger
                 .Select(e => e.Key)
                 .ToList();
 
-                if (uuid != null)
-                    if (_StagedParticleIndex.TryGetValue(uuid, out var dic))
+                if (id != null)
+                    if (_StagedParticleIndex.TryGetValue(id, out var dic))
                         upParticles.AddRange(dic.Where(e => e.Value == Spin.Up).Select(e => e.Key));
 
                 return upParticles;
@@ -152,16 +152,16 @@ namespace HeliumParty.RadixDLT.Ledger
             });
         }
 
-        public void StageParticleGroup(string uuid, ParticleGroup particleGroup)
+        public void StageParticleGroup(string id, ParticleGroup particleGroup)
         {
-            if (uuid == null)
-                throw new ArgumentNullException(nameof(uuid));
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
             if (particleGroup == null)
                 throw new ArgumentNullException(nameof(particleGroup));
 
             lock (_Lock)
             {
-                _StagedAtoms.TryGetValue(uuid, out var stagedAtom);
+                _StagedAtoms.TryGetValue(id, out var stagedAtom);
                 if (stagedAtom == null)
                     stagedAtom = new Atom(particleGroup, System.DateTime.UtcNow.Ticks);
                 else
@@ -170,16 +170,16 @@ namespace HeliumParty.RadixDLT.Ledger
                     stagedAtom = new Atom(groups, System.DateTime.UtcNow.Ticks);
                 }
 
-                _StagedAtoms.AddOrUpdate(uuid, stagedAtom, (_1, _2) => stagedAtom);
+                _StagedAtoms.AddOrUpdate(id, stagedAtom, (_1, _2) => stagedAtom);
 
                 foreach (var sp in particleGroup.Particles)
                 {
-                    _StagedParticleIndex.TryGetValue(uuid, out var spinByParticle);
+                    _StagedParticleIndex.TryGetValue(id, out var spinByParticle);
                     if (spinByParticle == null)
                         spinByParticle = new Dictionary<Particle, Spin>();
 
                     spinByParticle.AddOrUpdate(sp.Particle, sp.Spin);
-                    _StagedParticleIndex.AddOrUpdate(uuid, spinByParticle, (_1, _2) => spinByParticle);
+                    _StagedParticleIndex.AddOrUpdate(id, spinByParticle, (_1, _2) => spinByParticle);
                 }
             }
         }

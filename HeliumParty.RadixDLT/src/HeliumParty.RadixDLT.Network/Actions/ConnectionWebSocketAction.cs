@@ -7,13 +7,11 @@
     {
         public RadixNode Node { get; }
 
-        private ConnectionWebSocketAction(RadixNode node)
+        public ConnectionWebSocketAction(RadixNode node)
         {
             Node = node ?? throw new System.ArgumentNullException(nameof(node));
         }
-
-        public static ConnectionWebSocketAction From(RadixNode node) => new ConnectionWebSocketAction(node);
-
+        
         public override string ToString() => $"CONNECT_WEB_SOCKET_ACTION {Node}";
     }
 }

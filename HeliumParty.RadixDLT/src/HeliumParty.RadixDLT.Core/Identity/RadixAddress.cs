@@ -65,6 +65,8 @@ namespace HeliumParty.RadixDLT.Identity
             ECPublicKey = publicKey;
         }
 
+        public EUID GetId() => new EUID(ECPublicKey.Base64Array);   // TODO: Is this fine for the ID?
+
         public override string ToString()
         {
             return _addressBase58;

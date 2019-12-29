@@ -84,5 +84,19 @@ namespace HeliumParty.RadixDLT.Atoms
                 .Select(d => d.Shard)
                 .Distinct());
         }
+
+        public HashSet<long> GetRequiredFirstShard()
+        {
+            var particles = GetAllParticles();
+            if (particles.Any(sp => sp.Spin == Particles.Spin.Down))
+                return new HashSet<long>(particles
+                    .Where(sp => sp.Spin == Particles.Spin.Down)
+                    .Select(sp => sp.Particle)
+                    .SelectMany(p => p.Destinations)
+                    .Select(d => d.Shard)
+                    .Distinct());
+            else
+                return GetAllShards();
+        }
     }
 }
