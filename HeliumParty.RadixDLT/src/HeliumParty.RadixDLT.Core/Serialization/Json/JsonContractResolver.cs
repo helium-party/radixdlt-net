@@ -22,8 +22,7 @@ namespace HeliumParty.RadixDLT.Serialization.Json
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
             var properties = base.CreateProperties(type, memberSerialization);
-            var result = new List<JsonProperty>();
-            var props = type.GetProperties().Concat(type.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)).ToArray();
+            var result = new List<JsonProperty>();            
 
             if (type == typeof(ECSignature))
             {
@@ -42,6 +41,10 @@ namespace HeliumParty.RadixDLT.Serialization.Json
             }
             else
             {
+                var props = type
+                    .GetProperties()
+                    .Concat(type.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance));
+
                 bool shouldSerialize;
                 foreach (var p in props)
                 {
@@ -60,9 +63,13 @@ namespace HeliumParty.RadixDLT.Serialization.Json
                         if (serializationAttributes.Any(a => a.ValidOn.Contains(OutputMode.None)))
                             continue;
 
-                        // Check for matching output mode or OutputMode.All
-                        if (!serializationAttributes.Any(a => a.ValidOn.Contains(_outputMode) || a.ValidOn.Contains(OutputMode.All)))
-                            shouldSerialize = false;
+                        // For 'OutputMode.All', every property (except the ones with 'OutputMode.None' will be serialized)
+                        if (_outputMode != OutputMode.All)
+                        {
+                            // Check for matching output mode or OutputMode.All
+                            if (!serializationAttributes.Any(a => a.ValidOn.Contains(_outputMode) || a.ValidOn.Contains(OutputMode.All)))
+                                shouldSerialize = false;
+                        }
                     }
 
                     if (shouldSerialize)
