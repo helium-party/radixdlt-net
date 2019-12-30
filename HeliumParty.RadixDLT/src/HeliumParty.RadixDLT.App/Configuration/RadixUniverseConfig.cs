@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using HeliumParty.RadixDLT.Atoms;
 
 namespace HeliumParty.RadixDLT.Configuration
 {
-    public class RadixUniverseConfig
+
+    public class RadixUniverseConfig : SerializableObject
     {
+
     }
 }

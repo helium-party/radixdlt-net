@@ -67,5 +67,28 @@ namespace HeliumParty.RadixDLT
             => "RadixNodeState{" 
             + $"node='{Node}', status={Status}, data={Data}, universeConfig={UniverseConfig}" 
             + "}";
+
+        public override bool Equals(object obj)
+        {
+            if (obj is RadixNodeState rns)
+            {
+                return this.Node.Equals(rns.Node) 
+                    && this.Status.Equals(rns.Status)
+                    && this.Data.Equals(rns.Data)
+                    && this.Version.Equals(rns.Version)
+                    && this.UniverseConfig.Equals(rns.UniverseConfig);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Node.GetHashCode() * 3
+                + (int)this.Status * 11
+                + this.Data.GetHashCode() * 17
+                + this.Version * 23
+                + this.UniverseConfig.GetHashCode() * 31;
+        }
     }
 }

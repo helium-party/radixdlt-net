@@ -5,8 +5,6 @@ namespace HeliumParty.RadixDLT.Jsonrpc
 {
     public class ShardSpace
     {
-        // TODO this class could probably use some comments...
-
         public const int ShardChunks = 1 << 20;
         public const long ShardChunkRange = -(long.MinValue / ShardChunks) * 2;
         public const long ShardChunkHalfRange = -(long.MinValue / ShardChunks);

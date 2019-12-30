@@ -8,7 +8,7 @@ namespace HeliumParty.RadixDLT
     /// <summary>
     /// Service that builds the <see cref="RadixNetworkController"/>
     /// </summary>          
-    public class RadixNetworkControllerBuilder  // TODO: Check where we want to have the logic for class-builders
+    public class RadixNetworkControllerBuilder
     {
         private RadixNetwork _Network;
         private readonly ImmutableList<IRadixNetworkEpic>.Builder _Epics = ImmutableList.CreateBuilder<IRadixNetworkEpic>();

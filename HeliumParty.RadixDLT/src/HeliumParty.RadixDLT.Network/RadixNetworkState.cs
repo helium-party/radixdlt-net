@@ -22,5 +22,15 @@ namespace HeliumParty.RadixDLT
         public HashSet<RadixNode> GetNodes() => new HashSet<RadixNode>(NodeStateCollection.Keys);
 
         public override string ToString() => NodeStateCollection.ToString();
+
+        public override bool Equals(object obj)
+        {
+            if (obj is RadixNetworkState rns)
+                return this.NodeStateCollection.Equals(rns.NodeStateCollection);
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode() => this.NodeStateCollection.GetHashCode();
     }
 }

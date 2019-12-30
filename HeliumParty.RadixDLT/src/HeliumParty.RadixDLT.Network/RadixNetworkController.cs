@@ -25,8 +25,7 @@ namespace HeliumParty.RadixDLT
         public IObservable<IRadixNodeAction> ReducedNodeActions { get; }
 
         // TODO: Might need to adjust to java lib, if changes are made
-        // TODO: Adjust access modifier when changing where builder is implemented
-
+        
         internal RadixNetworkController(
             RadixNetwork network, 
             RadixNetworkState initialState,
@@ -50,8 +49,7 @@ namespace HeliumParty.RadixDLT
                     if (_Logger.IsDebugEnabled)
                         _Logger.LogMessage(action.ToString(), Log.LogLevel.Debug);
 
-                    // TODO: Add equal check in RadixNetworkState
-                    if (nextState != curState)
+                    if (nextState.Equals(curState))
                         NetworkState.OnNext(nextState);
                 }).Publish();
 
@@ -80,6 +78,6 @@ namespace HeliumParty.RadixDLT
         public void Dispatch(IRadixNodeAction action)
         {
             _NodeActions.OnNext(action);
-        }           // TODO: Change to private?
+        }
     }
 }
