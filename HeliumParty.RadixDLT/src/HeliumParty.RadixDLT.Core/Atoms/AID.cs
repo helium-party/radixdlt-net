@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
-using HeliumParty.RadixDLT.Hashing;
 using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization;
 
@@ -11,7 +9,7 @@ namespace HeliumParty.RadixDLT.Atoms
     /// An Atom ID, made up of 192 bits of truncated hash and 64 bits of a selected shard.    
     /// The Atom ID is used so that Atoms can be located using just their hid.
     /// </summary>
-    [SerializationPrefix(Dson= 0x08)]
+    [SerializationPrefix(Json = ":aid:" , Dson = 0x08)]
     public class AID
     {
         public const int HashBytesSize = 24;
@@ -57,6 +55,17 @@ namespace HeliumParty.RadixDLT.Atoms
         }
 
         public long Shard => Longs.FromByteArray(Bytes, HashBytesSize);
+
+        public override bool Equals(object obj)
+        {
+            if (obj == this)
+                return true;
+
+            if (!(obj.GetType() == typeof(AID)))
+                return false;
+
+            return Bytes.SequenceEqual(((AID)obj).Bytes);
+        }
 
         public override string ToString() => Primitives.Bytes.ToHexString(Bytes);
     }

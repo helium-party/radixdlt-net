@@ -8,6 +8,7 @@ using HeliumParty.RadixDLT.Identity;
 using HeliumParty.RadixDLT.Particles;
 using HeliumParty.RadixDLT.Serialization;
 using HeliumParty.RadixDLT.Serialization.Dson;
+using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Atoms
 {
@@ -17,6 +18,7 @@ namespace HeliumParty.RadixDLT.Atoms
     /// that can be issued onto the ledger.
     /// </summary>
     [CborDiscriminator("radix.atom" , Policy = CborDiscriminatorPolicy.Always)]
+    [JsonObject(ItemTypeNameHandling = TypeNameHandling.None)]
     public class Atom : SerializableObject
     {
         public static string MetadataTimestampKey = "timestamp";

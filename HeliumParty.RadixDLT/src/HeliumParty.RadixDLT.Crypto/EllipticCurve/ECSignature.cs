@@ -24,6 +24,12 @@ namespace HeliumParty.RadixDLT.EllipticCurve
             S = Bytes.TrimLeadingZeros(s.ToByteArray());
         }
 
+        public ECSignature(byte[] r, byte[] s)
+        {
+            R = Bytes.TrimLeadingZeros(r);
+            S = Bytes.TrimLeadingZeros(s);
+        }
+
         public string GetRBase64() => Base64.ToBase64String(R);
 
         // Set sign to positive to stop BigInteger interpreting high bit as sign

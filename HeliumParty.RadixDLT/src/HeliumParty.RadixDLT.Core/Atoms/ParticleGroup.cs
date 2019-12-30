@@ -3,10 +3,12 @@ using System.Collections.Immutable;
 using System.Linq;
 using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Particles;
+using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Atoms
 {
     [CborDiscriminator("radix.particle_group", Policy = CborDiscriminatorPolicy.Always)]
+    [JsonObject(ItemTypeNameHandling = TypeNameHandling.None)]
     public class ParticleGroup : SerializableObject
     {           
         public ImmutableList<SpunParticle> Particles { get; protected set; }
@@ -21,6 +23,7 @@ namespace HeliumParty.RadixDLT.Atoms
 
         public ParticleGroup() { }
 
+        [JsonConstructor]
         public ParticleGroup(ImmutableList<SpunParticle> particles, ImmutableDictionary<string, string> metaData)
         {
             Particles = particles;

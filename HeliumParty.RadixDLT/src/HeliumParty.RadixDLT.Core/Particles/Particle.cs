@@ -16,7 +16,11 @@ namespace HeliumParty.RadixDLT.Particles
         public Particle(EUID destination)
         {
             if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
+            {
+                //throw new ArgumentNullException(nameof(destination));
+                Destinations = new HashSet<EUID>();
+                return; 
+            }
 
             Destinations = new HashSet<EUID>() { destination };
         }
