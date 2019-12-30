@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using HeliumParty.RadixDLT.Hashing;
 using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization;
 

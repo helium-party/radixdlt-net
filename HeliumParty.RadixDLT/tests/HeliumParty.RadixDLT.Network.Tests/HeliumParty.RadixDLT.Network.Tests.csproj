@@ -1,19 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>HeliumParty.RadixDLT</RootNamespace>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.Reactive" Version="4.3.1" />
-    <PackageReference Include="WebSocketSharp.Standard" Version="1.0.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="Shouldly" Version="3.0.2" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HeliumParty.RadixDLT.Core\HeliumParty.RadixDLT.Core.csproj" />
-    <ProjectReference Include="..\HeliumParty.RadixDLT.Utils\HeliumParty.RadixDLT.Utils.csproj" />
+    <ProjectReference Include="..\..\src\HeliumParty.BaseTest\HeliumParty.BaseTest.csproj" />
+    <ProjectReference Include="..\..\src\HeliumParty.RadixDLT.Network\HeliumParty.RadixDLT.Network.csproj" />
   </ItemGroup>
 
   <ItemGroup>

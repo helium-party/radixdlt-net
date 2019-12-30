@@ -1,69 +1,93 @@
-﻿using HeliumParty.RadixDLT.Atoms;
+﻿using Dahomey.Cbor.Attributes;
+using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Hashing;
 using HeliumParty.RadixDLT.Identity;
-using System;
+using HeliumParty.RadixDLT.Serialization;
+using HeliumParty.RadixDLT.Serialization.Dson;
+using HeliumParty.RadixDLT.Serialization.Json;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace HeliumParty.RadixDLT.Universe
 {
-    public class RadixUniverseConfig // TODO: SerializableObject?? --> We might not want to have it in this project!
+    [CborDiscriminator("radix.universe", Policy = CborDiscriminatorPolicy.Always)]
+    public class RadixUniverseConfig : SerializableObject
     {
-        public int Magic { get; }
-        public ImmutableList<Atom> Genesis { get; }
-        public ECPublicKey Creator { get; }
+        #region Public Members
+        [SerializationOutput(OutputMode.Api, OutputMode.Persist, OutputMode.Wire)]
+        public long Magic { get; }
+
+        [SerializationOutput(OutputMode.All)]
+        public int Port { get; }
+
+        [SerializationOutput(OutputMode.All)]
         public string Name { get; }
+
+        [SerializationOutput(OutputMode.All)]
         public string Description { get; }
 
-        private long _Timestamp;
-        private RadixUniverseType _Type;
-        private long _Port;
+        [SerializationOutput(OutputMode.All)]
+        public long Timestamp { get; }
 
-        // TODO: Why no arg constructor for serialization?
-        public RadixUniverseConfig() { }
+        [SerializationOutput(OutputMode.All)]
+        public ImmutableList<Atom> Genesis { get; }
+
+        [SerializationOutput(OutputMode.All)]
+        public RadixUniverseType Type { get; }
+
+        [CborProperty("creator")]
+        [JsonProperty("creator")]
+        [SerializationOutput(OutputMode.All)]
+        public ECPublicKey SystemPublicKey { get; }
+        #endregion
 
         public RadixUniverseConfig(
             string name,
             string description,
-            ECPublicKey creator,
+            ECPublicKey systemPublicKey,
             long timestamp,
             RadixUniverseType type,
-            long port,
-            int magic, 
-            List<Atom> genesis) 
+            int port,
+            int magic,
+            List<Atom> genesis)
         {
             Name = name;
             Description = description;
-            Creator = creator;
-            _Timestamp = timestamp;
-            _Type = type;
-            _Port = port;
+            SystemPublicKey = systemPublicKey;
+            Timestamp = timestamp;
+            Type = type;
+            Port = port;
             Magic = magic;
             Genesis = ImmutableList.Create(genesis.ToArray());
         }
 
-        /// <summary>
-        /// Returns the magic as a single byte
-        /// </summary>
-        /// <returns>The magic as single byte</returns>
-        public byte GetMagicByte() => (byte)(Magic & 0xFF);
+        public static RadixUniverseConfig FromBytes(byte[] bytes)
+        {
+            var manager = new JsonManager();
+            var json = RadixConstants.StandardEncoding.GetString(bytes);
+            return manager.FromJson<RadixUniverseConfig>(json);
+        }
+               
+        public RadixHash GetHash()
+        {
+            var manager = new DsonManager();    // TODO: Should probably a DependencyInjection provided manager
+            return RadixHash.From(manager.ToDson(this, OutputMode.Hash));
+        }
 
-        /// <summary>
-        /// Creates a new <see cref="RadixAddress"/> instance for the current <see cref="RadixUniverseConfig"/>
-        /// </summary>
-        public RadixAddress GetAddress() => new RadixAddress(Magic, Creator);
+        public EUID GetHId() => new EUID(GetHash().ToByteArray());
 
-        public RadixHash GetHash() => throw new NotImplementedException();        // TODO: Serialize to DSON? Need more info on this...
+        public byte GetMagicByte() => (byte)(Magic & 0xff);
 
-        public EUID GetHID() => new EUID(GetHash().ToByteArray());
+        public RadixAddress GetSystemAddress() => new RadixAddress((int)Magic, SystemPublicKey);
 
-        public override string ToString() => $"{Name} {Magic} {GetHID()}";
+        public override string ToString() => $"{Name} {Magic} ";
         public override int GetHashCode() => GetHash().GetHashCode();
         public override bool Equals(object obj)
         {
-            if (obj != null && obj is RadixUniverseConfig config)
-                return GetHash().Equals(config.GetHash());
+            if (obj is RadixUniverseConfig config)
+                return this.GetHash().Equals(config.GetHash());
 
             return false;
         }

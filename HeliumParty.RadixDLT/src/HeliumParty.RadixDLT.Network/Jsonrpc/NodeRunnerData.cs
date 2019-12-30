@@ -7,11 +7,9 @@ namespace HeliumParty.RadixDLT.Jsonrpc
     [CborDiscriminator("network.peer", Policy = CborDiscriminatorPolicy.Always)]
     public class NodeRunnerData : SerializableObject
     {
-        [SerializationPrefix(Json = "system")]
         [SerializationOutput(OutputMode.All)]
         private RadixSystem _System;
 
-        [SerializationPrefix(Json = "host")]
         [SerializationOutput(OutputMode.All)]
         public string IP { get; private set; }
         public ShardSpace Shards => _System.Shards;
