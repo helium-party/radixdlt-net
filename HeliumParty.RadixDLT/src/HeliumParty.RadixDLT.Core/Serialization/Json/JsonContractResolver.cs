@@ -10,6 +10,7 @@ namespace HeliumParty.RadixDLT.Serialization.Json
 {
     public class JsonContractResolver : DefaultContractResolver
     {
+        [SerializationOutputAttribute(OutputMode.None)]
         private readonly OutputMode _outputMode;
 
         public JsonContractResolver(OutputMode outputMode)
@@ -41,97 +42,31 @@ namespace HeliumParty.RadixDLT.Serialization.Json
             }
             else
             {
+                bool shouldSerialize;
                 foreach (var p in props)
                 {
-                    var shouldSerialize = true;
+                    // By default, we always want to serialize the property (e.g. if it doesn't have an OutputAttribute)
+                    shouldSerialize = true;
 
-                    if (p.GetCustomAttributes().Where(x => x.GetType() == typeof(SerializationOutputAttribute)).ToArray().Length == 0)
+                    var serializationAttributes = p.GetCustomAttributes().OfType<SerializationOutputAttribute>();
+                    if (serializationAttributes.Count() == 0)
                     {
-                        // field or property has no attribute
-                        switch (_outputMode)
-                        {
-                            case OutputMode.None:
-                                shouldSerialize = false; // to archive zero output when OutputMode == None
-                                break;
-                            case OutputMode.Hash:
-                                break;
-                            case OutputMode.Api:
-                                break;
-                            case OutputMode.Wire:
-                                break;
-                            case OutputMode.Persist:
-                                break;
-                            case OutputMode.All:
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
+                        if (_outputMode == OutputMode.None)
+                            continue;
                     }
                     else
                     {
-                        // Attribute is present
-                        foreach (var attr in p.GetCustomAttributes())
-                        {
-                            if (attr.GetType() != typeof(SerializationOutputAttribute)) continue;
+                        // Property should be excluded from serialization
+                        if (serializationAttributes.Any(a => a.ValidOn.Contains(OutputMode.None)))
+                            continue;
 
-                            var oa = (SerializationOutputAttribute)attr;
-                            switch (_outputMode)
-                            {
-                                case OutputMode.None:
-                                    {
-                                        shouldSerialize = false;
-                                        break;
-                                    }
-                                case OutputMode.Hash:
-                                    {
-                                        if (oa.ValidOn.Contains(OutputMode.Hash) || oa.ValidOn.Contains(OutputMode.All))
-                                            shouldSerialize = true;
-                                        else shouldSerialize = false;
-
-                                        break;
-                                    }
-                                case OutputMode.Api:
-                                    {
-                                        if (oa.ValidOn.Contains(OutputMode.Api) || oa.ValidOn.Contains(OutputMode.All))
-                                            shouldSerialize = true;
-                                        else shouldSerialize = false;
-
-                                        break;
-                                    }
-                                case OutputMode.Wire:
-                                    {
-                                        if (oa.ValidOn.Contains(OutputMode.Wire) || oa.ValidOn.Contains(OutputMode.All))
-                                            shouldSerialize = true;
-                                        else shouldSerialize = false;
-
-                                        break;
-                                    }
-                                case OutputMode.Persist:
-                                    {
-                                        if (oa.ValidOn.Contains(OutputMode.Persist) || oa.ValidOn.Contains(OutputMode.All))
-                                            shouldSerialize = true;
-                                        else shouldSerialize = false;
-
-                                        break;
-                                    }
-                                case OutputMode.All:
-                                    {
-                                        shouldSerialize = true;
-                                        if (oa.ValidOn.Contains(OutputMode.None))
-                                            shouldSerialize = false;
-
-                                        break;
-                                    }
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-                        }
+                        // Check for matching output mode or OutputMode.All
+                        if (!serializationAttributes.Any(a => a.ValidOn.Contains(_outputMode) || a.ValidOn.Contains(OutputMode.All)))
+                            shouldSerialize = false;
                     }
 
                     if (shouldSerialize)
-                    {
                         result.Add(properties.First(o => o.UnderlyingName == p.Name));
-                    }
                 }
             }
 
