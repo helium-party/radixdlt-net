@@ -23,7 +23,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
         {
             var buffer = ToDsonAsync(obj, mode).Result;
             CborObject o;
-            
+
             // this is needed because basic types can't be deserialized 
             // to a CborObject, but they don't need sorting anyways
             try
@@ -114,18 +114,13 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
         {
             foreach (var mode in (OutputMode[])Enum.GetValues(typeof(OutputMode)))
             {
-                var discriminator = new DsonDiscriminator();
-                discriminator.RegisterAssembly(Assembly.GetAssembly(typeof(Atom)));
-                discriminator.RegisterType(typeof(ECSignature), RadixConstants.StandardEncoding.GetBytes("crypto.ecdsa_signature"));
-                discriminator.RegisterType(typeof(ECKeyPair), RadixConstants.StandardEncoding.GetBytes("crypto.ec_key_pair"));
-
                 var options = new CborOptions();
-                options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider(mode));
-                options.DiscriminatorConvention = discriminator;
 
+                // specify how arrays and lists are serialized
                 options.ArrayLengthMode = LengthMode.DefiniteLength;
                 options.MapLengthMode = LengthMode.IndefiniteLength;
 
+                // register converters
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(byte[]), new DsonObjectConverter<byte[]>(x => x, y => y));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(UInt256), new DsonObjectConverter<UInt256>(x => x, y => y)); //implicit conversion
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(EUID), new DsonObjectConverter<EUID>(x => x.ToByteArray(), y => new EUID(y)));
@@ -136,6 +131,10 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(RRI), new DsonObjectConverter<RRI>(x => RadixConstants.StandardEncoding.GetBytes(x.ToString()), y => new RRI(RadixConstants.StandardEncoding.GetString(y))));
                 options.Registry.ConverterRegistry.RegisterConverter(typeof(AID), new DsonObjectConverter<AID>(x => x.Bytes, y => new AID(y)));
 
+                // register the custom ObjectMappingProvider
+                options.Registry.ObjectMappingConventionRegistry.RegisterProvider(new DsonObjectMappingConventionProvider(mode));
+
+                // manually register foreign classes 
                 // ECKeypair
                 // For security reasons the private Key is only serialized on PERSIST
                 if (mode == OutputMode.Persist)
@@ -169,6 +168,21 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
                     om.MapMember(m => m.S);
                     om.SetDiscriminator("crypto.ecdsa_signature").SetDiscriminatorPolicy(CborDiscriminatorPolicy.Always);
                 });
+
+                // register the discriminator
+                var discriminator = new DsonDiscriminator(options.Registry);
+                options.Registry.DiscriminatorConventionRegistry.ClearConventions();
+                options.Registry.DiscriminatorConventionRegistry.RegisterConvention(discriminator);
+
+                var assemblies = new List<Assembly>
+                {
+                    // Assemblys which shall be searched for a CborDiscriminator Attribute
+                    Assembly.GetAssembly(typeof(Atom)),
+                };
+                foreach (var type in assemblies.SelectMany(assembly => assembly.GetTypes().Where(t => Attribute.IsDefined(t, typeof(CborDiscriminatorAttribute)))))
+                {
+                    options.Registry.DiscriminatorConventionRegistry.RegisterType(type);
+                }
 
                 _outputModeOptions.Add(mode, options);
             }
