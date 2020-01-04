@@ -8,15 +8,14 @@ using HeliumParty.RadixDLT.Primitives;
 using HeliumParty.RadixDLT.Serialization.Dson;
 using Shouldly;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
+using Dahomey.Cbor.Serialization.Conventions;
 using Xunit;
 
 namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 {
     public class Dahomey_Tests
     {
-
         [Fact]
         public async Task Should_Deserialize_WithCustom_Options()
         {
@@ -82,7 +81,8 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         public async Task Should_Deserialize_AccordingToDiscriminator()
         {
             CborOptions options = new CborOptions();
-            options.Registry.DefaultDiscriminatorConvention.RegisterAssembly(typeof(Dog).Assembly);
+            options.Registry.DiscriminatorConventionRegistry.RegisterConvention(new AttributeBasedDiscriminatorConvention<string>(options.Registry, "serializer"));
+            options.Registry.DiscriminatorConventionRegistry.RegisterType<Dog>();
 
             var dog = new Dog()
             {
@@ -96,6 +96,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
                 await Cbor.SerializeAsync(dog, ms, options);
                 serializedBytes = ms.ToArray();
             }
+            var cborValue = Bytes.ToHexString(serializedBytes);
 
             Animal animal = null;
             using (var ms = new MemoryStream())
@@ -105,20 +106,14 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             }
 
             animal.ShouldBeOfType<Dog>();
-
-
         }
 
-
-
-        [CborDiscriminator("somediscriminator")]
+        [CborDiscriminator("somediscriminator", Policy = CborDiscriminatorPolicy.Always)]
         public class Car 
         {
             public string Description{ get; set; }
         }
 
-
-        
         [Fact]
         public async Task Should_Serialize_Discriminator()
         {
@@ -128,9 +123,9 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
                 Description = "n"
             };
             
-
             CborOptions options = new CborOptions();
-            options.Registry.DefaultDiscriminatorConvention.RegisterAssembly(typeof(Car).Assembly);
+            options.Registry.DiscriminatorConventionRegistry.RegisterConvention(new AttributeBasedDiscriminatorConvention<string>(options.Registry));
+            options.Registry.DiscriminatorConventionRegistry.RegisterType<Car>();
 
             byte[] serializedBytes = null;
             using (var ms = new MemoryStream())
@@ -138,8 +133,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
                 await Cbor.SerializeAsync(car, ms, options);
                 serializedBytes = ms.ToArray();
             }
-
-            //List<Car> cbor = null;
+            
             CborObject cbor = null;
             using (var ms = new MemoryStream())
             {
@@ -148,21 +142,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             }
 
             cbor.ShouldNotBeNull();
-
-            var actualoutput = Bytes.ToHexString(serializedBytes);
-            cbor.Add("_t", "somediscriminator");
-
-            byte[] serializedBytes2 = null;
-            using (var ms = new MemoryStream())
-            {
-                await Cbor.SerializeAsync(cbor, ms, options);
-                serializedBytes2 = ms.ToArray();
-            }
-
-            var expectedOutput = Bytes.ToHexString(serializedBytes2);
-            expectedOutput.ShouldNotBeNull();
         }
-
 
         public abstract class DummyParticle
         {
@@ -174,20 +154,16 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
         {
             public long nonce { get; protected set; }
 
-            public DummyMessageParticle() : base()
-            {
-
-            }
+            public DummyMessageParticle() : base() { }
         }
 
         [Fact]
         public async Task ShouldDeserialize_Foreign_Cbor_ToParticle_Test()
         {
-            //CborOptions options = DsonOutputMapping.GetDsonOptions(OutputMode.All);
             CborOptions options = new CborOptions();
-            var discriminator = new DsonDiscriminator();
-            discriminator.RegisterAssembly(Assembly.GetAssembly(typeof(DummyParticle)));
-            options.DiscriminatorConvention = discriminator;
+            var discriminator = new DsonDiscriminator(options.Registry);
+            options.Registry.DiscriminatorConventionRegistry.RegisterConvention(discriminator);
+            options.Registry.DiscriminatorConventionRegistry.RegisterType<DummyMessageParticle>();
 
             var data = ResourceParser.GetResource("messageParticle3.dson");
             DummyParticle particle = null;
@@ -206,7 +182,6 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var particle2 = manager.FromDson<Particle>(data);
             (particle2 as MessageParticle).Nonce.ShouldBe(2181035975144481159);
         }
-
 
         public class ConstTest
         {
