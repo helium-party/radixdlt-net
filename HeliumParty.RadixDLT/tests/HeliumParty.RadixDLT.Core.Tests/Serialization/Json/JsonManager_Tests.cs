@@ -298,7 +298,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Json
             var group = new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
             var groups = new List<ParticleGroup> {group};
 
-            var metaData = new Dictionary<string, string>();
+            var metaData = new SortedDictionary<string, string>();
             metaData.Add("work", "please");
             metaData.Add(Atom.MetadataTimestampKey, 0L.ToString());
 

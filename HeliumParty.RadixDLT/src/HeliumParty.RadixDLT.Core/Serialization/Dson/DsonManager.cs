@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Dahomey.Cbor;
 using Dahomey.Cbor.Attributes;
 using HeliumParty.DependencyInjection;
-using Dahomey.Cbor.ObjectModel;
 using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Identity;
@@ -19,75 +18,16 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
     public class DsonManager : IDsonManager , ITransientDependency
     {
         private readonly Dictionary<OutputMode, CborOptions> _outputModeOptions;
-        public byte[] ToDson<T>(T obj, OutputMode mode = OutputMode.All)
-        {
-            var buffer = ToDsonAsync(obj, mode).Result;
-            CborObject o;
-
-            // this is needed because basic types can't be deserialized 
-            // to a CborObject, but they don't need sorting anyways
-            try
-            {
-                o = FromDson<CborObject>(buffer);
-            }
-            catch
-            {
-                return buffer;
-            }
-
-            var sortedO = SortCborObject(o);
-            return ToDsonAsync(sortedO, mode).Result;
-        }
-
-        public CborObject SortCborObject(CborObject obj)
-        {
-            var sortedObj = new CborObject(obj);
-
-            foreach (var o in obj)
-            {
-                if (o.Value.Type == CborValueType.Array)
-                {
-                    sortedObj.Remove(o.Key);
-                    var value = SortCborArray((CborArray)o.Value);
-                    sortedObj.Add(o.Key, value);
-                }
-                else if (o.Value.Type == CborValueType.Object)
-                {
-                    sortedObj.Remove(o.Key);
-                    var value = SortCborObject((CborObject)o.Value);
-                    sortedObj.Add(o.Key, value);
-                }
-            }
-
-            return (CborObject) sortedObj.OrderBy(p => p.Key).ToDictionary(p => p.Key, p => p.Value);
-        }
-
-        public CborArray SortCborArray(CborArray arr)
-        {
-            var sortedArr = arr.ToList();
-
-            for (var i = 0; i < sortedArr.Count; i++)
-            {
-                if (sortedArr[i].Type == CborValueType.Array)
-                {
-                    sortedArr[i] = SortCborArray((CborArray) sortedArr[i]);
-                }
-                else if (sortedArr[i].Type == CborValueType.Object)
-                {
-                    sortedArr[i] = SortCborObject((CborObject) sortedArr[i]);
-                }
-            }
-
-            return new CborArray(sortedArr);
-        }
-
-        public T FromDson<T>(byte[] bytes, OutputMode mode = OutputMode.All) => FromDsonAsync<T>(bytes, mode).Result;
 
         public DsonManager()
         {
             _outputModeOptions = new Dictionary<OutputMode, CborOptions>();
             InitializeOptions();
         }
+
+        public byte[] ToDson<T>(T obj, OutputMode mode = OutputMode.All) => ToDsonAsync(obj, mode).Result;
+
+        public T FromDson<T>(byte[] bytes, OutputMode mode = OutputMode.All) => FromDsonAsync<T>(bytes, mode).Result;
 
         public virtual async Task<byte[]> ToDsonAsync<T>(T obj, OutputMode mode)
         {
@@ -99,7 +39,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             }
         }
 
-        public virtual async Task<T> FromDsonAsync<T>(byte[] bytes, OutputMode mode = OutputMode.All)
+        public virtual async Task<T> FromDsonAsync<T>(byte[] bytes, OutputMode mode)
         {
             using (var ms = new System.IO.MemoryStream())
             {

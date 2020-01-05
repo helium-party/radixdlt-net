@@ -342,7 +342,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             var group = new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
 
-            var metaData = new Dictionary<string, string>();
+            var metaData = new SortedDictionary<string, string>();
             metaData.Add("work", "please");
 
             var cAtom = new Atom()

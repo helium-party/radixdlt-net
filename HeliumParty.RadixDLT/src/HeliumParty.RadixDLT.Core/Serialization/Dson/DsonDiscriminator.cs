@@ -62,7 +62,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             }
 
             _discriminatorsByType[type] = discriminator;
-            _typesByDiscriminator.Add(discriminator, type);
+            _typesByDiscriminator[discriminator] = type;
             return true;
         }
     }

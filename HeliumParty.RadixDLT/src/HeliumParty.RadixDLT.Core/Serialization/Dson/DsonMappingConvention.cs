@@ -80,6 +80,7 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
             }
 
             objectMapping.AddMemberMappings(memberMappings);
+            objectMapping.SetOrderBy(m => m.MemberName); // sort alphabetically
 
             var constructorInfos = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
             var constructorInfo = constructorInfos.FirstOrDefault(c => c.IsDefined(typeof(CborConstructorAttribute)));
