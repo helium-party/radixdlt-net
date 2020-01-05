@@ -180,6 +180,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             //act
             var serialized = _dsonmanager.ToDson<Particle>(messageParticle);
+
             var deserialized = (MessageParticle)_dsonmanager.FromDson<Particle>(serialized);
 
             //assert
@@ -196,6 +197,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
             var address = new RadixAddress(10, eCKeyManager.GetRandomKeyPair().PublicKey);
             var rriParticle = new RRIParticle(new RRI(address, "test"), _euidmanager.GetEUID(address));
             var serialized = _dsonmanager.ToDson<Particle>(rriParticle);
+
             var deserialized = _dsonmanager.FromDson<Particle>(serialized);
 
             ((RRIParticle)deserialized).RRI.Address.ECPublicKey.Base64.ShouldBe(address.ECPublicKey.Base64);
@@ -211,7 +213,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             //act
             var serialized = _dsonmanager.ToDson(uniqeParticle);
-            var deserialized = _dsonmanager.FromDson<UniqueParticle>(serialized);
+            var deserialized = (UniqueParticle)_dsonmanager.FromDson<Particle>(serialized);
 
             //assert
             deserialized.Address.ShouldBe(uniqeParticle.Address);
@@ -340,7 +342,7 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             var group = new ParticleGroup(listbuilder.ToImmutableList(), mdatabuilder.ToImmutableDictionary());
 
-            var metaData = new Dictionary<string, string>();
+            var metaData = new SortedDictionary<string, string>();
             metaData.Add("work", "please");
 
             var cAtom = new Atom()

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.Hashing;
-using HeliumParty.RadixDLT.Particles;
 using HeliumParty.RadixDLT.Serialization;
 using HeliumParty.RadixDLT.Serialization.Dson;
 using Newtonsoft.Json;
@@ -25,7 +24,7 @@ namespace HeliumParty.RadixDLT.Atoms
         public List<ParticleGroup> ParticleGroups { get; set; }
 
         [SerializationOutput(OutputMode.Api, OutputMode.Persist, OutputMode.Wire)]
-        public Dictionary<string, ECSignature> Signatures { get; set; }
+        public SortedDictionary<string, ECSignature> Signatures { get; set; }
 
         public bool ShouldSerializeSignatures()
         {
@@ -34,13 +33,14 @@ namespace HeliumParty.RadixDLT.Atoms
             return true;
         }
 
-        public Dictionary<string, string> MetaData { get; set; }
+        public SortedDictionary<string, string> MetaData { get; set; }
 
         [SerializationOutput(OutputMode.None)]
         public RadixHash Hash
         {
             get
             {
+                //TODO should this manager be created via DI ?
                 var manager = new DsonManager();
                 return RadixHash.From(manager.ToDson(this, OutputMode.Hash));
             }
@@ -54,9 +54,9 @@ namespace HeliumParty.RadixDLT.Atoms
             this(new List<ParticleGroup>{particleGroup}, timestamp) { }
 
         public Atom(List<ParticleGroup> particleGroups, long timestamp) : 
-            this(particleGroups, new Dictionary<string, string> {{MetadataTimestampKey, timestamp.ToString()}}) { }
+            this(particleGroups, new SortedDictionary<string, string> {{MetadataTimestampKey, timestamp.ToString()}}) { }
 
-        public Atom(List<ParticleGroup> particleGroups, Dictionary<string, string> metaData)
+        public Atom(List<ParticleGroup> particleGroups, SortedDictionary<string, string> metaData)
         {
             ParticleGroups = particleGroups ?? throw new ArgumentNullException(nameof(particleGroups));
             MetaData = metaData ?? throw new ArgumentNullException(nameof(metaData));
