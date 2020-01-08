@@ -23,11 +23,11 @@ namespace HeliumParty.RadixDLT.Mappers
         {
             if (action.TokenSupplyType == TokenSupplyType.Fixed)
             {
-                return createFixedSupplyToken(action);
+                return CreateFixedSupplyToken(action);
             }
             else if (action.TokenSupplyType == TokenSupplyType.Mutable)
             {
-                return createVariableSupplyToken(action);
+                return CreateVariableSupplyToken(action);
             }
             else
             {
@@ -35,12 +35,43 @@ namespace HeliumParty.RadixDLT.Mappers
             }
         }
 
-        private List<ParticleGroup> createVariableSupplyToken(CreateTokenAction action)
+        private List<ParticleGroup> CreateVariableSupplyToken(CreateTokenAction action)
         {
+            MutableSupplyTokenDefinitionParticle token = new MutableSupplyTokenDefinitionParticle(
+                action.RRI,
+                action.Name,
+                action.Description,
+                TokenUnitConversions.UnitsToSubUnits(action.Granularity),
+                action.IconUrl,
+                new Dictionary<TokenTransition, TokenPermission>()
+                {
+                    { TokenTransition.Mint, TokenPermission.TokenOwnerOnly},
+                    { TokenTransition.Burn, TokenPermission.TokenOwnerOnly},
+                });
+
+            var unAllocated = new UnallocatedTokensParticle(
+                token.RRI,
+                action.Granularity,
+                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                UInt256.MaxValue,
+                token.TokenPermissions,
+                _euidManager.GetEUID(token.RRI.Address));
+
+            var rriParticle = new RRIParticle(token.RRI,_euidManager.GetEUID(token.RRI.Address));
+            var tokenCreationGroup = new ParticleGroup(new List<SpunParticle>() 
+            {
+                SpunParticle.Down(rriParticle),
+                SpunParticle.Up(token),
+                SpunParticle.Up(unAllocated)
+            });
+
+            if (action.InitialSupply == 0)
+                return new List<ParticleGroup>() { tokenCreationGroup };
+
             throw new NotImplementedException();
         }
 
-        private List<ParticleGroup> createFixedSupplyToken(CreateTokenAction action)
+        private List<ParticleGroup> CreateFixedSupplyToken(CreateTokenAction action)
         {
             var amount = TokenUnitConversions.UnitsToSubUnits(action.InitialSupply);
             var granularity = TokenUnitConversions.UnitsToSubUnits(action.Granularity);
