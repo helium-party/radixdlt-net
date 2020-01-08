@@ -78,6 +78,12 @@ namespace HeliumParty.RadixDLT.Primitives
             return Arrays.ConcatArrays(b1, b2, b3, b4);            
         }
 
+
+        public static implicit operator UInt256(string str)
+        {
+            return (UInt256)BigInteger.Parse(str);
+        }
+
         public override string ToString()
         {
             return ((BigInteger)this).ToString();

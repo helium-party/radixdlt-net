@@ -65,10 +65,11 @@ namespace HeliumParty.RadixDLT
             return this;
         }
 
-        public static RadixApplicationAPIBuilder Builder()
-        {
-            return new RadixApplicationAPIBuilder();            
-        }
+        //todo : breaks DI, to solve we could implement nullpatern. Question? do we need it?
+        //public static RadixApplicationAPIBuilder Builder()
+        //{
+        //    return new RadixApplicationAPIBuilder();            
+        //}
 
         public RadixApplicationAPIBuilder AddAtomMapper<T>(IAtomToExecutedActionsMapper<T> atomMapper)
         {

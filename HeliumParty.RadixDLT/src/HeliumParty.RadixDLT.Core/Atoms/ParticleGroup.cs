@@ -23,6 +23,11 @@ namespace HeliumParty.RadixDLT.Atoms
 
         public ParticleGroup() { }
 
+        public ParticleGroup(List<SpunParticle> particles)
+        {
+            Particles = particles.ToImmutableList();
+        }
+
         [JsonConstructor]
         public ParticleGroup(ImmutableList<SpunParticle> particles, ImmutableDictionary<string, string> metaData)
         {

@@ -67,9 +67,9 @@ namespace HeliumParty.RadixDLT.Mappers
 
             var rriParticle = new RRIParticle(token.RRI, _euidManager.GetEUID(token.RRI.Address));
 
-            
-            var tokenCreationGroup = new ParticleGroup(new List<SpunParticle>() 
-            { 
+
+            var tokenCreationGroup = new ParticleGroup(new List<SpunParticle>()
+            {
                 SpunParticle.Down(rriParticle),
                 SpunParticle.Up(token),
                 SpunParticle.Up(tokens)
