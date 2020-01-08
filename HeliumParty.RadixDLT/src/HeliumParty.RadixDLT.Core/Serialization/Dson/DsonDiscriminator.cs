@@ -1,78 +1,69 @@
 ﻿using Dahomey.Cbor;
-using Dahomey.Cbor.Attributes;
 using Dahomey.Cbor.Serialization;
 using Dahomey.Cbor.Serialization.Conventions;
-using Dahomey.Cbor.Util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text;
+using Dahomey.Cbor.Serialization.Converters.Mappings;
 
 
 namespace HeliumParty.RadixDLT.Serialization.Dson
 {
     public class DsonDiscriminator : IDiscriminatorConvention
     {
-        private readonly ReadOnlyMemory<byte> _memberName = Encoding.ASCII.GetBytes("serializer");
-        private readonly ByteBufferDictionary<Type> _typesByDiscriminator = new ByteBufferDictionary<Type>();
-        private readonly Dictionary<Type, ReadOnlyMemory<byte>> _discriminatorsByType = new Dictionary<Type, ReadOnlyMemory<byte>>();
-        private readonly HashSet<Type> _discriminatedTypes = new HashSet<Type>();
+        private readonly SerializationRegistry _serializationRegistry;
+        private readonly ReadOnlyMemory<byte> _memberName = Encoding.ASCII.GetBytes(RadixConstants.SerializerName);
+        private readonly Dictionary<string, Type> _typesByDiscriminator = new Dictionary<string, Type>();
+        private readonly Dictionary<Type, string> _discriminatorsByType = new Dictionary<Type, string>();
+
+        public DsonDiscriminator(SerializationRegistry serializationRegistry)
+        {
+            _serializationRegistry = serializationRegistry;
+        }
 
         public ReadOnlySpan<byte> MemberName => _memberName.Span;
 
         public Type ReadDiscriminator(ref CborReader reader)
         {
-            ReadOnlySpan<byte> discriminator = reader.ReadRawString();
+            var discriminator = Encoding.UTF8.GetString(reader.ReadRawString().ToArray());
             if (!_typesByDiscriminator.TryGetValue(discriminator, out Type type))
             {
-                throw reader.BuildException($"Unknown type discriminator: {Encoding.UTF8.GetString(discriminator.ToArray())}");
+                throw reader.BuildException($"Unknown type discriminator: {discriminator}");
             }
             return type;
         }
 
-        public void WriteDiscriminator<T>(ref CborWriter writer, Type actualType)
-            where T : class
+        public void WriteDiscriminator(ref CborWriter writer, Type actualType)
         {
-            if (!_discriminatorsByType.TryGetValue(actualType, out ReadOnlyMemory<byte> discriminator))
+            if (!_discriminatorsByType.TryGetValue(actualType, out string discriminator))
             {
                 throw new CborException($"Unknown discriminator for type: {actualType}");
             }
 
-            writer.WriteString(MemberName);
-            writer.WriteString(discriminator.Span);
+            //writer.WriteString(MemberName);
+            writer.WriteString(discriminator);
         }
-
-        /// <summary>
-        /// Returns whether the given type has any discriminators registered for any of its subclasses.
-        /// </summary>
-        /// <param name="type">A Type.</param>
-        /// <returns>True if the type is discriminated.</returns>
-        public bool IsTypeDiscriminated(Type type)
+        
+        public bool TryRegisterType(Type type)
         {
-            return type.IsInterface || _discriminatedTypes.Contains(type);
-        }
-
-        public void RegisterAssembly(Assembly assembly)
-        {
-            foreach (Type type in assembly.GetTypes()
-                .Where(t => Attribute.IsDefined(t, typeof(CborDiscriminatorAttribute))))
+            IObjectMapping objectMapping;
+            try
             {
-                string discriminator = type.GetCustomAttribute<CborDiscriminatorAttribute>().Discriminator;
-                RegisterType(type, discriminator.AsBinaryMemory());
+                 objectMapping = _serializationRegistry.ObjectMappingRegistry.Lookup(type);
             }
-        }
+            catch
+            {
+                return false;
+            }
 
-        public void RegisterType(Type type, ReadOnlyMemory<byte> discriminator)
-        {
-            _typesByDiscriminator.Add(discriminator.Span, type);
+            if (objectMapping.Discriminator == null || !(objectMapping.Discriminator is string discriminator))
+            {
+                return false;
+            }
+
             _discriminatorsByType[type] = discriminator;
-
-            // mark all base types as discriminated (so we know that it's worth reading a discriminator)
-            for (Type baseType = type.BaseType; baseType != null; baseType = baseType.BaseType)
-            {
-                _discriminatedTypes.Add(baseType);
-            }
+            _typesByDiscriminator[discriminator] = type;
+            return true;
         }
     }
 }

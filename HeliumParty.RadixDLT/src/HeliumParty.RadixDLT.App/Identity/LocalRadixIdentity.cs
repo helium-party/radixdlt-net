@@ -38,7 +38,7 @@ namespace HeliumParty.RadixDLT.Identity
 
             var signature = _keyManager.GetECSignature(_keyPair.PrivateKey, hash.ToByteArray());
             var EUID = _euidManager.GetEUID(_keyPair.PublicKey);
-            var signatures = new Dictionary<string, ECSignature>();
+            var signatures = new SortedDictionary<string, ECSignature>();
             signatures.Add(EUID.ToString(), signature);
 
             return new Atom()

@@ -41,18 +41,12 @@ namespace HeliumParty.RadixDLT.Serialization.Json
             }
             else
             {
-                var props = type
-                    .GetProperties()
-                    .Concat(type.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance));
+                var props = type.GetProperties().Concat(type.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance));
 
-                bool shouldSerialize;
                 foreach (var p in props)
                 {
-                    // By default, we always want to serialize the property (e.g. if it doesn't have an OutputAttribute)
-                    shouldSerialize = true;
-
                     var serializationAttributes = p.GetCustomAttributes().OfType<SerializationOutputAttribute>();
-                    if (serializationAttributes.Count() == 0)
+                    if (!serializationAttributes.Any())
                     {
                         if (_outputMode == OutputMode.None)
                             continue;
@@ -68,12 +62,11 @@ namespace HeliumParty.RadixDLT.Serialization.Json
                         {
                             // Check for matching output mode or OutputMode.All
                             if (!serializationAttributes.Any(a => a.ValidOn.Contains(_outputMode) || a.ValidOn.Contains(OutputMode.All)))
-                                shouldSerialize = false;
+                                continue;
                         }
                     }
 
-                    if (shouldSerialize)
-                        result.Add(properties.First(o => o.UnderlyingName == p.Name));
+                    result.Add(properties.First(o => o.UnderlyingName == p.Name));
                 }
             }
 

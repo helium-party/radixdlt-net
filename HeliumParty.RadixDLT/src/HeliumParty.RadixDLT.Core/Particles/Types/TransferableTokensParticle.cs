@@ -9,7 +9,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
     /// A particle which represents an amount of consumable and consuming, tranferable fungible tokens
     /// owned by some key owner and stored in an account.
     /// </summary>
-    [CborDiscriminator("radix.particles.transferrable_tokens")]
+    [CborDiscriminator("radix.particles.transferrable_tokens", Policy = CborDiscriminatorPolicy.Always)]
     public class TransferableTokensParticle : Particle, IAccountable, IOwnable
     {
         public RadixAddress Address { get; protected set; }

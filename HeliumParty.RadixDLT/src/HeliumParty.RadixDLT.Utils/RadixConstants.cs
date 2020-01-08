@@ -7,5 +7,7 @@ namespace HeliumParty.RadixDLT
         public static readonly Encoding StandardEncoding = Encoding.UTF8;
 
         public static readonly int JsonPrefixLength = 5;
+
+        public static readonly string SerializerName = "serializer";
     }
 }
