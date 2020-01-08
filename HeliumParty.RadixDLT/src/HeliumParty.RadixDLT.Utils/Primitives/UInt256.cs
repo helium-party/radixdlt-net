@@ -88,5 +88,13 @@ namespace HeliumParty.RadixDLT.Primitives
         {
             return ((BigInteger)this).ToString();
         }
+
+        public static UInt256 MaxValue = new UInt256()
+        {
+            s0 = ulong.MaxValue,
+            s1 = ulong.MaxValue,
+            s2 = ulong.MaxValue,
+            s3 = ulong.MaxValue
+        };
     }
 }
