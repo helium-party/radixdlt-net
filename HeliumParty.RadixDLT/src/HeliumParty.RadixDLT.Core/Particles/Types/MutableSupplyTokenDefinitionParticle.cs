@@ -5,7 +5,7 @@ using HeliumParty.RadixDLT.Primitives;
 
 namespace HeliumParty.RadixDLT.Particles.Types
 {
-    [CborDiscriminator("radix.particles.mutable_supply_token_definition")]
+    [CborDiscriminator("radix.particles.mutable_supply_token_definition", Policy = CborDiscriminatorPolicy.Always)]
     public class MutableSupplyTokenDefinitionParticle : Particle, IIdentifiable, IOwnable
     {
         public RRI RRI { get; protected set; }

@@ -1,9 +1,10 @@
 ﻿using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Atoms;
+using Newtonsoft.Json;
 
 namespace HeliumParty.RadixDLT.Particles
 {
-    [CborDiscriminator("radix.spun_particle", Policy =CborDiscriminatorPolicy.Always)]
+    [CborDiscriminator("radix.spun_particle", Policy = CborDiscriminatorPolicy.Always)]
     public class SpunParticle : SerializableObject
     {
         public Spin Spin { get; protected set; }
@@ -14,7 +15,8 @@ namespace HeliumParty.RadixDLT.Particles
 
         }
 
-        public SpunParticle(Particle particle, Spin spin)            
+        [JsonConstructor]
+        public SpunParticle(Particle particle, Spin spin)
         {
             Particle = particle;
             Spin = spin;

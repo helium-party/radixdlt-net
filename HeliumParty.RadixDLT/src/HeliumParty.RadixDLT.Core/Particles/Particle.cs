@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Dahomey.Cbor.Attributes;
 using HeliumParty.RadixDLT.Atoms;
 using HeliumParty.RadixDLT.Identity;
 
 namespace HeliumParty.RadixDLT.Particles
 {
+    [CborDiscriminator("radix.particles", Policy = CborDiscriminatorPolicy.Always)]
     public abstract class Particle : SerializableObject
     {
         //private readonly HashSet<EUID> _destinations; 
@@ -16,7 +18,11 @@ namespace HeliumParty.RadixDLT.Particles
         public Particle(EUID destination)
         {
             if (destination == null)
-                throw new ArgumentNullException(nameof(destination));
+            {
+                //throw new ArgumentNullException(nameof(destination));
+                Destinations = new HashSet<EUID>();
+                return; 
+            }
 
             Destinations = new HashSet<EUID>() { destination };
         }

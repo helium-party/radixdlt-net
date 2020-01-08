@@ -24,6 +24,13 @@ namespace HeliumParty.RadixDLT.EllipticCurve
             Array.Copy(privateKey, _privateKey, privateKey.Length);
         }
 
+        public ECPrivateKey(string str)
+        {
+            var privateKey = Convert.FromBase64String(str);
+            _privateKey = new byte[privateKey.Length];
+            Array.Copy(privateKey, _privateKey, privateKey.Length);
+        }
+
         public override string ToString() => Base64;
     }
 }

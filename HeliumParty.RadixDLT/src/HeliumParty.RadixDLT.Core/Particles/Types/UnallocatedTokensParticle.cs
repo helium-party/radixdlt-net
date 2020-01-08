@@ -8,7 +8,7 @@ namespace HeliumParty.RadixDLT.Particles.Types
     /// <summary>
     /// A particle which represents an amount of unallocated tokens which can be minted.
     /// </summary>
-    [CborDiscriminator("radix.particles.unallocated_tokens")]
+    [CborDiscriminator("radix.particles.unallocated_tokens", Policy = CborDiscriminatorPolicy.Always)]
     public class UnallocatedTokensParticle : Particle, IAccountable, IOwnable
     {
         public HashSet<RadixAddress> Addresses => new HashSet<RadixAddress>() { Address };

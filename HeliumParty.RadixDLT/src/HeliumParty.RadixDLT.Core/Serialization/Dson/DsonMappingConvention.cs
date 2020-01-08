@@ -3,15 +3,17 @@ using Dahomey.Cbor.Serialization.Conventions;
 using Dahomey.Cbor.Serialization.Converters.Mappings;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.Serialization;
+using Dahomey.Cbor.Attributes;
 
 namespace HeliumParty.RadixDLT.Serialization.Dson
 {
     public class DsonObjectMappingConvention : IObjectMappingConvention
     {
-        private readonly IObjectMappingConvention _defaultObjectMappingConvention = new DefaultObjectMappingConvention();
         private readonly INamingConvention _dsonNamingConvention = new CamelCaseNamingConvention();
         private readonly OutputMode _outputMode;
         
@@ -22,114 +24,133 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
         public void Apply<T>(SerializationRegistry registry, ObjectMapping<T> objectMapping) where T : class
         {
-            // TODO add fields?
-            var memberMappings = new List<MemberMapping>();
+            var type = objectMapping.ObjectType;
+            var memberMappings = new List<MemberMapping<T>>();
 
-            _defaultObjectMappingConvention.Apply<T>(registry, objectMapping);
+            var discriminatorAttribute = type.GetCustomAttribute<CborDiscriminatorAttribute>();
+            if (discriminatorAttribute != null)
+            {
+                objectMapping.SetDiscriminator(discriminatorAttribute.Discriminator);
+                objectMapping.SetDiscriminatorPolicy(discriminatorAttribute.Policy);
+            }
 
-            objectMapping.ClearMemberMappings();
-            var props = typeof(T).GetProperties().Concat(typeof(T).GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)).ToArray();
+            var namingConventionType = type.GetCustomAttribute<CborNamingConventionAttribute>()?.NamingConventionType;
+            if (namingConventionType != null)
+            {
+                objectMapping.SetNamingConvention((INamingConvention)Activator.CreateInstance(namingConventionType));
+            }
+
+            var lengthModeAttribute = type.GetCustomAttribute<CborLengthModeAttribute>();
+            if (lengthModeAttribute != null)
+            {
+                objectMapping.SetLengthMode(lengthModeAttribute.LengthMode);
+            }
+
+            var props = type.GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
             foreach (var p in props)
             {
-                var shouldSerialize = true;
-
-                if (p.GetCustomAttributes().Where(x => x.GetType() == typeof(SerializationOutputAttribute)).ToArray().Length == 0)
+                var serializationAttributes = p.GetCustomAttributes().OfType<SerializationOutputAttribute>();
+                if (!serializationAttributes.Any())
                 {
-                    // field or property has no attribute
-                    switch (_outputMode)
-                    {
-                        case OutputMode.None:
-                            shouldSerialize = false; // to archive zero output when OutputMode == None
-                            break;
-                        case OutputMode.Hash:
-                            break;
-                        case OutputMode.Api:
-                            break;
-                        case OutputMode.Wire:
-                            break;
-                        case OutputMode.Persist:
-                            break;
-                        case OutputMode.All:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                    if (_outputMode == OutputMode.None)
+                        continue;
                 }
                 else
                 {
-                    // Attribute is present
-                    foreach (var attr in p.GetCustomAttributes())
+                    // Property should be excluded from serialization
+                    if (serializationAttributes.Any(a => a.ValidOn.Contains(OutputMode.None)))
+                        continue;
+
+                    // For 'OutputMode.All', every property (except the ones with 'OutputMode.None' will be serialized)
+                    if (_outputMode != OutputMode.All)
                     {
-                        if (attr.GetType() != typeof(SerializationOutputAttribute)) continue;
-
-                        var oa = (SerializationOutputAttribute)attr;
-                        switch (_outputMode)
-                        {
-                            case OutputMode.None:
-                            {
-                                shouldSerialize = false;
-                                break;
-                            }
-                            case OutputMode.Hash:
-                            {
-                                if (oa.ValidOn.Contains(OutputMode.Hash) || oa.ValidOn.Contains(OutputMode.All))
-                                    shouldSerialize = true;
-                                else shouldSerialize = false;
-
-                                break;
-                            }
-                            case OutputMode.Api:
-                            {
-                                if (oa.ValidOn.Contains(OutputMode.Api) || oa.ValidOn.Contains(OutputMode.All))
-                                        shouldSerialize = true;
-                                else shouldSerialize = false;
-
-                                break;
-                            }
-                            case OutputMode.Wire:
-                            {
-                                if (oa.ValidOn.Contains(OutputMode.Wire) || oa.ValidOn.Contains(OutputMode.All))
-                                        shouldSerialize = true;
-                                else shouldSerialize = false;
-
-                                break;
-                            }
-                            case OutputMode.Persist:
-                            {
-                                if (oa.ValidOn.Contains(OutputMode.Persist) || oa.ValidOn.Contains(OutputMode.All))
-                                        shouldSerialize = true;
-                                else shouldSerialize = false;
-
-                                break;
-                            }
-                            case OutputMode.All:
-                            {
-                                shouldSerialize = true;
-                                if (oa.ValidOn.Contains(OutputMode.None))
-                                        shouldSerialize = false;
-
-                                break;
-                            }
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
+                        // Check for matching output mode or OutputMode.All
+                        if (!serializationAttributes.Any(a => a.ValidOn.Contains(_outputMode) || a.ValidOn.Contains(OutputMode.All)))
+                            continue;
                     }
                 }
 
-                if (shouldSerialize)
-                {
-                    var memberMapping = new MemberMapping(registry.ConverterRegistry, objectMapping, p, p.PropertyType);
-                    ProcessShouldSerializeMethod(memberMapping);
-                    memberMappings.Add(memberMapping);
-                }
+                var memberMapping = new MemberMapping<T>(registry.ConverterRegistry, objectMapping, p, p.PropertyType);
+                ProcessDefaultValue(p, memberMapping);
+                ProcessShouldSerializeMethod(memberMapping);
+                ProcessLengthMode(p, memberMapping);
+                ProcessRequired(p, memberMapping);
+                memberMappings.Add(memberMapping);
             }
 
-            //objectMapping.SetMemberMappings(objectMapping.MemberMappings.OrderBy(m => m.MemberInfo.Name).ToList());
-            objectMapping.SetMemberMappings(memberMappings);
+            objectMapping.AddMemberMappings(memberMappings);
+            objectMapping.SetOrderBy(m => m.MemberName); // sort alphabetically
+
+            var constructorInfos = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            var constructorInfo = constructorInfos.FirstOrDefault(c => c.IsDefined(typeof(CborConstructorAttribute)));
+
+            if (constructorInfo != null)
+            {
+                CborConstructorAttribute constructorAttribute = constructorInfo.GetCustomAttribute<CborConstructorAttribute>();
+                CreatorMapping creatorMapping = objectMapping.MapCreator(constructorInfo);
+                if (constructorAttribute.MemberNames != null)
+                {
+                    creatorMapping.SetMemberNames(constructorAttribute.MemberNames);
+                }
+            }
+            // if no default constructor, pick up first one
+            else if (constructorInfos.Length > 0 && !constructorInfos.Any(c => c.GetParameters().Length == 0))
+            {
+                constructorInfo = constructorInfos[0];
+                objectMapping.MapCreator(constructorInfo);
+            }
+
+            var methodInfo = type.GetMethods().FirstOrDefault(m => m.IsDefined(typeof(OnDeserializingAttribute)));
+            if (methodInfo != null)
+            {
+                objectMapping.SetOnDeserializingMethod(GenerateCallbackDelegate<T>(methodInfo));
+            }
+            else if (type.GetInterfaces().Any(i => i == typeof(ISupportInitialize)))
+            {
+                objectMapping.SetOnDeserializingMethod(t => ((ISupportInitialize)t).BeginInit());
+            }
+
+            methodInfo = type.GetMethods().FirstOrDefault(m => m.IsDefined(typeof(OnDeserializedAttribute)));
+            if (methodInfo != null)
+            {
+                objectMapping.SetOnDeserializedMethod(GenerateCallbackDelegate<T>(methodInfo));
+            }
+            else if (type.GetInterfaces().Any(i => i == typeof(ISupportInitialize)))
+            {
+                objectMapping.SetOnDeserializedMethod(t => ((ISupportInitialize)t).EndInit());
+            }
+
+            methodInfo = type.GetMethods().FirstOrDefault(m => m.IsDefined(typeof(OnSerializingAttribute)));
+            if (methodInfo != null)
+            {
+                objectMapping.SetOnSerializingMethod(GenerateCallbackDelegate<T>(methodInfo));
+            }
+
+            methodInfo = type.GetMethods().FirstOrDefault(m => m.IsDefined(typeof(OnSerializedAttribute)));
+            if (methodInfo != null)
+            {
+                objectMapping.SetOnSerializedMethod(GenerateCallbackDelegate<T>(methodInfo));
+            }
+
             objectMapping.SetNamingConvention(_dsonNamingConvention);
         }
 
-        private void ProcessShouldSerializeMethod(MemberMapping memberMapping)
+        private void ProcessDefaultValue<T>(MemberInfo memberInfo, MemberMapping<T> memberMapping) where T : class
+        {
+            var defaultValueAttribute = memberInfo.GetCustomAttribute<DefaultValueAttribute>();
+            if (defaultValueAttribute != null)
+            {
+                memberMapping.SetDefaultValue(defaultValueAttribute.Value);
+            }
+
+            if (memberInfo.IsDefined(typeof(CborIgnoreIfDefaultAttribute)))
+            {
+                memberMapping.SetIngoreIfDefault(true);
+            }
+        }
+
+        private void ProcessShouldSerializeMethod<T>(MemberMapping<T> memberMapping) where T : class
         {
             string shouldSerializeMethodName = "ShouldSerialize" + memberMapping.MemberInfo.Name;
             Type objectType = memberMapping.MemberInfo.DeclaringType;
@@ -149,6 +170,37 @@ namespace HeliumParty.RadixDLT.Serialization.Dson
 
                 memberMapping.SetShouldSerializeMethod(lambdaExpression.Compile());
             }
+        }
+
+        private void ProcessLengthMode<T>(MemberInfo memberInfo, MemberMapping<T> memberMapping) where T : class
+        {
+            var lengthModeAttribute = memberInfo.GetCustomAttribute<CborLengthModeAttribute>();
+            if (lengthModeAttribute != null)
+            {
+                memberMapping.SetLengthMode(lengthModeAttribute.LengthMode);
+            }
+        }
+
+        private void ProcessRequired<T>(MemberInfo memberInfo, MemberMapping<T> memberMapping) where T : class
+        {
+            var jsonRequiredAttribute = memberInfo.GetCustomAttribute<CborRequiredAttribute>();
+            if (jsonRequiredAttribute != null)
+            {
+                memberMapping.SetRequired(jsonRequiredAttribute.Policy);
+            }
+        }
+
+        private Action<T> GenerateCallbackDelegate<T>(MethodInfo methodInfo)
+        {
+            // obj => obj.Callback()
+            ParameterExpression objParameter = Expression.Parameter(typeof(T), "obj");
+            Expression<Action<T>> lambdaExpression = Expression.Lambda<Action<T>>(
+                Expression.Call(
+                    Expression.Convert(objParameter, typeof(T)),
+                    methodInfo),
+                objParameter);
+
+            return lambdaExpression.Compile();
         }
     }
 
