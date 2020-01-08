@@ -4,7 +4,7 @@ namespace HeliumParty.RadixDLT.Universe
 {
     public static class RadixUniverseConfigs
     {
-        public static RadixUniverseConfig GetLocalet() => RadixUniverseConfig.FromBytes(Resources.localnet);
+        public static RadixUniverseConfig GetLocalnet() => RadixUniverseConfig.FromBytes(Resources.localnet);
         public static RadixUniverseConfig GetBetanet() => RadixUniverseConfig.FromBytes(Resources.betanet);
         public static RadixUniverseConfig GetWinterfell() => RadixUniverseConfig.FromBytes(Resources.testuniverse);
         public static RadixUniverseConfig GetSunstone() => RadixUniverseConfig.FromBytes(Resources.sunstone);

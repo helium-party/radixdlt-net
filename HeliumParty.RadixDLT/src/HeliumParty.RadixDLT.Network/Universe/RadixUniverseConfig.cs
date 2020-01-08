@@ -60,7 +60,7 @@ namespace HeliumParty.RadixDLT.Universe
             Type = type;
             Port = port;
             Magic = magic;
-            Genesis = ImmutableList.Create(genesis.ToArray());
+            Genesis = genesis?.ToImmutableList();
         }
 
         public static RadixUniverseConfig FromBytes(byte[] bytes)
