@@ -44,18 +44,6 @@ namespace HeliumParty.RadixDLT.Primitives
             }
         }
 
-        public static void Fill<T>(this T[] array, int start, int end, T value)
-        {
-            if (array == null)
-                throw new ArgumentNullException("array");
-            if (start < 0 || start >= end)
-                    throw new ArgumentOutOfRangeException("fromIndex");
-            if (end >= array.Length)
-                throw new ArgumentOutOfRangeException("toIndex");
-            for (int i = start; i < end; i++)
-                array[i] = value;
-        }
-
         /// <summary>
         /// Extends the array to the specified size by filling in the specified value 
         /// either at the beginning or the ending of the current values in the array

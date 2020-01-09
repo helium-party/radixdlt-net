@@ -54,7 +54,8 @@ namespace HeliumParty.RadixDLT.Identity
             var newBytes = new byte[Bytes];
             var newPos = Bytes - bytes.Length;
             // Sign extension            
-            newBytes.Fill(0, newPos, (bytes[0] < 0) ? (byte)0xFF : (byte)0x00);
+            //newBytes.Fill(0, newPos, (bytes[0] < 0) ? (byte)0xFF : (byte)0x00);
+            Arrays.Fill(ref newBytes, 0, newPos - 1, (byte)0x00);
             Array.Copy(bytes, 0, newBytes, newPos, bytes.Length);
             return newBytes;
         }
