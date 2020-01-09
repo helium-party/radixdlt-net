@@ -1,16 +1,13 @@
 ﻿using HeliumParty.RadixDLT.Primitives;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace HeliumParty.RadixDLT.Utils.Tests.Primitives
 {
-    public class UInt256_Tests
+    public class UInt256Tests
     {
         [Fact]
-        public void IntToByteConversionTest()
+        public void Should_Convert_IntToByte()
         {
             //arrange
             var bytes = RandomGenerator.GetRandomBytes(32);

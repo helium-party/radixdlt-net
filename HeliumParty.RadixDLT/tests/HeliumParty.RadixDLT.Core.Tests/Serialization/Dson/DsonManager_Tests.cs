@@ -20,7 +20,7 @@ using HeliumParty.RadixDLT.Identity.Managers;
 
 namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 {
-    public class DsonManager_Tests : HbIntegratedBaseTest
+    public class DsonManager_Tests : HpIntegratedBaseTest
     {
         private readonly IDsonManager _dsonmanager;
         private readonly IEUIDManager _euidmanager;

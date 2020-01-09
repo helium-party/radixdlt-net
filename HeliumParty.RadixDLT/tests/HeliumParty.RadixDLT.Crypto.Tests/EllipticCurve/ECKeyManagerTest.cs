@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using HeliumParty.BaseTest;
 using HeliumParty.RadixDLT.EllipticCurve;
 using HeliumParty.RadixDLT.EllipticCurve.Managers;
@@ -11,23 +10,25 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HeliumParty.RadixDLT.Crypto.Tests
 {
-    public class ECKeyManagerTest : HbIntegratedBaseTest
+    public class ECKeyManagerTest : HpIntegratedBaseTest
     {
-        private readonly IECKeyManager _manager;
+        private readonly IECKeyManager _ecKeyManager;
 
         public ECKeyManagerTest()
         {
-            _manager = IocContainer.GetService<IECKeyManager>();
+            _ecKeyManager = IocContainer.GetService<IECKeyManager>();
         }
 
         [Fact]
         public void Should_GenerateUnique_Keys()
         {
+            //arrange
             var keyPairs = new List<ECKeyPair>();
 
+            //act
             var i = 0;
             while (i++ < 100)
-                keyPairs.Add(_manager.GetRandomKeyPair());
+                keyPairs.Add(_ecKeyManager.GetRandomKeyPair());
 
             foreach (var pair in keyPairs)
             {
@@ -36,20 +37,25 @@ namespace HeliumParty.RadixDLT.Crypto.Tests
                     ec.PublicKey.Base64 == pair.PublicKey.Base64
                 ).ToList();
 
+                //assert
                 //there should only be one match, aka himself
                 a.Count.ShouldBe(1);
             }
         }
 
-
         [Fact]
         public void Should_CreateTheSame_KeyPair()
         {
-            var pair = _manager.GetRandomKeyPair();
-            var pair2 = _manager.GetKeyPair(pair.PrivateKey);
+            //arrange
+            var pair = _ecKeyManager.GetRandomKeyPair();
 
-            pair2.PublicKey.Base64.ShouldBe(pair2.PublicKey.Base64);
-            _manager.VerifyKeyPair(pair2).ShouldBe(true);
+            //act
+            var pair2 = _ecKeyManager.GetKeyPair(pair.PrivateKey);
+
+            //assert
+            pair.PublicKey.Base64.ShouldBe(pair2.PublicKey.Base64);
+            _ecKeyManager.VerifyKeyPair(pair).ShouldBe(true);
+            _ecKeyManager.VerifyKeyPair(pair2).ShouldBe(true);
         }
 
         [Fact]
@@ -60,10 +66,9 @@ namespace HeliumParty.RadixDLT.Crypto.Tests
             var pubkeyBase64 = "A3eCL5NJVVmJLXloK+zO9BFj36sHKGHHxG6Ytz5DX+qr";            
 
             var privKey = new ECPrivateKey(Convert.FromBase64String(privkeyBase64));
-            //var addressbase58 = "JH11YADXCXF84r5G6ZVt6QkrsXNBa4X62rpTyaRiVWGrqTZrcjS";
 
             //act
-            var pair = _manager.GetKeyPair(privKey);
+            var pair = _ecKeyManager.GetKeyPair(privKey);
 
             //assert
             pair.PublicKey.Base64.ShouldBe(pubkeyBase64);
@@ -72,29 +77,43 @@ namespace HeliumParty.RadixDLT.Crypto.Tests
         [Fact]
         public void Should_CreateValid_ECSignature()
         {
+            //arrange
             var toSign = "Hello World!";
-            var pair = _manager.GetRandomKeyPair();
+            var pair = _ecKeyManager.GetRandomKeyPair();
 
-            var signature = _manager.GetECSignature(pair.PrivateKey, Encoding.ASCII.GetBytes(toSign));
-            _manager.VerifyECSignature(pair.PublicKey, signature, Encoding.ASCII.GetBytes(toSign)).ShouldBe(true);
-            _manager.VerifyECSignature(pair.PublicKey, signature, Encoding.ASCII.GetBytes(toSign + " ")).ShouldBe(false);
+            //act
+            var signature = _ecKeyManager.GetECSignature(pair.PrivateKey, RadixConstants.StandardEncoding.GetBytes(toSign));
+
+            //assert
+            _ecKeyManager.VerifyECSignature(pair.PublicKey, signature, RadixConstants.StandardEncoding.GetBytes(toSign)).ShouldBe(true);
+            _ecKeyManager.VerifyECSignature(pair.PublicKey, signature, RadixConstants.StandardEncoding.GetBytes(toSign + " ")).ShouldBe(false);
         }
 
         [Fact]
         public void UnEncrypted_And_DeCrypted_ShouldBeTheSame()
         {
             //arrange
-            var keypair = _manager.GetRandomKeyPair();
+            var keypair = _ecKeyManager.GetRandomKeyPair();
             var msg = "This is a message we want to encrypt";
             var toEncrypt = RadixConstants.StandardEncoding.GetBytes(msg);
 
             //act
-            var encrypted = _manager.Encrypt(keypair.PublicKey, toEncrypt);
-            var decrypted = _manager.Decrypt(keypair.PrivateKey, encrypted);
+            var encrypted = _ecKeyManager.Encrypt(keypair.PublicKey, toEncrypt);
+            var decrypted = _ecKeyManager.Decrypt(keypair.PrivateKey, encrypted);
 
             //assert
             msg.ShouldBe(RadixConstants.StandardEncoding.GetString(decrypted));
             msg.ShouldNotBe(RadixConstants.StandardEncoding.GetString(encrypted));
+        }
+
+        [Fact]
+        public void Should_Throw_Exception_On_Invalid_Data()
+        {
+            //arrange
+            var keypair = _ecKeyManager.GetRandomKeyPair();
+
+            //assert
+            Should.Throw<Exception>(() => _ecKeyManager.Decrypt(keypair.PrivateKey, new byte[] {0x00}));
         }
     }
 }

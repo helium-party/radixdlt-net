@@ -18,7 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Json
 {
-    public class JsonManager_Tests : HbIntegratedBaseTest
+    public class JsonManager_Tests : HpIntegratedBaseTest
     {
         private readonly IJsonManager _jsonmanager;
         private readonly IEUIDManager _euidmanager;

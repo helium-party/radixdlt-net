@@ -1,4 +1,6 @@
-﻿using Dahomey.Cbor;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using Dahomey.Cbor;
 using Dahomey.Cbor.Attributes;
 using Dahomey.Cbor.ObjectModel;
 using HeliumParty.RadixDLT.Core.Tests.Resources;
@@ -10,11 +12,13 @@ using Shouldly;
 using System.IO;
 using System.Threading.Tasks;
 using Dahomey.Cbor.Serialization.Conventions;
+using HeliumParty.RadixDLT.Atoms;
+using HeliumParty.RadixDLT.Serialization;
 using Xunit;
 
 namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 {
-    public class Dahomey_Tests
+    public class DahomeyTests
     {
         [Fact]
         public async Task Should_Deserialize_WithCustom_Options()
@@ -221,6 +225,29 @@ namespace HeliumParty.RadixDLT.Core.Tests.Serialization.Dson
 
             deserialized.Value.ShouldBe(100);
 
+        }
+
+        [CborDiscriminator("dahomey.immutabletest", Policy = CborDiscriminatorPolicy.Always)]
+        public class ImmutableTest
+        {
+            [SerializationOutput(OutputMode.All)]
+            public ImmutableList<Atom> MyList { get; set; }
+
+            public ImmutableTest(List<Atom> list)
+            {
+                MyList = list?.ToImmutableList();
+            }
+        }
+
+        [Fact]
+        public void Should_Serialize_And_Deserialize()
+        {
+            var manager = new DsonManager();
+
+            var obj = new ImmutableTest(new List<Atom>{new Atom()});
+
+            var serialized = manager.ToDson(obj, OutputMode.Hash);
+            var deserialized = manager.FromDson<ImmutableTest>(serialized, OutputMode.Hash);
         }
     }
 }

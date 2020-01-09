@@ -9,6 +9,7 @@ namespace HeliumParty.RadixDLT.Utils.Tests.Primitives
         [Fact]
         public void ShouldCompare()
         {
+            //arrange
             var ilong1 = new Int128((long)3000);
             var ilong2 = new Int128((long)6000);
             var ilong3 = new Int128((long)-3000);
@@ -26,7 +27,7 @@ namespace HeliumParty.RadixDLT.Utils.Tests.Primitives
             var iflo3 = new Int128(-555.55d);
             var iflo4 = new Int128(-222.22d);
 
-
+            //assert
             ilong1.ShouldBe(ilong2 / (long)2);
             ilong1.ShouldBe(ilong2 / (ulong)2);
             ilong1.ShouldBe(ilong2 / 2);

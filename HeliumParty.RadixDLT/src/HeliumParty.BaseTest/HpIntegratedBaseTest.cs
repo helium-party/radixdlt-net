@@ -6,11 +6,11 @@ using System.Text;
 
 namespace HeliumParty.BaseTest
 {
-    public abstract class HbIntegratedBaseTest
+    public abstract class HpIntegratedBaseTest
     {
         public IServiceProvider IocContainer { get; set; }
 
-        public HbIntegratedBaseTest()
+        public HpIntegratedBaseTest()
         {
             var collection = new ServiceCollection();
             new ServiceCollectionRegistrar()

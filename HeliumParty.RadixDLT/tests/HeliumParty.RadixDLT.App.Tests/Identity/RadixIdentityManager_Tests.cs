@@ -12,7 +12,7 @@ using Xunit;
 
 namespace HeliumParty.RadixDLT.App.Tests.Identity
 {
-    public class RadixIdentityManager_Tests : HbIntegratedBaseTest
+    public class RadixIdentityManager_Tests : HpIntegratedBaseTest
     {
         private const string PRIVATEKEY_INBASE64 = "lA8N6h4uUEbmf+Pp4DS41UPBJ8LIlUwBkfjKThw0fuI=";
         private const string PUBLICKEY_INBASE64 = "A3eCL5NJVVmJLXloK+zO9BFj36sHKGHHxG6Ytz5DX+qr";

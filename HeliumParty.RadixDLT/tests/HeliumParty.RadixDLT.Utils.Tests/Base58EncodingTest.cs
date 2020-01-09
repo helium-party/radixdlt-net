@@ -10,9 +10,11 @@ namespace HeliumParty.RadixDLT.Utils.Tests
         [Fact]
         public void Base58FromToTest()
         {
+            //arrange
             var decoded = Base58Encoding.Decode(ValidBase58);
             var encoded = Base58Encoding.Encode(decoded);
 
+            //assert
             encoded.ShouldBe(ValidBase58);
         }
     }
