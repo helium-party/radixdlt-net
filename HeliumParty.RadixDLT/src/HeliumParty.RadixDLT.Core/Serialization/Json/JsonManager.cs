@@ -62,6 +62,7 @@ namespace HeliumParty.RadixDLT.Serialization.Json
                 settings.ContractResolver = new JsonContractResolver(mode);
                 settings.SerializationBinder = new JsonSerializationBinder();
                 settings.TypeNameHandling = TypeNameHandling.Objects;
+                settings.MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead;
                 _outputModeOptions.Add(mode, settings);
             }
         }
